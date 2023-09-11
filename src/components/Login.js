@@ -44,7 +44,7 @@ function Login() {
   useEffect(() => {
     if (context.accessToken !== "") {
       console.log(context);
-      localStorage.setItem("userState", JSON.stringify(context));
+      sessionStorage.setItem("userState", JSON.stringify(context));
       navigate("/main");
     }
   }, [context.accessToken]);

@@ -17,12 +17,12 @@ function InstrumentSelectionInput({ setSheetInfo, value, text }) {
         type="radio"
         className="btn-check"
         name="instrument"
-        id={value}
+        id={`instrument${value}`}
         autoComplete="off"
         onClick={changeInstrument}
         value={value}
       />
-      <label className="btn btn-secondary" htmlFor={value}>
+      <label className="btn btn-secondary" htmlFor={`instrument${value}`}>
         {text}
       </label>
     </div>

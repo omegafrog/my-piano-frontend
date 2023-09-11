@@ -1,12 +1,14 @@
+import { Link } from "react-router-dom";
+
 function NavigationBtn({ text, img, href }) {
   if (text === undefined) {
     text = "";
   }
   return (
-    <a href={href}>
+    <Link to={href}>
       {text}
       {img ? <img src={img} alt="button img"></img> : null}
-    </a>
+    </Link>
   );
 }
 export default NavigationBtn;

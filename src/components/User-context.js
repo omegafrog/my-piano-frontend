@@ -32,8 +32,8 @@ export const UserProvider = ({ children }) => {
     setAccessToken,
   };
 
-  if (localStorage.getItem("userState") !== null) {
-    initialState = JSON.parse(localStorage.getItem("userState"));
+  if (sessionStorage.getItem("userState") !== null) {
+    initialState = JSON.parse(sessionStorage.getItem("userState"));
   }
   const [state, setState] = useState(initialState);
   console.log(state);

@@ -4,6 +4,7 @@ function GenreSelectionInput({ sheetInfo, setSheetInfo, value, text }) {
   const changeGenre = (event) => {
     event.preventDefault();
     if (event.target.classList.contains("active")) {
+      console.log("aa");
       if (sheetInfo.sheetDto.genres.length >= 2) {
         alert("2개 이상 선택할 수 없습니다.");
         event.target.classList.toggle("active");
@@ -16,6 +17,7 @@ function GenreSelectionInput({ sheetInfo, setSheetInfo, value, text }) {
         },
       }));
     } else {
+      console.log("bb");
       const after = sheetInfo.sheetDto.genres.filter(
         (genre) => genre !== event.target.value
       );

@@ -9,11 +9,7 @@ function Sheets() {
   const [sheetPosts, setSheetPosts] = useState([]);
 
   const getSheetPosts = async () => {
-    const result = await axios.get("/api/sheet", {
-      headers: {
-        Authorization: accessToken,
-      },
-    });
+    const result = await axios.get("/api/sheet", { validateStatus: false });
     console.log(result);
   };
 
@@ -26,7 +22,11 @@ function Sheets() {
       <Navigator />
       <div>
         <LeftNavigator />
-        <div className="content">contents</div>
+        {sheetPosts.length > 0 ? (
+          <div className="content">contents</div>
+        ) : (
+          <h1>Loading...</h1>
+        )}
       </div>
     </div>
   );

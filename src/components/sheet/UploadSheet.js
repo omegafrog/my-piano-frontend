@@ -1,10 +1,16 @@
-import { useContext, useEffect, useState } from "react";
-import Editor from "./editor";
+import { useContext, useEffect, useMemo, useState } from "react";
 import GenreSelection from "./GenreSelectionInput";
 import InstrumentSelection from "./InstrumentSelection";
+import SettingPrice from "./SettingPrice";
+import SheetPostDescription from "./SheetPostDescription";
+import OrganizationSelection from "./OrganizationSelection";
+import axios from "axios";
+import { UserContext } from "../User-context";
+import LyricsSelection from "./LyricsSelection";
+import DifficultySelection from "./DifficultySelection";
+import UploadFile from "./UploadFile";
 
 function UploadSheet() {
-  const [isFree, setFree] = useState(true);
   const [sheetInfo, setSheetInfo] = useState({
     title: "",
     content: "",
@@ -21,80 +27,96 @@ function UploadSheet() {
       filePath: "",
     },
   });
-  const changeSheetTitle = (event) => {
-    event.preventDefault();
+  const { accessToken } = useContext(UserContext);
+  const value = useMemo(
+    () => ({ sheetInfo, setSheetInfo }),
+    [sheetInfo, setSheetInfo]
+  );
+
+  const sendRequest = async (form) => {
+    const result = await axios({
+      method: "post",
+      url: "/api/sheet/file",
+      withCredentials: true,
+      headers: {
+        Authorization: accessToken,
+      },
+      data: form,
+    });
+    const data = await JSON.parse(result.data.serializedData);
+    let imageListItems = "";
+    Object.values(data.resources).forEach((sheet) => {
+      imageListItems += sheet;
+      imageListItems += ",";
+    });
     setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: { ...prev.sheetDto, title: event.target.value },
+      sheetDto: {
+        ...prev.sheetDto,
+        filePath: imageListItems,
+      },
     }));
   };
-  const changeTitle = (event) => {
-    event.preventDefault();
-    setSheetInfo((prev) => ({
-      ...prev,
-      title: event.target.title,
-    }));
-  };
-  const changePrice = (event) => {
-    event.preventDefault();
-    setSheetInfo((prev) => ({
-      ...prev,
-      price: event.target.price,
-    }));
-  };
-  const changeContent = (event) => {
-    event.preventDefault();
-    setSheetInfo((prev) => ({
-      ...prev,
-      content: event.target.content,
-    }));
+
+  const submitSheetPost = async () => {
+    // send sheet data
+    const sheetForm = document.querySelector("#sheetForm");
+    let form1 = new FormData(sheetForm);
+    await sendRequest(form1);
+
+    const result = await axios.post("/api/sheet/write", value.sheetInfo, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
   };
 
   console.log("sheetInfo", sheetInfo);
   return (
     <div className="sheet-upload">
       <h1>악보 게시판 업로드</h1>
-      <input
-        type="radio"
-        id="free"
-        name="cost-radio"
-        value={"free"}
-        onClick={() => setFree(true)}
+      <SettingPrice
+        sheetInfo={value.sheetInfo}
+        setSheetInfo={value.setSheetInfo}
       />
-      <label htmlFor="free">무료</label>
 
-      <input
-        type="radio"
-        id="pay"
-        name="cost-radio"
-        value={"pay"}
-        onClick={() => setFree(false)}
+      <div className="sheet-upload-file">
+        <UploadFile setSheetInfo={value.setSheetInfo} />
+      </div>
+      <SheetPostDescription
+        sheetInfo={value.sheetInfo}
+        setSheetInfo={value.setSheetInfo}
       />
-      <label htmlFor="pay">유료</label>
+      <GenreSelection
+        sheetInfo={value.sheetInfo}
+        setSheetInfo={value.setSheetInfo}
+      />
+      <InstrumentSelection setSheetInfo={value.setSheetInfo} />
+      <div>
+        <h3>편성</h3>
+        <OrganizationSelection setSheetInfo={value.setSheetInfo} />
+      </div>
 
-      {isFree ? null : (
-        <div className="sheet-upload-price">
-          <span>소비자가격(원화, 부가세 포함)</span>
-          <input type="number" value={sheetInfo.price} onChange={changePrice} />
-        </div>
-      )}
-
-      <div className="sheet-upload-file">파일을 첨부해라</div>
-      <input
-        type="text"
-        placeholder="곡 제목"
-        value={sheetInfo.sheetDto.title}
-        onChange={changeSheetTitle}
-      />
-      <input
-        type="text"
-        placeholder="글 제목"
-        value={sheetInfo.title}
-        onChange={changeTitle}
-      />
-      <Editor onChange={changeContent} />
-      <GenreSelection sheetInfo={sheetInfo} setSheetInfo={setSheetInfo} />
-      <InstrumentSelection sheetInfo={sheetInfo} setSheetInfo={setSheetInfo} />
+      <div>
+        <h3>가사 여부</h3>
+        <LyricsSelection setSheetInfo={value.setSheetInfo} />
+      </div>
+      <div>
+        <h3>난이도</h3>
+        <DifficultySelection setSheetInfo={value.setSheetInfo} />
+      </div>
+      <div>
+        <button type="button" className="btn btn-outline-secondary">
+          리셋
+        </button>
+        <button
+          type="button"
+          onClick={submitSheetPost}
+          className="btn btn-danger"
+        >
+          작성
+        </button>
+      </div>
     </div>
   );
 }

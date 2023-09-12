@@ -33,10 +33,12 @@ export const UserProvider = ({ children }) => {
   };
 
   if (sessionStorage.getItem("userState") !== null) {
-    initialState = JSON.parse(sessionStorage.getItem("userState"));
+    const a = JSON.parse(sessionStorage.getItem("userState"));
+    initialState = { ...a, setLoggedUser, setLoggedIn, setAccessToken };
+
+    console.log("initialState", initialState);
   }
   const [state, setState] = useState(initialState);
-  console.log(state);
   useEffect(() => console.log("state change", state), [state]);
   const value = useMemo(() => state, [state]);
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

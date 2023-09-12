@@ -24,12 +24,15 @@ function Login() {
     if (response.data.status !== 200) {
       alert("로그인 실패");
     } else {
+      const accessToken = JSON.parse(response.data.serializedData)[
+        "access token"
+      ];
       const userInfoResponse = await axios.get("/api/user", {
         headers: {
-          Authorization: response.data.serializedData["access token"],
+          Authorization: accessToken,
         },
       });
-      context.setAccessToken(response.data.serializedData["access token"]);
+      context.setAccessToken(accessToken);
       context.setLoggedIn(true);
       context.setLoggedUser(
         JSON.parse(userInfoResponse.data.serializedData).user

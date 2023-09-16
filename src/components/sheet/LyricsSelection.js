@@ -13,7 +13,7 @@ function LyricsSelection({ setSheetInfo }) {
       <input
         type="radio"
         name="lyrics"
-        value={1}
+        value={true}
         id={"lyrics1"}
         className="btn-check"
         onClick={changeLyrics}
@@ -24,7 +24,7 @@ function LyricsSelection({ setSheetInfo }) {
       <input
         type="radio"
         name="lyrics"
-        value={0}
+        value={false}
         id={"lyrics0"}
         className="btn-check"
         onClick={changeLyrics}

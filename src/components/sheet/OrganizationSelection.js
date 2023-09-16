@@ -18,7 +18,7 @@ function OrganizationSelection({ setSheetInfo }) {
         className="btn-check"
         autoComplete="off"
         id={`organization${1}`}
-        value={1}
+        value={true}
         onClick={changeOrganization}
       />
       <label htmlFor={`organization${1}`} className="btn btn-primary">
@@ -31,7 +31,7 @@ function OrganizationSelection({ setSheetInfo }) {
         className="btn-check"
         autoComplete="off"
         id={`organization${0}`}
-        value={0}
+        value={false}
         onClick={changeOrganization}
       />
       <label htmlFor={`organization${0}`} className="btn btn-primary">

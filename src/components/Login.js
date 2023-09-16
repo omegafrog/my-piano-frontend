@@ -24,9 +24,7 @@ function Login() {
     if (response.data.status !== 200) {
       alert("로그인 실패");
     } else {
-      const accessToken = JSON.parse(response.data.serializedData)[
-        "access token"
-      ];
+      const accessToken = response.data.serializedData["access token"];
       const userInfoResponse = await axios.get("/api/user", {
         headers: {
           Authorization: accessToken,
@@ -34,9 +32,7 @@ function Login() {
       });
       context.setAccessToken(accessToken);
       context.setLoggedIn(true);
-      context.setLoggedUser(
-        JSON.parse(userInfoResponse.data.serializedData).user
-      );
+      context.setLoggedUser(userInfoResponse.data.serializedData.user);
     }
   };
   const navigate = useNavigate();
@@ -44,9 +40,9 @@ function Login() {
     event.preventDefault();
     getLoginInfo();
   };
+
   useEffect(() => {
     if (context.accessToken !== "") {
-      console.log(context);
       sessionStorage.setItem("userState", JSON.stringify(context));
       navigate("/main");
     }

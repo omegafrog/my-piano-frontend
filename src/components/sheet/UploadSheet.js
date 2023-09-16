@@ -9,6 +9,7 @@ import { UserContext } from "../User-context";
 import LyricsSelection from "./LyricsSelection";
 import DifficultySelection from "./DifficultySelection";
 import UploadFile from "./UploadFile";
+import { decodeToken, isExpired } from "react-jwt";
 
 function UploadSheet() {
   const [sheetInfo, setSheetInfo] = useState({
@@ -19,56 +20,159 @@ function UploadSheet() {
     sheetDto: {
       title: "",
       pageNum: 0,
-      difficulty: 0,
-      instrument: 0,
+      difficulty: -1,
+      instrument: -1,
       genres: [],
-      isSolo: true,
-      lyrics: false,
+      isSolo: null,
+      lyrics: null,
       filePath: "",
     },
   });
-  const { accessToken } = useContext(UserContext);
+
+  const [sheetFileForm, setSheetFileForm] = useState([]);
+
+  const context = useContext(UserContext);
+
   const value = useMemo(
-    () => ({ sheetInfo, setSheetInfo }),
-    [sheetInfo, setSheetInfo]
+    () => ({ sheetInfo, setSheetInfo, sheetFileForm, setSheetFileForm }),
+    [sheetInfo, setSheetInfo, sheetFileForm, setSheetFileForm]
   );
 
-  const sendRequest = async (form) => {
-    const result = await axios({
-      method: "post",
-      url: "/api/sheet/file",
-      withCredentials: true,
-      headers: {
-        Authorization: accessToken,
-      },
-      data: form,
-    });
-    const data = await JSON.parse(result.data.serializedData);
-    let imageListItems = "";
-    Object.values(data.resources).forEach((sheet) => {
-      imageListItems += sheet;
-      imageListItems += ",";
-    });
+  const validateToken = async () => {
+    const jwtSecret = process.env.REACT_APP_JWT_SECRET;
+    const token = decodeToken(context.accessToken);
+    if (Date.now() / 1000 >= token.exp) {
+      console.log("revalidation is needed.");
+      console.log("before", context.accessToken);
+      const response = await axios.get("/api/user/login/invalidate", {
+        headers: {
+          Authorization: context.accessToken,
+        },
+      });
+      const newToken = response.data.serializedData["access token"];
+      context.setAccessToken(newToken);
+      sessionStorage.setItem("userState", JSON.stringify(context));
+      console.log("revalidation over.");
+    } else {
+      console.log("revalidation is not needed.");
+    }
+  };
+  useEffect(() => {
+    validateToken();
+  }, []);
+  const submitSheetPost = async () => {
+    // send sheet data
+    if (value.sheetInfo.title.length < 3) {
+      alert("글 제목이 너무 짧습니다.");
+      return;
+    }
+    if (value.sheetInfo["content"].length < 10) {
+      alert("글 내용이 너무 짧습니다.");
+      return;
+    }
+    if (value.sheetInfo["price"] === null || value.sheetInfo["price"] < 0) {
+      alert("금액은 0원 이하일 수 없습니다.");
+      return;
+    }
+    console.log(value.sheetInfo.sheetDto);
+    if (
+      value.sheetInfo.sheetDto.title === null ||
+      value.sheetInfo["sheetDto"]["title"].length < 3
+    ) {
+      alert("곡 제목이 너무 짧습니다.");
+      return;
+    }
+    if (
+      value.sheetInfo.sheetDto.pageNum === null ||
+      value.sheetInfo.sheetDto.pageNum <= 0
+    ) {
+      alert("악보 페이지가 잘못되었습니다.");
+      return;
+    }
+    if (
+      value.sheetInfo.sheetDto.difficulty === null ||
+      value.sheetInfo.sheetDto.difficulty < 0 ||
+      value.sheetInfo.sheetDto.difficulty > 4
+    ) {
+      alert("난이도가 잘못되었습니다.");
+      return;
+    }
+    if (
+      value.sheetInfo.sheetDto.instrument === null ||
+      value.sheetInfo.sheetDto.instrument < 0 ||
+      value.sheetInfo.sheetDto.instrument > 12
+    ) {
+      alert("악기 선택이 잘못되었습니다.");
+      return;
+    }
+    if (
+      value.sheetInfo.sheetDto.genres === null ||
+      value.sheetInfo.sheetDto.genres.length == 0 ||
+      value.sheetInfo.sheetDto.genres.length > 2
+    ) {
+      alert("장르 선택이 잘못되었습니다.");
+      return;
+    }
+    if (value.sheetInfo.sheetDto.isSolo === null) {
+      alert("편성을 선택하지 않았습니다.");
+      return;
+    }
+    if (value.sheetInfo.sheetDto.lyrics === null) {
+      alert("가사 여부를 선택하지 않았습니다.");
+      return;
+    }
+    if (
+      value.sheetInfo.sheetDto.filePath === null ||
+      value.sheetInfo.sheetDto.filePath.length === 0
+    ) {
+      alert("악보를 올리지 않았습니다.");
+      return;
+    }
+
     setSheetInfo((prev) => ({
       ...prev,
       sheetDto: {
         ...prev.sheetDto,
-        filePath: imageListItems,
+        genres: {
+          genre1: value.sheetInfo.sheetDto.genres[0],
+          genre2:
+            value.sheetInfo.sheetDto.genres.length > 1
+              ? value.sheetInfo.sheetDto.genres[1]
+              : null,
+        },
       },
     }));
-  };
 
-  const submitSheetPost = async () => {
-    // send sheet data
-    const sheetForm = document.querySelector("#sheetForm");
-    let form1 = new FormData(sheetForm);
-    await sendRequest(form1);
-
+    console.log("sheetInfo:", sheetInfo);
     const result = await axios.post("/api/sheet/write", value.sheetInfo, {
       headers: {
-        Authorization: accessToken,
+        Authorization: context.accessToken,
       },
     });
+    console.log(result);
+    if (result.data.status !== 200) {
+      alert(result.data.message);
+      if (result.data.status === 401) {
+        const response = await axios.get("/api/user/login/invalidate", {
+          headers: {
+            Authorization: context.accessToken,
+          },
+        });
+        console.log(context);
+        const newToken = response.data.serializedData["access token"];
+        context.setAccessToken(newToken);
+      }
+    }
+    const fileResult = await axios({
+      method: "post",
+      url: "/api/sheet/file",
+      withCredentials: true,
+      headers: {
+        Authorization: context.accessToken,
+      },
+      data: value.sheetFileForm,
+    });
+    console.log(fileResult);
   };
 
   console.log("sheetInfo", sheetInfo);
@@ -81,16 +185,13 @@ function UploadSheet() {
       />
 
       <div className="sheet-upload-file">
-        <UploadFile setSheetInfo={value.setSheetInfo} />
+        <UploadFile value={value} />
       </div>
       <SheetPostDescription
         sheetInfo={value.sheetInfo}
         setSheetInfo={value.setSheetInfo}
       />
-      <GenreSelection
-        sheetInfo={value.sheetInfo}
-        setSheetInfo={value.setSheetInfo}
-      />
+      <GenreSelection value={value} />
       <InstrumentSelection setSheetInfo={value.setSheetInfo} />
       <div>
         <h3>편성</h3>

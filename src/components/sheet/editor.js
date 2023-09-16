@@ -1,15 +1,14 @@
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import theme from "../../../node_modules/react-quill/dist/quill.snow.css";
 
-function Editor() {
+function Editor({ sheetInfo, setSheetInfo }) {
   return (
     <div>
-      <ReactQuill />
+      <ReactQuill
+        value={sheetInfo.content}
+        onChange={(e) => setSheetInfo((prev) => ({ ...prev, content: e }))}
+      />
     </div>
   );
-}
-
-function GetEditorOutput(content) {
-  return <div dangerouslySetInnerHTML={{ __html: content }} />;
 }
 export default Editor;

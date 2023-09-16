@@ -1,13 +1,6 @@
-import Editor from "./editor";
+import Editor from "./Editor";
 
 function SheetPostDescription({ setSheetInfo, sheetInfo }) {
-  const changeContent = (event) => {
-    event.preventDefault();
-    setSheetInfo((prev) => ({
-      ...prev,
-      content: event.target.value,
-    }));
-  };
   const changeSheetTitle = (event) => {
     event.preventDefault();
     setSheetInfo((prev) => ({
@@ -36,7 +29,7 @@ function SheetPostDescription({ setSheetInfo, sheetInfo }) {
         value={sheetInfo.title || ""}
         onChange={changeTitle}
       />
-      <Editor onChange={changeContent} />
+      <Editor sheetInfo={sheetInfo} setSheetInfo={setSheetInfo} />
     </div>
   );
 }

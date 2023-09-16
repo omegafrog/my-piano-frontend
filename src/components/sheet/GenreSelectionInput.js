@@ -4,7 +4,6 @@ function GenreSelectionInput({ sheetInfo, setSheetInfo, value, text }) {
   const changeGenre = (event) => {
     event.preventDefault();
     if (event.target.classList.contains("active")) {
-      console.log("aa");
       if (sheetInfo.sheetDto.genres.length >= 2) {
         alert("2개 이상 선택할 수 없습니다.");
         event.target.classList.toggle("active");
@@ -13,17 +12,18 @@ function GenreSelectionInput({ sheetInfo, setSheetInfo, value, text }) {
       setSheetInfo((prev) => ({
         ...prev,
         sheetDto: {
+          ...prev.sheetDto,
           genres: [...prev.sheetDto.genres, event.target.value],
         },
       }));
     } else {
-      console.log("bb");
       const after = sheetInfo.sheetDto.genres.filter(
         (genre) => genre !== event.target.value
       );
       setSheetInfo((prev) => ({
         ...prev,
         sheetDto: {
+          ...prev.sheetDto,
           genres: after,
         },
       }));
@@ -49,98 +49,98 @@ function GenreSelection({ sheetInfo, setSheetInfo }) {
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"carol"}
-        value={"0"}
+        value={0}
         text={"캐롤"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"kpop"}
-        value={"1"}
+        value={1}
         text={"K-POP"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"pop"}
-        value={"2"}
+        value={2}
         text={"해외 POP"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"newage"}
-        value={"3"}
+        value={3}
         text={"뉴에이지"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"classic"}
-        value={"4"}
+        value={4}
         text={"클래식"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"custom"}
-        value={"5"}
+        value={5}
         text={"자작곡"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"jazz"}
-        value={"6"}
+        value={6}
         text={"재즈"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"duet"}
-        value={"7"}
+        value={7}
         text={"연탄곡"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"game_anime"}
-        value={"8"}
+        value={8}
         text={"게임/애니"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"ost"}
-        value={"9"}
+        value={9}
         text={"OST"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"kids"}
-        value={"10"}
+        value={10}
         text={"동요"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"bgm"}
-        value={"11"}
+        value={11}
         text={"BGM"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"musical"}
-        value={"12"}
+        value={12}
         text={"뮤지컬"}
       />
       <GenreSelectionInput
         sheetInfo={sheetInfo}
         setSheetInfo={setSheetInfo}
         id={"religious"}
-        value={"13"}
+        value={13}
         text={"종교"}
       />
     </div>

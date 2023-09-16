@@ -33,7 +33,7 @@ function UploadFile({ value }) {
         pageNum: files.length,
       },
     }));
-    return form;
+    value.setSheetFileForm(form);
   };
   return (
     <form id="sheetForm" encType="multipart/form-data" method="POST">

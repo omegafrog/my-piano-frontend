@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import GenreSelection from "./GenreSelectionInput";
+import GenreSelection from "./GenreSelection";
 import InstrumentSelection from "./InstrumentSelection";
 import SettingPrice from "./SettingPrice";
 import SheetPostDescription from "./SheetPostDescription";
@@ -9,7 +9,7 @@ import { UserContext } from "../User-context";
 import LyricsSelection from "./LyricsSelection";
 import DifficultySelection from "./DifficultySelection";
 import UploadFile from "./UploadFile";
-import { decodeToken, isExpired } from "react-jwt";
+import { decodeToken } from "react-jwt";
 
 function UploadSheet() {
   const [sheetInfo, setSheetInfo] = useState({
@@ -51,7 +51,7 @@ function UploadSheet() {
       });
       const newToken = response.data.serializedData["access token"];
       context.setAccessToken(newToken);
-      sessionStorage.setItem("userState", JSON.stringify(context));
+      localStorage.setItem("userState", JSON.stringify(context));
       console.log("revalidation over.");
     } else {
       console.log("revalidation is not needed.");

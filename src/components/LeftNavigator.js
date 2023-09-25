@@ -9,7 +9,7 @@ function LeftNavigator() {
       <Col>
         <Row className="d-inline-flex">
           <Col className="w-33 d-flex justify-content-around">
-            <Nav.Link>
+            <Nav.Link href="/sheet/upload">
               악보 <br />
               업로드
             </Nav.Link>

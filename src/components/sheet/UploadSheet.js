@@ -10,6 +10,7 @@ import LyricsSelection from "./LyricsSelection";
 import DifficultySelection from "./DifficultySelection";
 import UploadFile from "./UploadFile";
 import { decodeToken } from "react-jwt";
+import Navigator from "../Navigator";
 
 function UploadSheet() {
   const [sheetInfo, setSheetInfo] = useState({
@@ -177,46 +178,51 @@ function UploadSheet() {
 
   console.log("sheetInfo", sheetInfo);
   return (
-    <div className="sheet-upload">
-      <h1>악보 게시판 업로드</h1>
-      <SettingPrice
-        sheetInfo={value.sheetInfo}
-        setSheetInfo={value.setSheetInfo}
-      />
+    <div className="d-flex flex-column">
+      <Navigator />
+      <div className="sheet-upload d-flex flex-column align-items-center align-self-center w-75 mt-3">
+        <h3>악보 게시판 업로드</h3>
+        <SettingPrice
+          sheetInfo={value.sheetInfo}
+          setSheetInfo={value.setSheetInfo}
+        />
 
-      <div className="sheet-upload-file">
-        <UploadFile value={value} />
-      </div>
-      <SheetPostDescription
-        sheetInfo={value.sheetInfo}
-        setSheetInfo={value.setSheetInfo}
-      />
-      <GenreSelection value={value} />
-      <InstrumentSelection setSheetInfo={value.setSheetInfo} />
-      <div>
-        <h3>편성</h3>
-        <OrganizationSelection setSheetInfo={value.setSheetInfo} />
-      </div>
+        <div className="sheet-upload-file">
+          <UploadFile value={value} />
+        </div>
 
-      <div>
-        <h3>가사 여부</h3>
-        <LyricsSelection setSheetInfo={value.setSheetInfo} />
-      </div>
-      <div>
-        <h3>난이도</h3>
-        <DifficultySelection setSheetInfo={value.setSheetInfo} />
-      </div>
-      <div>
-        <button type="button" className="btn btn-outline-secondary">
-          리셋
-        </button>
-        <button
-          type="button"
-          onClick={submitSheetPost}
-          className="btn btn-danger"
-        >
-          작성
-        </button>
+        <SheetPostDescription
+          sheetInfo={value.sheetInfo}
+          setSheetInfo={value.setSheetInfo}
+          className={"w-75"}
+        />
+        <GenreSelection value={value} />
+        <InstrumentSelection setSheetInfo={value.setSheetInfo} />
+        <div>
+          <h3>편성</h3>
+          <OrganizationSelection setSheetInfo={value.setSheetInfo} />
+        </div>
+
+        <div>
+          <h3>가사 여부</h3>
+          <LyricsSelection setSheetInfo={value.setSheetInfo} />
+        </div>
+        <div>
+          <h3>난이도</h3>
+          <DifficultySelection setSheetInfo={value.setSheetInfo} />
+        </div>
+        <div>
+          <button type="button" className="btn btn-outline-secondary">
+            리셋
+          </button>
+          <button
+            type="button"
+            onClick={submitSheetPost}
+            className="btn btn-danger"
+          >
+            작성
+          </button>
+        </div>
       </div>
     </div>
   );

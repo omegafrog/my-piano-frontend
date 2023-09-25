@@ -9,6 +9,7 @@ import SheetInfo from "./components/sheet/SheetInfo";
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Helmet } from "react-helmet";
+import "./css/App.css";
 
 function App() {
   return (

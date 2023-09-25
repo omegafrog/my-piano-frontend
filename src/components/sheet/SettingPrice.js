@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function SettingPrice({ sheetInfo, setSheetInfo }) {
+function SettingPrice({ sheetInfo, setSheetInfo, className }) {
   const [isFree, setFree] = useState(true);
   const changePrice = (event) => {
     event.preventDefault();
@@ -10,7 +10,7 @@ function SettingPrice({ sheetInfo, setSheetInfo }) {
     }));
   };
   return (
-    <div>
+    <div className={className}>
       <input
         type="radio"
         id="free"

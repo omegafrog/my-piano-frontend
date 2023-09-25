@@ -30,7 +30,7 @@ function UploadFile({ value }) {
       sheetDto: {
         ...prev.sheetDto,
         filePath: imageListItems,
-        pageNum: files.length,
+        pageNum: imgFiles.length,
       },
     }));
     value.setSheetFileForm(form);

@@ -29,7 +29,10 @@ function SheetPostDescription({ setSheetInfo, sheetInfo }) {
         value={sheetInfo.title || ""}
         onChange={changeTitle}
       />
-      <Editor sheetInfo={sheetInfo} setSheetInfo={setSheetInfo} />
+      <Editor
+        content={sheetInfo.content}
+        setContent={(e) => setSheetInfo((prev) => ({ ...prev, content: e }))}
+      />
     </div>
   );
 }

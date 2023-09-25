@@ -32,14 +32,15 @@ export const UserProvider = ({ children }) => {
     setAccessToken,
   };
 
-  if (sessionStorage.getItem("userState") !== null) {
-    const a = JSON.parse(sessionStorage.getItem("userState"));
+  if (localStorage.getItem("userState") !== null) {
+    const a = JSON.parse(localStorage.getItem("userState"));
     initialState = { ...a, setLoggedUser, setLoggedIn, setAccessToken };
-
-    console.log("initialState", initialState);
   }
   const [state, setState] = useState(initialState);
-  useEffect(() => console.log("state change", state), [state]);
+  useEffect(() => {
+    console.log("state change", state);
+    localStorage.setItem("userState", JSON.stringify(state));
+  }, [state]);
   const value = useMemo(() => state, [state]);
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

@@ -56,31 +56,26 @@ function GenreSelection({ value }) {
     <div className="sheet-upload-genre">
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"carol"}
         value={0}
         text={"캐롤"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"kpop"}
         value={1}
         text={"K-POP"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"pop"}
         value={2}
         text={"해외 POP"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"newage"}
         value={3}
         text={"뉴에이지"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"classic"}
         value={4}
         text={"클래식"}
       />
@@ -92,54 +87,63 @@ function GenreSelection({ value }) {
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"jazz"}
         value={6}
         text={"재즈"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"duet"}
         value={7}
         text={"연탄곡"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"game_anime"}
         value={8}
         text={"게임/애니"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"ost"}
         value={9}
         text={"OST"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"kids"}
         value={10}
         text={"동요"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"bgm"}
         value={11}
         text={"BGM"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"musical"}
         value={12}
         text={"뮤지컬"}
       />
       <GenreSelectionInput
         genreSetter={{ genres, setGenres }}
-        id={"religious"}
         value={13}
         text={"종교"}
       />
     </div>
   );
 }
+
+export const genreDict = {
+  CAROL: "캐롤",
+  K_POP: "K-pop",
+  POP: "해외 POP",
+  NEW_AGE: "뉴에이지",
+  CLASSIC: "클래식",
+  CUSTOM: "자작곡",
+  JAZZ: "재즈",
+  DUET: "연탄곡",
+  GAME_ANIME: "게임/애니",
+  OST: "OST",
+  BGM: "BGM",
+  KIDS: "동요",
+  MUSICAL: "뮤지컬",
+  RELIGIOUS: "종교",
+};
 
 export default GenreSelection;

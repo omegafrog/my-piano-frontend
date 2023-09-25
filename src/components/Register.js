@@ -1,19 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Register() {
   const url = "/api/user/register";
   const navigate = useNavigate();
-  const [registerInfo, setRegisterInfo] = useState({
-    username: "",
-    password: "",
-    name: "",
-    email: "",
-    loginMethod: "1",
-    profileSrc: "default",
-    phoneNum: "",
-  });
+  const { state } = useLocation();
+  const initialRegisterInfo = state;
+  const [registerInfo, setRegisterInfo] = useState(initialRegisterInfo);
   const [checkPassword, setCheckPassword] = useState("");
   const [response, setResponse] = useState(null);
 
@@ -67,7 +61,7 @@ function Register() {
           <label htmlFor="username">username</label>
           <input
             id="username"
-            value={registerInfo.username}
+            value={registerInfo.username || ""}
             onChange={setUsername}
             required
           />
@@ -78,9 +72,10 @@ function Register() {
           <input
             type="password"
             id="password"
-            value={registerInfo.password}
+            value={registerInfo.password || ""}
             onChange={setPassword}
             required
+            disabled={registerInfo.loginMethod === "GOOGLE"}
           />
           <br />
           <label htmlFor="password-authentication">
@@ -92,6 +87,7 @@ function Register() {
             value={checkPassword}
             onChange={setPasswordCheck}
             required
+            disabled={registerInfo.loginMethod === "GOOGLE"}
           />
           <br></br>
           {registerInfo.password === checkPassword ? (
@@ -106,7 +102,7 @@ function Register() {
           <label htmlFor="name">name</label>
           <input
             id="name"
-            value={registerInfo.name}
+            value={registerInfo.name || ""}
             onChange={setName}
             required
           />
@@ -114,14 +110,18 @@ function Register() {
 
         <div>
           <label htmlFor="email">email</label>
-          <input id="email" value={registerInfo.email} onChange={setEmail} />
+          <input
+            id="email"
+            value={registerInfo.email || ""}
+            onChange={setEmail}
+          />
         </div>
         <div>
           <label htmlFor="phoneNum">phoneNum</label>
           <input
             type="phone"
             id="phoneNum"
-            value={registerInfo.phoneNum}
+            value={registerInfo.phoneNum || ""}
             onChange={setPhoneNum}
             required
           />

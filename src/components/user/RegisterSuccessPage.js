@@ -20,6 +20,7 @@ export default function RegisterSuccessPage() {
             </Row>
             <Row>
               <h3>환영합니다. {state}님.</h3>
+              <small>다시 로그인해 주세요</small>
             </Row>
             <Button
               onClick={() => {

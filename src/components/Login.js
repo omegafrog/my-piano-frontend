@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "./User-context";
 import { useNavigate } from "react-router";
 import { Button, Form, Modal } from "react-bootstrap";
-import {  GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login({ show, handleClose }) {
   const [loginInfo, setLoginInfo] = useState({ username: "", password: "" });
@@ -81,7 +81,7 @@ function Login({ show, handleClose }) {
             console.log("response:", response);
             if (response.data.status === 302) {
               const initialRegisterInfo = response.data.serializedData.userInfo;
-              navigate("/user/register", { state: initialRegisterInfo });
+                            navigate("/user/register", { state: initialRegisterInfo });
             } else if (response.data.status === 200) {
               console.log("로그인 성공");
               const accessToken = response.data.serializedData["access token"];

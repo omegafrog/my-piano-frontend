@@ -28,11 +28,19 @@ function Register() {
       : state;
   const [registerInfo, setRegisterInfo] = useState(initialRegisterInfo);
   const [checkPassword, setCheckPassword] = useState("");
-  const [profileSrc, setProfileSrc] = useState("/img/defaultUserImg.png");
   const [showAlert, setShowAlert] = useState({ state: false, text: "" });
   const [profileFile, setProfileFile] = useState();
   const bucketName = process.env.REACT_APP_S3_BUCKET_NAME;
   const region = process.env.REACT_APP_REGION;
+  const [profileSrc, setProfileSrc] = useState("/img/defaultUserImg.png");
+
+  if (state !== null) {
+    fetch(state.profileSrc)
+      .then((response) => response.blob())
+      .then((blob) => {
+        setProfileSrc(URL.createObjectURL(blob));
+      });
+  }
 
   const changeProfile = (event) => {
     const files = event.target.files;
@@ -80,7 +88,7 @@ function Register() {
       className="d-flex w-50 justify-content-center p-5 align-self-center"
       style={{ backgroundColor: "#ecf0f1" }}
     >
-      <CustomAlert showAlert={showAlert} />
+      <CustomAlert value={{ showAlert, setShowAlert }} />
       <Form className="w-100">
         <Form.Group>
           <Form.Label>아이디</Form.Label>

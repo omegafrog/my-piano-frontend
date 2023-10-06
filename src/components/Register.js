@@ -1,134 +1,199 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Button, Form, Image, Row } from "react-bootstrap";
+import CustomAlert from "./CustomAlert";
+
+function CheckPassword({ registerInfo, checkPassword }) {
+  if (checkPassword === "") return null;
+  if (checkPassword === registerInfo.password) {
+    return <Form.Text>비밀번호 인증 성공</Form.Text>;
+  } else return <Form.Text>비밀번호가 다릅니다.</Form.Text>;
+}
 
 function Register() {
-  const url = "/api/user/register";
   const navigate = useNavigate();
   const { state } = useLocation();
-  const initialRegisterInfo = state;
+  const initialRegisterInfo =
+    state === null
+      ? {
+          username: "",
+          password: "",
+          name: "",
+          email: "",
+          phoneNum: "",
+          loginMethod: "EMAIL",
+          profileSrc: "",
+        }
+      : state;
   const [registerInfo, setRegisterInfo] = useState(initialRegisterInfo);
   const [checkPassword, setCheckPassword] = useState("");
-  const [response, setResponse] = useState(null);
+  const [profileSrc, setProfileSrc] = useState("/img/defaultUserImg.png");
+  const [showAlert, setShowAlert] = useState({ state: false, text: "" });
+  const [profileFile, setProfileFile] = useState();
+  const bucketName = process.env.REACT_APP_S3_BUCKET_NAME;
+  const region = process.env.REACT_APP_REGION;
 
-  const setUsername = (event) => {
-    setRegisterInfo({ ...registerInfo, username: event.target.value });
+  const changeProfile = (event) => {
+    const files = event.target.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const fileName = file.name.split(".");
+      if (fileName.length < 2) {
+        setShowAlert({ state: true, text: "invalid filename." });
+        return;
+      }
+      setProfileSrc(URL.createObjectURL(file));
+      const newFileName = `https://${bucketName}.s3.${region}.amazonaws.com/profile-${
+        fileName[0]
+      }-${crypto.randomUUID()}.${fileName[1]}`;
+      setProfileFile(new File([file], newFileName, { type: file.type }));
+      setRegisterInfo((prev) => ({ ...prev, profileSrc: newFileName }));
+    }
   };
-  const setPassword = (event) => {
-    setRegisterInfo({ ...registerInfo, password: event.target.value });
-  };
-  const setPasswordCheck = (event) => {
-    setCheckPassword(event.target.value);
-  };
-  const setName = (event) => {
-    setRegisterInfo({ ...registerInfo, name: event.target.value });
-  };
-  const setEmail = (event) => {
-    setRegisterInfo({ ...registerInfo, email: event.target.value });
-  };
-  const setLoginMethod = (event) => {
-    setRegisterInfo({ ...registerInfo, username: event.target.value });
-  };
-  const setProfileSrc = (event) => {
-    setRegisterInfo({ ...registerInfo, username: event.target.value });
-  };
-  const setPhoneNum = (event) => {
-    setRegisterInfo({ ...registerInfo, phoneNum: event.target.value });
-  };
+
   const requestRegister = async () => {
-    const res = await axios.post(url, registerInfo);
-    setResponse(res);
+    const registerForm = new FormData();
+    registerForm.append("registerInfo", JSON.stringify(registerInfo));
+    registerForm.append("profileImg", profileFile);
+    console.log(profileFile);
+    console.log(registerForm.get("profileImg"));
+    const res = await axios({
+      method: "post",
+      url: "/api/user/register",
+      withCredentials: true,
+      data: registerForm,
+    });
+    console.log(res);
+    // if (res === null) {
+    //   return;
+    // }
+    // if (res.data.status >= 400) {
+    //   alert(res.data.message);
+    // } else {
+    //   console.log(res);
+    //   const fileRes = await axios({
+    //     method: "post",
+    //     url: "/api/user/profile/register",
+    //     withCredentials: true,
+    //     data: profileForm,
+    //   });
+    //   console.log(fileRes);
+    //   if (fileRes.data.status === 200) navigate("/main");
+    // }
   };
   const submitRegister = (event) => {
     event.preventDefault();
     requestRegister();
   };
-  useEffect(() => {
-    if (response === null) {
-      return;
-    }
-    if (response.data.status >= 400) {
-      alert(response.data.message);
-    } else {
-      navigate("/main");
-    }
-  }, [response]);
 
   return (
-    <div>
-      <form onSubmit={submitRegister}>
-        <div>
-          <label htmlFor="username">username</label>
-          <input
+    <div
+      className="d-flex w-50 justify-content-center p-5 align-self-center"
+      style={{ backgroundColor: "#ecf0f1" }}
+    >
+      <CustomAlert showAlert={showAlert} />
+      <Form className="w-100">
+        <Form.Group>
+          <Form.Label>아이디</Form.Label>
+          <Form.Control
+            type="text"
             id="username"
             value={registerInfo.username || ""}
-            onChange={setUsername}
+            onChange={(e) =>
+              setRegisterInfo({ ...registerInfo, username: e.target.value })
+            }
             required
           />
-        </div>
+          <Form.Text>로그인 시 사용되는 고유한 값입니다</Form.Text>
+        </Form.Group>
 
-        <div className="div-password-check">
-          <label htmlFor="password">password</label>
-          <input
+        <Form.Group>
+          <Form.Label>비밀번호</Form.Label>
+          <Form.Control
             type="password"
             id="password"
             value={registerInfo.password || ""}
-            onChange={setPassword}
+            onChange={(e) =>
+              setRegisterInfo({ ...registerInfo, password: e.target.value })
+            }
             required
-            disabled={registerInfo.loginMethod === "GOOGLE"}
+            disabled={registerInfo.loginMethod !== "EMAIL"}
           />
-          <br />
-          <label htmlFor="password-authentication">
-            password-authentication
-          </label>
-          <input
+          <Form.Label>비밀번호 확인</Form.Label>
+          <Form.Control
             type="password"
             id="password-authetication"
             value={checkPassword}
-            onChange={setPasswordCheck}
+            onChange={(e) => setCheckPassword(e.target.value)}
             required
-            disabled={registerInfo.loginMethod === "GOOGLE"}
+            disabled={registerInfo.loginMethod !== "EMAIL"}
           />
-          <br></br>
-          {registerInfo.password === checkPassword ? (
-            <span id="password-check-success">
-              비밀번호 인증에 성공했습니다.
-            </span>
-          ) : (
-            <span id="password-check-fail">비밀번호가 다릅니다.</span>
-          )}
-        </div>
-        <div>
-          <label htmlFor="name">name</label>
-          <input
+          <CheckPassword
+            registerInfo={registerInfo}
+            checkPassword={checkPassword}
+          />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>이름</Form.Label>
+          <Form.Control
             id="name"
             value={registerInfo.name || ""}
-            onChange={setName}
+            onChange={(e) =>
+              setRegisterInfo({ ...registerInfo, name: e.target.value })
+            }
             required
           />
-        </div>
+        </Form.Group>
 
-        <div>
-          <label htmlFor="email">email</label>
-          <input
+        <Form.Group>
+          <Form.Label>이메일</Form.Label>
+          <Form.Control
+            type="email"
             id="email"
             value={registerInfo.email || ""}
-            onChange={setEmail}
+            onChange={(e) =>
+              setRegisterInfo({ ...registerInfo, email: e.target.value })
+            }
           />
-        </div>
-        <div>
-          <label htmlFor="phoneNum">phoneNum</label>
-          <input
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>전화번호</Form.Label>
+          <Form.Control
             type="phone"
             id="phoneNum"
             value={registerInfo.phoneNum || ""}
-            onChange={setPhoneNum}
-            required
+            onChange={(e) =>
+              setRegisterInfo({ ...registerInfo, phoneNum: e.target.value })
+            }
           />
-        </div>
-        <div className="profile-submit">프로필 사진 등록 div</div>
-        <button>회원 가입하기</button>
-      </form>
+        </Form.Group>
+        <Form.Group className="mb-3 d-flex flex-column ">
+          <Form.Label>프로필 사진</Form.Label>
+          <Image
+            src={profileSrc}
+            thumbnail
+            style={{ width: "200px", height: "200px", objectFit: "cover" }}
+            className="align-self-center"
+            id="profileImg"
+          />
+          <Form.Control type="file" onChange={changeProfile} />
+        </Form.Group>
+        <Row>
+          <Button className="m-2" onClick={submitRegister}>
+            회원 가입하기
+          </Button>
+          <Button
+            className="m-2"
+            variant="secondary"
+            onClick={() => {
+              navigate("/main");
+            }}
+          >
+            홈으로
+          </Button>
+        </Row>
+      </Form>
     </div>
   );
 }

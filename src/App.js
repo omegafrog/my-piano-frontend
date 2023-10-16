@@ -1,20 +1,20 @@
 import { Navigate, Route, Routes } from "react-router";
 import Main from "./router/Main";
 import Login from "./components/Login";
-import Register from "./components/Register";
+import Register from "./components/user/Register";
 import { UserProvider } from "./components/User-context";
 import Sheets from "./components/sheet/Sheets";
 import UploadSheet from "./components/sheet/UploadSheet";
 import SheetInfo from "./components/sheet/SheetInfo";
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { Helmet } from "react-helmet";
 import "./css/App.css";
+import RegisterSuccessPage from "./components/user/RegisterSuccessPage";
+import NavSearchRecommend from "./components/NavSearchRecommend";
 
 function App() {
   return (
     <GoogleOAuthProvider clientId="25240194686-nd0b27v2dcvv9e458hhssip100630t74.apps.googleusercontent.com">
-      <Helmet></Helmet>
       <UserProvider>
         <BrowserRouter>
           <Routes>
@@ -25,6 +25,11 @@ function App() {
             <Route path="/sheet" element={<Sheets />} />
             <Route path="/sheet/upload" element={<UploadSheet />} />
             <Route path="/sheet/:id" element={<SheetInfo />} />
+            <Route
+              path="/user/register/success"
+              element={<RegisterSuccessPage />}
+            />
+            <Route path="/search/recommend" element={<NavSearchRecommend />} />
           </Routes>
         </BrowserRouter>
       </UserProvider>

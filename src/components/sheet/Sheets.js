@@ -1,14 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import LeftNavigator from "../LeftNavigator";
 import Navigator from "../Navigator";
 import axios from "axios";
 import { UserContext } from "../User-context";
 import { Link } from "react-router-dom";
+import { GetSheetPosts } from "../AxiosUtil";
+import CustomAlert from "../CustomAlert";
 
 function SheetList({ sheetPosts }) {
   if (sheetPosts.length > 0) {
     return (
-      <div className="content m-4">
+      <div className="w-100">
         <ul>
           {sheetPosts.map((item) => (
             <li key={item.id}>
@@ -26,19 +28,20 @@ function SheetList({ sheetPosts }) {
 function Sheets() {
   const { accessToken } = useContext(UserContext);
   const [sheetPosts, setSheetPosts] = useState();
-
-  const getSheetPosts = async () => {
-    const result = await axios.get("/api/sheet", { validateStatus: false });
-    setSheetPosts(result.data.serializedData.sheetPosts);
-  };
+  const [showAlert, setShowAlert] = useState({ state: false, text: "" });
+  const value = useMemo(
+    () => ({ showAlert, setShowAlert }),
+    [showAlert, setShowAlert]
+  );
 
   useEffect(() => {
-    getSheetPosts();
+    GetSheetPosts(setSheetPosts, setShowAlert);
   }, []);
 
   return (
     <div className="Sheets">
       <Navigator />
+      <CustomAlert variant={"danger"} value={value} />
       <div className="vh-100 d-flex">
         <LeftNavigator />
         {sheetPosts === undefined ? (

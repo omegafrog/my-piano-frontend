@@ -30,17 +30,19 @@ function Register() {
   const [checkPassword, setCheckPassword] = useState("");
   const [showAlert, setShowAlert] = useState({ state: false, text: "" });
   const [profileFile, setProfileFile] = useState();
-  const bucketName = process.env.REACT_APP_S3_BUCKET_NAME;
-  const region = process.env.REACT_APP_REGION;
+
   const [profileSrc, setProfileSrc] = useState("/img/defaultUserImg.png");
 
-  if (state !== null) {
-    fetch(state.profileSrc)
-      .then((response) => response.blob())
-      .then((blob) => {
-        setProfileSrc(URL.createObjectURL(blob));
-      });
-  }
+  useEffect(() => {
+    if (state !== null) {
+      fetch(state.profileSrc)
+        .then((response) => response.blob())
+        .then((blob) => {
+          setProfileSrc(URL.createObjectURL(blob));
+        });
+      state.phoneNum = "";
+    }
+  }, []);
 
   const changeProfile = (event) => {
     const files = event.target.files;
@@ -52,9 +54,9 @@ function Register() {
         return;
       }
       setProfileSrc(URL.createObjectURL(file));
-      const newFileName = `https://${bucketName}.s3.${region}.amazonaws.com/profile-${
-        fileName[0]
-      }-${crypto.randomUUID()}.${fileName[1]}`;
+      const newFileName = `profile-${fileName[0]}-${crypto.randomUUID()}.${
+        fileName[1]
+      }`;
       setProfileFile(new File([file], newFileName, { type: file.type }));
       setRegisterInfo((prev) => ({ ...prev, profileSrc: newFileName }));
     }

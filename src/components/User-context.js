@@ -22,7 +22,9 @@ export const UserProvider = ({ children }) => {
       accessToken: token,
     }));
   };
-
+  const initialize = () => {
+    setState(initialState);
+  };
   let initialState = {
     loggedUser: {},
     loggedIn: false,
@@ -30,13 +32,24 @@ export const UserProvider = ({ children }) => {
     setLoggedUser,
     setLoggedIn,
     setAccessToken,
+    initialize,
   };
 
-  if (localStorage.getItem("userState") !== null) {
-    const a = JSON.parse(localStorage.getItem("userState"));
-    initialState = { ...a, setLoggedUser, setLoggedIn, setAccessToken };
-  }
   const [state, setState] = useState(initialState);
+
+  useEffect(() => {
+    if (localStorage.getItem("userState") !== null) {
+      setState({
+        ...JSON.parse(localStorage.getItem("userState")),
+        setLoggedIn,
+        setLoggedUser,
+        setAccessToken,
+        initialize,
+      });
+    }
+  }, []);
+
+  // state가 변경되면 localStorage에 자동으로 저장됨
   useEffect(() => {
     console.log("state change", state);
     localStorage.setItem("userState", JSON.stringify(state));

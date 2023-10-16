@@ -1,8 +1,8 @@
 // class의 active의 여부로 선택 여부를 확인. onclick 이전에 수정되어서 고칠 일 없음.
+import "../../scss/custom.scss";
 
 import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import "../../../css/GenreSelection.scss";
 
 // 2개 이상 선택할 때만 선택된거 풀어주면 됨
 function GenreSelectionInput({ genreSetter, value, text }) {
@@ -101,13 +101,13 @@ function GenreSelection({ value }) {
         />
         <GenreSelectionInput
           genreSetter={{ genres, setGenres }}
-          value={8}
-          text={"게임/애니"}
+          value={9}
+          text={"OST"}
         />
         <GenreSelectionInput
           genreSetter={{ genres, setGenres }}
-          value={9}
-          text={"OST"}
+          value={8}
+          text={"게임/애니"}
         />
         <GenreSelectionInput
           genreSetter={{ genres, setGenres }}

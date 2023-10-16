@@ -11,7 +11,6 @@ import { UserContext } from "../User-context";
 import axios from "axios";
 
 import revalidate from "../../uitl/revalidate";
-import queryString from "query-string";
 
 function SheetContent({ item }) {
   console.log(item);
@@ -116,14 +115,8 @@ function SheetInfo() {
   const [sheetPost, setSheetPost] = useState();
   const context = useContext(UserContext);
   let genreList = [];
+
   useEffect(() => {
-    async function a() {
-      const newToken = await revalidate(context.accessToken);
-      if (newToken !== null) {
-        context.setAccessToken(newToken);
-        localStorage.setItem("userState", JSON.stringify(context));
-      }
-    }
     async function b() {
       const response = await axios.get(`/api/sheet/${id}`);
       if (response.data.status === 200) {
@@ -134,7 +127,6 @@ function SheetInfo() {
       }
     }
     async function c() {
-      await a();
       await b();
     }
     c();

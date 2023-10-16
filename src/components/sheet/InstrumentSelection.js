@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../User-context";
+import { Nav, Tab, TabContainer, Tabs } from "react-bootstrap";
 
 function InstrumentSelectionInput({ setSheetInfo, value, text }) {
   const changeInstrument = (event) => {
@@ -12,7 +13,7 @@ function InstrumentSelectionInput({ setSheetInfo, value, text }) {
     }));
   };
   return (
-    <div>
+    <div className="m-1">
       <input
         type="radio"
         className="btn-check"
@@ -43,101 +44,95 @@ function InstrumentSelection({ setSheetInfo }) {
     }
   };
   return (
-    <div>
-      <div className="instrument-select-index">
-        <button value={"piano"} onClick={changeIndex}>
-          피아노
-        </button>
-        <button value={"guitar"} onClick={changeIndex}>
-          기타
-        </button>
-        <button value={"string"} onClick={changeIndex}>
-          현악기
-        </button>
-        <button value={"wooden"} onClick={changeIndex}>
-          목관악기
-        </button>
-        <button value={"steel"} onClick={changeIndex}>
-          금관악기
-        </button>
-      </div>
-      <div className="instrument-select-detail">
-        <div id="piano" style={{ display: "block" }}>
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={0}
-            text={"피아노 88키"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={1}
-            text={"피아노 61키"}
-          />
-        </div>
-        <div id="guitar" style={{ display: "none" }}>
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={2}
-            text={"어쿠스틱"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={3}
-            text={"일렉트릭"}
-          />
-        </div>
-        <div id="string" style={{ display: "none" }}>
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={4}
-            text={"베이스"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={5}
-            text={"우쿨렐레"}
-          />
-        </div>
-        <div id="wooden" style={{ display: "none" }}>
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={6}
-            text={"바이올린"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={7}
-            text={"비올라"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={8}
-            text={"첼로"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={9}
-            text={"베이스"}
-          />
-        </div>
-        <div id="steel" style={{ display: "none" }}>
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={10}
-            text={"플루트"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={11}
-            text={"피콜로"}
-          />
-          <InstrumentSelectionInput
-            setSheetInfo={setSheetInfo}
-            value={12}
-            text={"오보에"}
-          />
-        </div>
-      </div>
+    <div className="w-100">
+      <h2>악기</h2>
+      <Tabs defaultActiveKey="piano" className="mb-3">
+        <Tab eventKey="piano" title="피아노">
+          <div className="d-flex">
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={0}
+              text={"피아노 88키"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={1}
+              text={"피아노 61키"}
+            />
+          </div>
+        </Tab>
+        <Tab eventKey="guitar" title="기타">
+          <div className="d-flex">
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={2}
+              text={"어쿠스틱"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={3}
+              text={"일렉트릭"}
+            />
+          </div>
+        </Tab>
+        <Tab eventKey="string" title="현악기">
+          <div className="d-flex">
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={4}
+              text={"베이스"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={5}
+              text={"우쿨렐레"}
+            />
+          </div>
+        </Tab>
+        <Tab eventKey={"wooden"} title="목관악기">
+          <div className="d-flex">
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={6}
+              text={"바이올린"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={7}
+              text={"비올라"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={8}
+              text={"첼로"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={9}
+              text={"베이스"}
+            />
+          </div>
+        </Tab>
+        <Tab eventKey={"steel"} title="금관악기">
+          <div className="d-flex">
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={10}
+              text={"플루트"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={11}
+              text={"피콜로"}
+            />
+            <InstrumentSelectionInput
+              setSheetInfo={setSheetInfo}
+              value={12}
+              text={"오보에"}
+            />
+          </div>
+        </Tab>
+      </Tabs>
     </div>
   );
 }

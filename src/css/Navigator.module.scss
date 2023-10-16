@@ -1,0 +1,14 @@
+.NavBtn{
+    height: 10vh;
+    
+}
+.list-group{
+    padding-right:0px;
+    overflow:scroll;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none; // IE에서 스크롤바 감춤
+  &::-webkit-scrollbar { 
+    display: none !important; // 윈도우 크롬 등
+  }
+    max-height: 40vh;
+}

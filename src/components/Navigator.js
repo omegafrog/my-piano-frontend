@@ -2,7 +2,6 @@ import {
   Button,
   Col,
   Dropdown,
-  Form,
   ListGroup,
   Navbar,
   Row,
@@ -17,8 +16,6 @@ import { useNavigate } from "react-router";
 import Login from "./Login";
 import CustomToggle from "./navs/CustomNavToggle";
 import { Logout } from "./AxiosUtil";
-import axios from "axios";
-import https from "https";
 
 function Navigator() {
   const context = useContext(UserContext);
@@ -26,40 +23,11 @@ function Navigator() {
   const [searchResult, setSearchResult] = useState("");
   const [searchResultLoading, setSearchResultLoading] = useState(false);
   const [focus, setFocus] = useState(false);
-  const changeSearchResult = async (e) => {
+  const changeSearchResult = (e) => {
     setSearchResult(e.target.value);
-    if (searchResult.length >= 2) {
-      const esBody = {
-        query: {
-          query_string: {
-            query: e.target.value,
-          },
-        },
-      };
-
-      const esHost = process.env.REACT_APP_ELASTIC_HOSTNAME;
-      const esPort = process.env.REACT_APP_ELASTIC_PORT;
-      const esSecret = process.env.REACT_APP_ELASTIC_SECRET;
-      console.log("url:", `https://${esHost}:${esPort}/*/_search`);
-      const result = await axios({
-        method: "get",
-        
-        validateStatus: false,
-        withCredentials: true,
-        headers: {
-          Authorization: `Basic ${esSecret}`,
-        },
-        httpsAgent: new https.Agent({
-          rejectUnauthorized: false,
-        }),
-        data: esBody,
-      }).catch(function (error) {
-        console.log(error);
-      });
-      console.log("searchResult:", result);
-    }
   };
   const navigate = useNavigate();
+
   return (
     <Navbar
       sticky="top"
@@ -84,19 +52,8 @@ function Navigator() {
             <span>커뮤니티</span>
           </Navbar.Brand>
         </Col>
-        <Col xs={5} style={{ position: "relative" }}>
-          <Row>
-            <Form.Control
-              type="text"
-              placeholder="Search"
-              onChange={changeSearchResult}
-              onFocus={() => {
-                setFocus(true);
-              }}
-              onBlur={() => setFocus(false)}
-              value={searchResult}
-            />
-          </Row>
+        <Col xs={6} style={{ position: "relative" }}>
+          <Row> </Row>
           <Row
             className="w-100"
             style={{
@@ -104,20 +61,20 @@ function Navigator() {
             }}
             hidden={!focus}
           >
-            <ListGroup className={`w-100 ${styles["list-group"]}`}>
-              <ListGroup.Item className="w-100">결과 1</ListGroup.Item>
-              <ListGroup.Item className="w-100">결과 2</ListGroup.Item>
-              <ListGroup.Item className="w-100">결과 3</ListGroup.Item>
-              <ListGroup.Item className="w-100">결과 4</ListGroup.Item>
-              <ListGroup.Item className="w-100">결과 5</ListGroup.Item>
-              <ListGroup.Item className="w-100">결과 6</ListGroup.Item>
+            <ListGroup className={`${styles["list-group"]}`}>
+              <ListGroup.Item>결과 1</ListGroup.Item>
+              <ListGroup.Item>결과 2</ListGroup.Item>
+              <ListGroup.Item>결과 3</ListGroup.Item>
+              <ListGroup.Item>결과 4</ListGroup.Item>
+              <ListGroup.Item>결과 5</ListGroup.Item>
+              <ListGroup.Item>결과 6</ListGroup.Item>
             </ListGroup>
           </Row>
         </Col>
 
         <Col
-          xs={2}
-          className="d-inline-flex justify-content-around align-items-center"
+          xs={3}
+          className="d-inline-flex justify-content-end align-items-center"
         >
           <Navbar.Brand href="a">
             <NavigationBtn img={"/img/coin-stack.png"} />

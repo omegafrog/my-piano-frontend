@@ -18,9 +18,11 @@ export default function RegisterSuccessPage() {
             <Row>
               <h1>회원가입 성공!</h1>
             </Row>
-            <Row>
-              <h3>환영합니다. {state}님.</h3>
-              <small>다시 로그인해 주세요</small>
+            <Row className="d-inline-flex ">
+              <h3 style={{ textAlign: "center" }}>환영합니다. {state}님.</h3>
+              <small style={{ textAlign: "center" }}>
+                다시 로그인해 주세요
+              </small>
             </Row>
             <Button
               onClick={() => {

@@ -2,6 +2,7 @@ import {
   Button,
   Col,
   Dropdown,
+  Form,
   ListGroup,
   Navbar,
   Row,
@@ -9,23 +10,23 @@ import {
 import LogoBtn from "./LogoBtn";
 import NavigationBtn from "./NavigationBtn";
 import UserInfo from "./UserInfo";
-import styles from "../css/Navigator.module.scss";
+
 import { useContext, useState } from "react";
 import { UserContext } from "./User-context";
 import { useNavigate } from "react-router";
 import Login from "./Login";
 import CustomToggle from "./navs/CustomNavToggle";
 import { Logout } from "./AxiosUtil";
+import axios from "axios";
+import NavSearchRecommend from "./NavSearchRecommend";
+import NavSearchBar from "./NavSearchBar";
 
 function Navigator() {
   const context = useContext(UserContext);
   const [clickLogin, setClickLogin] = useState(false);
-  const [searchResult, setSearchResult] = useState("");
-  const [searchResultLoading, setSearchResultLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
   const [focus, setFocus] = useState(false);
-  const changeSearchResult = (e) => {
-    setSearchResult(e.target.value);
-  };
   const navigate = useNavigate();
 
   return (
@@ -37,8 +38,8 @@ function Navigator() {
       data-bs-theme="light"
       style={{ height: "70px" }}
     >
-      <Row className="d-inline-flex justify-content-between align-items-center w-100 ">
-        <Col xs={3} className="d-inline-flex align-items-center">
+      <Row className="d-flex justify-content-between align-items-center w-100 ">
+        <Col xs={3} className="d-flex align-items-center">
           <Navbar.Brand href={"/main"}>
             <LogoBtn />
           </Navbar.Brand>
@@ -53,23 +54,12 @@ function Navigator() {
           </Navbar.Brand>
         </Col>
         <Col xs={6} style={{ position: "relative" }}>
-          <Row> </Row>
-          <Row
-            className="w-100"
-            style={{
-              position: "absolute",
-            }}
-            hidden={!focus}
-          >
-            <ListGroup className={`${styles["list-group"]}`}>
-              <ListGroup.Item>결과 1</ListGroup.Item>
-              <ListGroup.Item>결과 2</ListGroup.Item>
-              <ListGroup.Item>결과 3</ListGroup.Item>
-              <ListGroup.Item>결과 4</ListGroup.Item>
-              <ListGroup.Item>결과 5</ListGroup.Item>
-              <ListGroup.Item>결과 6</ListGroup.Item>
-            </ListGroup>
-          </Row>
+          <NavSearchBar
+            searchTermValue={{ searchTerm, setSearchTerm }}
+            searchResultValue={{ searchResult, setSearchResult }}
+            focusValue={{ focus, setFocus }}
+          />
+          <NavSearchRecommend focus={focus} searchResult={searchResult} />
         </Col>
 
         <Col
@@ -106,7 +96,11 @@ function Navigator() {
             </Navbar.Brand>
           ) : (
             <div className="d-flex justify-content">
-              <Button variant="light" onClick={(e) => setClickLogin(true)}>
+              <Button
+                variant="light"
+                style={{ overflow: "hidden", whiteSpace: "nowrap" }}
+                onClick={(e) => setClickLogin(true)}
+              >
                 로그인
               </Button>
               <Login
@@ -116,6 +110,7 @@ function Navigator() {
               <Button
                 variant="light"
                 onClick={(e) => navigate("/user/register")}
+                style={{ overflow: "hidden", whiteSpace: "nowrap" }}
               >
                 회원가입
               </Button>

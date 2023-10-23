@@ -1,7 +1,29 @@
-export default function NavSearchRecommend() {
+import { ListGroup, Row } from "react-bootstrap";
+import styles from "../css/Navigator.module.scss";
+
+export default function NavSearchRecommend({ focus, searchResult }) {
   return (
-    <div>
-      <h1>검색어 추천 위치</h1>
-    </div>
+    <Row
+      className="w-100"
+      style={{
+        position: "absolute",
+      }}
+      hidden={!focus}
+    >
+      <ListGroup className={`${styles["list-group"]}`}>
+        {searchResult.map((result, index) => {
+          return (
+            <ListGroup.Item
+              eventKey={index}
+              key={index}
+              href={`/sheet/${result._id}`}
+              action
+            >
+              {result._source.name}
+            </ListGroup.Item>
+          );
+        })}
+      </ListGroup>
+    </Row>
   );
 }

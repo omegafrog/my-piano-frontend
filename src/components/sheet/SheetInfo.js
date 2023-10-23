@@ -1,16 +1,17 @@
-import { useLocation, useParams } from "react-router";
-import Navigator from "../Navigator";
-import LeftNavigator from "../LeftNavigator";
+import { useParams } from "react-router";
 import Carousel from "react-bootstrap/Carousel";
-import { genreDict } from "./GenreSelection";
+import { genreDict, genreIdDict } from "./GenreSelection";
 import { instrumentDict } from "./InstrumentSelection";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../User-context";
 import axios from "axios";
+import Layout from "../Layout";
 
-import revalidate from "../../uitl/revalidate";
+import revalidate from "../../util/revalidate";
+import useAlert from "../../hook/useAlert";
+import { Button, Col, Form, Image, Row } from "react-bootstrap";
 
 function SheetContent({ item }) {
   console.log(item);
@@ -23,7 +24,7 @@ function SheetContent({ item }) {
   filePaths.pop();
 
   return (
-    <Carousel>
+    <Carousel className="d-flex align-items-center">
       {filePaths.map((file, idx) => (
         <Carousel.Item key={idx}>
           <img className="d-block w-100" src={file} alt="Second slide" />
@@ -40,17 +41,13 @@ function Comment({ item }) {
   const removeComment = async (event) => {
     const commentDiv = event.target.parentElement;
 
-    const newToken = await revalidate(context.accessToken);
-    console.log("newToken:", newToken);
-    if (newToken !== null) {
-      context.setAccessToken(newToken);
-      localStorage.setItem("userState", JSON.stringify(context));
-    }
+    const { accessToken, error } = revalidate(context);
+
     const response = await axios.delete(
-      `/api/sheet/${item.id}/comment/${commentDiv.id}`,
+      `http://localhost:8080/sheet/${item.id}/comment/${commentDiv.id}`,
       {
         headers: {
-          Authorization: context.accessToken,
+          Authorization: accessToken,
         },
       }
     );
@@ -62,17 +59,14 @@ function Comment({ item }) {
     setCommentList(removedCommentList);
   };
   const sendComment = async (event) => {
-    const newToken = await revalidate(context.accessToken);
-    if (newToken !== null) {
-      context.setAccessToken(newToken);
-      localStorage.setItem("userState", JSON.stringify(context));
-    }
+    console.log(context);
+    const { accessToken, error } = revalidate(context);
     const response = await axios.post(
-      `/api/sheet/${item.id}/comment`,
+      `http://localhost:8080/sheet/${item.id}/comment`,
       { content: comment },
       {
         headers: {
-          Authorization: context.accessToken,
+          Authorization: accessToken,
         },
       }
     );
@@ -84,24 +78,57 @@ function Comment({ item }) {
 
   return (
     <div className="comment form">
-      <div className="input">
-        <textarea
-          placeholder="댓글을 작성하세요"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <button onClick={sendComment}>댓글 쓰기</button>
+      <h2>댓글 {commentList.length}건</h2>
+      <hr />
+      <div className="input d-flex">
+        <Col className="m-1">
+          <Form.Control
+            as={"textarea"}
+            rows={2}
+            placeholder="댓글을 작성하세요"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            style={{ resize: "none" }}
+          />
+        </Col>
+        <Col xs={"auto"} className="m-1">
+          <Button className="h-100" onClick={sendComment}>
+            댓글 쓰기
+          </Button>
+        </Col>
       </div>
       <div className="comments">
         {commentList.map((comment, idx) => (
-          <div className="comment" key={comment.id} id={comment.id}>
+          <div className="comment m-3" key={comment.id} id={comment.id}>
             <div className="sheet-info" id="author">
-              <img src={item.author.profileSrc} />
-              <span className="user-name">{item.author.name}</span>
+              <Row>
+                <Col xs={"auto"} style={{ paddingRight: "0px" }}>
+                  <Image
+                    className="sm"
+                    src={item.author.profileSrc}
+                    roundedCircle
+                    style={{ width: "30px", height: "auto" }}
+                  />
+                </Col>
+                <Col style={{ paddingLeft: "3px" }}>
+                  <span className="user-name" style={{ fontSize: "20px" }}>
+                    {item.author.name}
+                  </span>
+                </Col>
+              </Row>
             </div>
             <div className="sheet-info content">{comment.content}</div>
-            <button onClick={removeComment}>삭제</button>
-            <button>수정</button>
+            <Button size="sm" className="m-1">
+              답글
+            </Button>
+            <Button
+              size="sm"
+              className="m-1"
+              variant="danger"
+              onClick={removeComment}
+            >
+              삭제
+            </Button>
           </div>
         ))}
       </div>
@@ -111,79 +138,291 @@ function Comment({ item }) {
 
 function SheetInfo() {
   const { id } = useParams();
+  const context = useContext(UserContext);
 
   const [sheetPost, setSheetPost] = useState();
-  const context = useContext(UserContext);
-  let genreList = [];
+  const alertValue = useAlert();
 
   useEffect(() => {
-    async function b() {
-      const response = await axios.get(`/api/sheet/${id}`);
+    axios.get(`http://localhost:8080/sheet/${id}`).then((response) => {
       if (response.data.status === 200) {
         setSheetPost(response.data.serializedData.sheetPost);
-        genreList = Object.values(
-          response.data.serializedData.sheetPost.sheet.genres
-        ).map((genre) => genreDict[genre]);
+        if (context.loggedIn === true) {
+          const { accessToken, error } = revalidate(context);
+          if (accessToken) {
+            axios
+              .get(`http://localhost:8080/sheet/${id}/like`, {
+                headers: {
+                  Authorization: accessToken,
+                },
+              })
+              .then((response) => {
+                if (response.data.serializedData.isLikedPost === true) {
+                  const likeBtn = document.querySelector("#like-count");
+                  likeBtn.style.backgroundColor = "#74b9ff";
+                }
+              });
+            axios
+              .get(`http://localhost:8080/sheet/${id}/scrap`, {
+                headers: {
+                  Authorization: accessToken,
+                },
+              })
+              .then((response) => {
+                if (response.data.serializedData.isScrapped === true) {
+                  const scrapBtn = document.querySelector("#scrap-btn");
+                  scrapBtn.style.backgroundColor = "#74b9ff";
+                  scrapBtn.innerHTML = "scrapped";
+                }
+              });
+          }
+        }
       }
-    }
-    async function c() {
-      await b();
-    }
-    c();
+    });
   }, []);
 
   if (sheetPost !== undefined) {
     return (
-      <div>
-        <Navigator />
-        <div>
-          <LeftNavigator />
-          <div>
-            <div className="sheet-info" id="article">
-              <div className="sheet-info" id="title">
-                title:{sheetPost.title}
-              </div>
-              <div className="sheet-info" id="author">
-                <img src={sheetPost.author.profileSrc} />
-                <span className="user-name">{sheetPost.author.name}</span>
-              </div>
-              <div className="sheet-info" id="view-count">
-                조회수:{sheetPost.viewCount}
-              </div>
-              <SheetContent item={sheetPost} />
-              <div dangerouslySetInnerHTML={{ __html: sheetPost.content }} />
-              <div className="sheet-info" id="metadata">
-                <div id="price">
-                  {sheetPost.price === 0 ? "무료" : sheetPost.price}
+      <Layout alertValue={alertValue} leftNav={false}>
+        <div className="w-75" style={{ margin: "0px auto", paddingTop: "5vh" }}>
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="sheet-info" id="title" style={{ fontSize: "40px" }}>
+              {sheetPost.title}
+            </div>
+
+            <div className="sheet-info" id="author">
+              <Row>
+                <Col xs={"auto"} className="p-0">
+                  <Image
+                    className="sm"
+                    src={sheetPost.author.profileSrc}
+                    roundedCircle
+                    style={{ width: "30px", height: "auto" }}
+                  />
+                </Col>
+                <Col className="">
+                  <span className="user-name" style={{ fontSize: "20px" }}>
+                    {sheetPost.author.name}
+                  </span>
+                </Col>
+              </Row>
+              <Row>
+                <div
+                  className="sheet-info"
+                  id="view-count"
+                  style={{ textAlign: "end" }}
+                >
+                  조회수:{sheetPost.viewCount}
                 </div>
-                <span id="genre">
-                  genres:
-                  {genreList.map((genre, key) => (
-                    <span key={key}>{genre}</span>
-                  ))}
-                </span>
-                <span id="sheet-title">title:{sheetPost.sheet.title}</span>
-                <span id="difficulty">난이도:{sheetPost.sheet.difficulty}</span>
-                <span id="instrument">
-                  악기:{instrumentDict[sheetPost.sheet.instrument]}
-                </span>
-                <span id="lyrics">
-                  가사:{sheetPost.sheet.lyrics ? "가사 없음" : "가사 있음"}
-                </span>
-                <span id="solo">{sheetPost.sheet.solo ? "솔로" : "듀엣"}</span>
-                <span id="page-num">{sheetPost.sheet.pageNum}</span>
+              </Row>
+            </div>
+          </div>
+          <Row>
+            <Col className="d-flex flex-column align-items-center">
+              <SheetContent item={sheetPost} />
+
+              <div
+                dangerouslySetInnerHTML={{ __html: sheetPost.content }}
+                className="content align-self-start"
+              />
+            </Col>
+            <Col xs={4} className="h-100 d-flex justify-center ">
+              <div
+                className="sheet-info w-100"
+                id="metadata"
+                style={{ width: "300px", paddingTop: "60px" }}
+              >
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <span>가격</span>
+                  </Col>
+                  <Col>
+                    <span>장르</span>
+                  </Col>
+                </Row>
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <div id="price">
+                      {sheetPost.price === 0 ? "무료" : sheetPost.price}
+                    </div>
+                  </Col>
+                  <Col>
+                    <Button
+                      size="sm"
+                      className="genre"
+                      id={genreIdDict[sheetPost.sheet.genres.genre1]}
+                      variant="outline-secondary"
+                      disabled
+                    >
+                      {genreDict[sheetPost.sheet.genres.genre1]}
+                    </Button>
+                    {sheetPost.sheet.genres.genre2 ? (
+                      <Button
+                        size="sm"
+                        className="genre"
+                        id={genreDict[sheetPost.sheet.genres.genre2]}
+                        variant="outline-secondary"
+                      >
+                        {genreDict[sheetPost.sheet.genres.genre2]}
+                      </Button>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <span id="difficulty">난이도</span>
+                  </Col>
+                  <Col>
+                    <span id="instrument">악기</span>
+                  </Col>
+                </Row>
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <span>{sheetPost.sheet.difficulty}</span>
+                  </Col>
+                  <Col>
+                    <span>{instrumentDict[sheetPost.sheet.instrument]}</span>
+                  </Col>
+                </Row>
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <span>솔로/듀엣</span>
+                  </Col>
+                  <Col>
+                    <span>가사 여부</span>
+                  </Col>
+                </Row>
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <span id="solo">
+                      {sheetPost.sheet.solo ? "솔로" : "듀엣"}
+                    </span>
+                  </Col>
+                  <Col>
+                    {sheetPost.sheet.lyrics ? "가사 없음" : "가사 있음"}
+                  </Col>
+                </Row>
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <span>페이지 수</span>
+                  </Col>
+                  <Col>
+                    <span>곡 이름</span>
+                  </Col>
+                </Row>
+                <Row style={{ margin: "5px" }}>
+                  <Col>
+                    <span id="page-num">{sheetPost.sheet.pageNum}</span>
+                  </Col>
+                  <Col>
+                    <span id="sheet-title">{sheetPost.sheet.title}</span>
+                  </Col>
+                </Row>
               </div>
-            </div>
-            <div className="sheet-info scrap like">
-              <span id="scrap-count">scrap</span>
-              <span id="like-count">like{sheetPost.likeCount}</span>
-            </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <div className="sheet-info scrap like d-flex justify-content-between">
+                <button
+                  style={{ border: "1px solid gray", borderRadius: "20px" }}
+                  id="like-count"
+                  onClick={(e) => {
+                    const { accessToken, error } = revalidate(context);
+                    const likeBtn = document.querySelector("#like-count");
+                    if (likeBtn.classList.contains("active")) {
+                      axios
+                        .put(
+                          `http://localhost:8080/sheet/${sheetPost.id}/like`,
+                          null,
+                          {
+                            validateStatus: false,
+                            withCredentials: true,
+                            headers: {
+                              Authorization: accessToken,
+                            },
+                          }
+                        )
+                        .then((response) => {
+                          if (response.data.status === 200) {
+                            console.log("success");
+                            setSheetPost((prev) => ({
+                              ...prev,
+                              likeCount: sheetPost.likeCount + 1,
+                            }));
+                            likeBtn.style.backgroundColor = "#74b9ff";
+                            likeBtn.classList.add("active");
+                          }
+                        })
+                        .catch((error) => {
+                          console.log("예상하지 못한 에러입니다.");
+                          console.log("error:", error);
+                        });
+                    } else {
+                      axios
+                        .delete(
+                          `http://localhost:8080/sheet/${sheetPost.id}/like`,
+                          {
+                            validateStatus: false,
+                            withCredentials: true,
+                            headers: {
+                              Authorization: accessToken,
+                            },
+                          }
+                        )
+                        .then((response) => {
+                          if (response.data.status === 200) {
+                            setSheetPost((prev) => ({
+                              ...prev,
+                              likeCount: sheetPost.likeCount - 1,
+                            }));
+                            likeBtn.style.backgroundColor = "white";
+                            likeBtn.classList.remove("active");
+                          }
+                        });
+                    }
+                  }}
+                >
+                  ❤️<span>{sheetPost.likeCount}</span>
+                </button>
+                <button
+                  style={{ border: "1px solid gray", borderRadius: "20px" }}
+                  id="scrap-btn"
+                  onClick={(e) => {
+                    const { accessToken, error } = revalidate(context);
+                    axios
+                      .put(
+                        `http://localhost:8080/sheet/${sheetPost.id}/scrap`,
+                        null,
+                        {
+                          headers: {
+                            Authorization: accessToken,
+                          },
+                          withCredentials: true,
+                          validateStatus: false,
+                        }
+                      )
+                      .then((response) => {
+                        if (response.data.status === 200) {
+                          const scrapBtn = document.querySelector("#scrap-btn");
+                          scrapBtn.style.backgroundColor = "#74b9ff";
+                          scrapBtn.innerHTML = "scrapped";
+                        }
+                      });
+                  }}
+                >
+                  <span>🔖scrap</span>
+                </button>
+              </div>
+            </Col>
+          </Row>
+          <Row>
             <div className="sheet-info comment">
               <Comment item={sheetPost} />
             </div>
-          </div>
+          </Row>
         </div>
-      </div>
+      </Layout>
     );
   }
 }

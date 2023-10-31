@@ -1,11 +1,11 @@
 import axios from "axios";
-import useRevalidate from "../hook/useRevalidate";
+import revalidate from "../util/revalidate";
 
 export async function UploadFile(context, fileFormData) {
-  const { accessToken } = await useRevalidate(context);
+  const { accessToken } = await revalidate(context);
   return await axios({
     method: "post",
-    url: "/api/sheet/file",
+    url: "http://localhost:8080/sheet/file",
     withCredentials: true,
     headers: {
       Authorization: accessToken,
@@ -14,8 +14,9 @@ export async function UploadFile(context, fileFormData) {
   });
 }
 
-export async function UploadSheetInfo(context, value, setShowAlert) {
-  const { accessToken } = await useRevalidate(context);
+export async function UploadSheetInfo(context, value, setShowAlert, navigate) {
+  const response = revalidate(context) || {};
+  const { accessToken, error } = response;
   const formData = new FormData();
   value.sheetFile.forEach((file) => formData.append("sheetFiles", file));
   formData.append("sheetInfo", JSON.stringify(value.sheetInfo));
@@ -23,7 +24,7 @@ export async function UploadSheetInfo(context, value, setShowAlert) {
   console.log("asdfasd:", formData.get("sheetInfo"));
   axios({
     method: "post",
-    url: "/api/sheet/write",
+    url: "http://localhost:8080/sheet/write",
     withCredentials: true,
     validateStatus: false,
     headers: {
@@ -34,6 +35,8 @@ export async function UploadSheetInfo(context, value, setShowAlert) {
     .then((response) => {
       if (response.data.status !== 200) {
         setShowAlert({ state: true, text: response.data.message });
+      } else {
+        navigate("/sheet");
       }
     })
     .catch(function (error) {
@@ -42,10 +45,49 @@ export async function UploadSheetInfo(context, value, setShowAlert) {
     });
 }
 
-export function GetSheetPosts(setSheetPosts, setShowAlert) {
+export function GetSheetPosts({
+  setSheetPosts,
+  setShowAlert,
+  page = 0,
+  size = 20,
+  filter,
+  context,
+}) {
+  const url = "http://localhost:8080/sheet";
+  const params = {};
+  params.page = page;
+  let genreParam = "";
+  let instrumentParam = "";
+  let difficultyParam = "";
+
+  if (filter.genres.length > 0) {
+    filter.genres.forEach((item) => (genreParam += item + ","));
+    genreParam.slice({ end: genreParam.length - 1 });
+    params.genre = genreParam;
+  }
+  if (filter.instruments.length > 0) {
+    filter.instruments.forEach((item) => (instrumentParam += item + ","));
+    instrumentParam.slice({ end: instrumentParam.length - 1 });
+    params.instrument = instrumentParam;
+  }
+  if (filter.difficulties.length > 0) {
+    filter.difficulties.forEach((item) => (difficultyParam += item + ","));
+    difficultyParam.slice({ end: difficultyParam.length - 1 });
+    params.difficulty = difficultyParam;
+  }
+
+  const response = revalidate(context) || {};
+
+  const { accessToken, error } = response;
   const result = axios
-    .get("/api/sheet")
+    .get(`http://localhost:8080/sheet`, {
+      params: params,
+      headers: {
+        Authorization: accessToken,
+      },
+    })
     .then((response) => {
+      console.log(response);
       setSheetPosts(response.data.serializedData.sheetPosts);
     })
     .catch(function (error) {
@@ -55,34 +97,31 @@ export function GetSheetPosts(setSheetPosts, setShowAlert) {
 }
 
 export async function Logout(context) {
-  useRevalidate(context).then((response) => {
-    const { error, accessToken } = response;
-    console.log("response:", response);
-    console.log("accessToken:", accessToken);
-    if (error !== undefined) {
-      alert("로그인이 만료되었습니다. 다시 로그인하세요.");
-      console.log("context:", context);
-      context.initialize();
-    } else {
-      axios
-        .get("/api/user/logout", {
-          headers: {
-            Authorization: accessToken,
-          },
-        })
-        .then((response) => {
-          console.log("response:", response);
-          if (response.data.status === 200) {
-            console.log(context);
-            context.initialize();
-            console.log("initialized");
-          } else {
-            alert("error");
-          }
-        })
-        .catch(function (error) {
-          if (error.request || error.response) console.log("error:", error);
-        });
-    }
-  });
+  const response = revalidate(context) || {};
+  console.log("response:", response);
+  const { error, accessToken } = response;
+  if (error !== null) {
+    alert("로그인이 만료되었습니다. 다시 로그인하세요.");
+    context.initialize();
+  } else {
+    axios
+      .get("http://localhost:8080/user/logout", {
+        headers: {
+          Authorization: accessToken,
+        },
+      })
+      .then((response) => {
+        console.log("response:", response);
+        if (response.data.status === 200) {
+          console.log(context);
+          context.initialize();
+          console.log("initialized");
+        } else {
+          alert("error");
+        }
+      })
+      .catch(function (error) {
+        if (error.request || error.response) console.log("error:", error);
+      });
+  }
 }

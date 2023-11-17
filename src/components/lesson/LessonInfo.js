@@ -11,7 +11,7 @@ import {
   NavItem,
   Row,
 } from "react-bootstrap";
-import { UserInfo } from "../user/userInfo";
+import { ItemListUserInfo } from "../user/userInfo";
 import axios from "axios";
 import revalidate from "../../util/revalidate";
 import { useContext, useEffect, useState } from "react";
@@ -53,7 +53,7 @@ export default function LessonInfo() {
               {lesson.title}
             </div>
             <div>
-              <UserInfo
+              <ItemListUserInfo
                 profileSrc={lesson.artist.profileSrc}
                 name={lesson.artist.name}
               />
@@ -204,7 +204,7 @@ function Comment({ target, item }) {
         {commentList.map((comment, idx) => (
           <div className="comment m-3" key={comment.id} id={comment.id}>
             <div className="sheet-info" id="author">
-              <UserInfo
+              <ItemListUserInfo
                 profileSrc={comment.author.profileSrc}
                 name={comment.author.name}
               />

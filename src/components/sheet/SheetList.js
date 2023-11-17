@@ -1,7 +1,7 @@
 import { Table } from "react-bootstrap";
 import { instrumentDict } from "./InstrumentSelection";
 import { difficultyDict } from "./DifficultySelection";
-import { UserInfo } from "../user/userInfo";
+import { ItemListUserInfo } from "../user/userInfo";
 
 export default function SheetList({ sheetPosts, noContentMessage, navigate }) {
   if (sheetPosts.length > 0) {
@@ -42,7 +42,7 @@ export default function SheetList({ sheetPosts, noContentMessage, navigate }) {
               </td>
               <td>
                 <div>
-                  <UserInfo
+                  <ItemListUserInfo
                     profileSrc={item.artist.profileSrc}
                     name={item.artist.name}
                   />

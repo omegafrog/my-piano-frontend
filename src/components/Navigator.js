@@ -1,12 +1,4 @@
-import {
-  Button,
-  Col,
-  Dropdown,
-  Form,
-  ListGroup,
-  Navbar,
-  Row,
-} from "react-bootstrap";
+import { Button, Col, Dropdown, Navbar, Row } from "react-bootstrap";
 import LogoBtn from "./LogoBtn";
 import NavigationBtn from "./NavigationBtn";
 import UserInfo from "./UserInfo";
@@ -17,7 +9,6 @@ import { useNavigate } from "react-router";
 import Login from "./Login";
 import CustomToggle from "./navs/CustomNavToggle";
 import { Logout } from "./AxiosUtil";
-import axios from "axios";
 import NavSearchRecommend from "./NavSearchRecommend";
 import NavSearchBar from "./NavSearchBar";
 
@@ -46,7 +37,7 @@ function Navigator() {
           <Navbar.Brand href="/sheet">
             <span>악보</span>
           </Navbar.Brand>
-          <Navbar.Brand href="/sheet">
+          <Navbar.Brand href="/lesson">
             <span>레슨</span>
           </Navbar.Brand>
           <Navbar.Brand href="/sheet">

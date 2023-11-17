@@ -1,6 +1,6 @@
 import axios from "axios";
-import { useState } from "react";
 import { Form, Row } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
 export default function NavSearchBar({
   searchTermValue,
@@ -10,6 +10,8 @@ export default function NavSearchBar({
   const { searchTerm, setSearchTerm } = searchTermValue;
   const { searchResult, setSearchResult } = searchResultValue;
   const { focus, setFocus } = focusValue;
+
+  const navigate = useNavigate();
 
   const changeSearchResult = (e) => {
     setSearchTerm(e.target.value);
@@ -31,6 +33,14 @@ export default function NavSearchBar({
                     },
                   },
                   {
+                    fuzzy: {
+                      title: {
+                        value: e.target.value,
+                        fuzziness: 1,
+                      },
+                    },
+                  },
+                  {
                     prefix: {
                       "name.keyword": {
                         value: e.target.value,
@@ -43,7 +53,8 @@ export default function NavSearchBar({
           },
           {
             headers: {
-              Authorization: "Basic ZWxhc3RpYzpIcHJLX3Zfd1VwZHliVjBjdHY0LQ==",
+              Authorization:
+                "ApiKey MVFLWjI0c0JLWGtCSW5Eb1ZaR2Q6b1BQUVVfaDFUU2lXTmVQOTBVUHhnZw==",
             },
           }
         )
@@ -62,6 +73,11 @@ export default function NavSearchBar({
         type="text"
         placeholder="Search"
         onChange={changeSearchResult}
+        onKeyUp={(e) => {
+          if (e.key === "Enter") {
+            navigate(`/search?q=${e.target.value}`);
+          }
+        }}
         onFocus={() => {
           setFocus(true);
           console.log(focus);

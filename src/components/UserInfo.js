@@ -10,6 +10,8 @@ function UserInfo() {
   userProfile = loggedUser.profileSrc;
   if (userProfile.startsWith("https://")) {
     userProfile = loggedUser.profileSrc;
+  } else if (userProfile === "") {
+    userProfile = "/img/defaultUserImg.png";
   } else {
     userProfile = `https://${bucketName}.s3.${region}.amazonaws.com/${loggedUser.profileSrc}`;
   }

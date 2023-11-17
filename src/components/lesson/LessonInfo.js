@@ -19,6 +19,7 @@ import { UserContext } from "../User-context";
 import VideoContainer from "./VideoContainer";
 import ScrapBtn from "../ScrapBtn";
 import LikeBtn from "../LikeBtn";
+import PaymentModal from "../PaymentModal";
 
 export default function LessonInfo() {
   const alertValue = useAlert();
@@ -53,8 +54,8 @@ export default function LessonInfo() {
             </div>
             <div>
               <UserInfo
-                profileSrc={lesson.lessonProvider.profileSrc}
-                name={lesson.lessonProvider.name}
+                profileSrc={lesson.artist.profileSrc}
+                name={lesson.artist.name}
               />
             </div>
           </div>
@@ -87,9 +88,7 @@ export default function LessonInfo() {
                 </div>
               </div>
 
-              <Button variant="outline-danger" size="lg">
-                지금 구매
-              </Button>
+              <PaymentModal item={lesson} target={"lesson"} />
               <div className="my-3">
                 <Row className="my-2">
                   <Col>

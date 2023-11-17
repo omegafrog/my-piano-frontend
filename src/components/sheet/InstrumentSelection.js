@@ -139,8 +139,8 @@ function InstrumentSelection({ setSheetInfo }) {
 export default InstrumentSelection;
 
 export const instrumentDict = {
-  PIANO_KEY_88: "88키",
-  PIANO_KEY_61: "61키",
+  PIANO_KEY_88: "피아노 88키",
+  PIANO_KEY_61: "피아노 61키",
 
   GUITAR_ACOUSTIC: "어쿠스틱",
   GUITAR_ELECTRIC: "일렉트릭",

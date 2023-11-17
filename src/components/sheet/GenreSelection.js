@@ -1,29 +1,41 @@
 // class의 active의 여부로 선택 여부를 확인. onclick 이전에 수정되어서 고칠 일 없음.
 import "../../scss/custom.scss";
 
-import { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "react-bootstrap";
 
 // 2개 이상 선택할 때만 선택된거 풀어주면 됨
-function GenreSelectionInput({ genreSetter, value, text }) {
+function GenreSelectionInput({ value, text, setSheetInfo }) {
   const changeGenre = (event) => {
     event.preventDefault();
+    const genreBtns = document.querySelectorAll("#sheet-upload-genre button");
+    const tmp = [];
+    genreBtns.forEach((item) => {
+      if (item.ariaPressed === "true") tmp.push(item.value);
+    });
+    const cnt = tmp.length;
     if (event.target.classList.contains("active")) {
       console.log("aa");
-      if (genreSetter.genres.length >= 2) {
-        alert("2개 이상 선택할 수 없습니다.");
+      if (cnt >= 3) {
+        alert("3개 이상 선택할 수 없습니다.");
         event.target.classList.toggle("active");
+        event.target.ariaPressed = "false";
         return;
       }
       console.log("genre add ok");
-      genreSetter.setGenres((prev) => [...prev, event.target.value]);
     } else {
       console.log("bb");
-      const after = genreSetter.genres.filter(
-        (genre) => genre !== event.target.value
-      );
-      genreSetter.setGenres(after);
     }
+    setSheetInfo((prev) => ({
+      ...prev,
+      sheetDto: {
+        ...prev.sheetDto,
+        genres: {
+          genre1: tmp[0],
+          genre2: tmp.length > 1 ? tmp[1] : null,
+        },
+      },
+    }));
   };
 
   return (
@@ -31,8 +43,8 @@ function GenreSelectionInput({ genreSetter, value, text }) {
       variant="secondary"
       className="m-1"
       data-bs-toggle="button"
-      onClick={changeGenre}
       value={value}
+      onClick={changeGenre}
     >
       {text}
     </Button>
@@ -40,93 +52,78 @@ function GenreSelectionInput({ genreSetter, value, text }) {
 }
 
 function GenreSelection({ value }) {
-  const [genres, setGenres] = useState([]);
-  useEffect(() => {
-    console.log(genres);
-    value.setSheetInfo((prev) => ({
-      ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
-        genres: {
-          genre1: genres[0],
-          genre2: genres.length > 1 ? genres[1] : null,
-        },
-      },
-    }));
-  }, [genres]);
   return (
     <div id="sheet-upload-genre">
       <h3>장르</h3>
       <div>
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={0}
+          setSheetInfo={value.setSheetInfo}
           text={"캐롤"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={1}
+          setSheetInfo={value.setSheetInfo}
           text={"K-POP"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={2}
+          setSheetInfo={value.setSheetInfo}
           text={"해외 POP"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={3}
+          setSheetInfo={value.setSheetInfo}
           text={"뉴에이지"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={4}
+          setSheetInfo={value.setSheetInfo}
           text={"클래식"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
-          id={"custom"}
           value={5}
+          setSheetInfo={value.setSheetInfo}
           text={"자작곡"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={6}
+          setSheetInfo={value.setSheetInfo}
           text={"재즈"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={7}
+          setSheetInfo={value.setSheetInfo}
           text={"연탄곡"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={9}
+          setSheetInfo={value.setSheetInfo}
           text={"OST"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={8}
+          setSheetInfo={value.setSheetInfo}
           text={"게임/애니"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={10}
+          setSheetInfo={value.setSheetInfo}
           text={"동요"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={11}
+          setSheetInfo={value.setSheetInfo}
           text={"BGM"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={12}
+          setSheetInfo={value.setSheetInfo}
           text={"뮤지컬"}
         />
         <GenreSelectionInput
-          genreSetter={{ genres, setGenres }}
           value={13}
+          setSheetInfo={value.setSheetInfo}
           text={"종교"}
         />
       </div>
@@ -149,6 +146,23 @@ export const genreDict = {
   KIDS: "동요",
   MUSICAL: "뮤지컬",
   RELIGIOUS: "종교",
+};
+
+export const genreIdDict = {
+  0: "CAROL",
+  1: "K_POP",
+  2: "POP",
+  3: "NEW_AGE",
+  4: "CLASSIC",
+  5: "CUSTOM",
+  6: "JAZZ",
+  7: "DUET",
+  8: "GAME_ANIME",
+  9: "OST",
+  10: "BGM",
+  11: "KIDS",
+  12: "MUSICAL",
+  13: "RELIGIOUS",
 };
 
 export default GenreSelection;

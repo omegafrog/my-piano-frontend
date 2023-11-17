@@ -6,7 +6,7 @@ function SettingPrice({ sheetInfo, setSheetInfo, className }) {
     event.preventDefault();
     setSheetInfo((prev) => ({
       ...prev,
-      price: event.target.price,
+      price: event.target.value,
     }));
   };
   return (

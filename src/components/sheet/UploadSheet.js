@@ -11,11 +11,12 @@ import DifficultySelection from "./DifficultySelection";
 import UploadFileForm from "./UploadFileForm";
 
 import Navigator from "../Navigator";
-import { Alert, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import CustomAlert from "../CustomAlert";
 import { UploadSheetInfo, UploadFile } from "../AxiosUtil";
 import { sheetInfoValidator } from "./SheetInfoValidator";
 import { useNavigate } from "react-router";
+import useAlert from "../../hook/useAlert";
 
 function UploadSheet() {
   const [sheetInfo, setSheetInfo] = useState({
@@ -36,42 +37,49 @@ function UploadSheet() {
   });
 
   const [sheetFile, setSheetFile] = useState([]);
-  const [showAlert, setShowAlert] = useState({ state: false, text: "" });
 
   const context = useContext(UserContext);
   const navigate = useNavigate();
+  const value2 = useAlert();
   const value = useMemo(
     () => ({ sheetInfo, setSheetInfo, sheetFile, setSheetFile }),
     [sheetInfo, setSheetInfo, sheetFile, setSheetFile]
   );
 
   useEffect(() => {
-    if (showAlert.state) {
-      setTimeout(() => {
-        setShowAlert({ state: false, text: "" });
-      }, 3000);
+    const localContext = JSON.parse(localStorage.getItem("userState"));
+    if (!localContext || localContext.loggedIn === false) {
+      alert("로그인하고 이용해주세요.");
+      navigate("/main");
     }
-  }, [showAlert]);
+  }, []);
+
+  //logging
+  useEffect(() => {
+    console.log(value.sheetInfo);
+  }, [sheetInfo]);
+
   const submitSheetPost = async () => {
     // send sheet data
     console.log("value:", value.sheetInfo);
-    const flag = sheetInfoValidator(value.sheetInfo, setShowAlert);
+    const flag = sheetInfoValidator(value.sheetInfo, value2.setShowAlert);
     console.log("flag:", flag);
     if (flag === false) {
       return;
     }
 
-    setGenre();
-
-    let result = await UploadSheetInfo(context, value, setShowAlert);
+    let result = await UploadSheetInfo(
+      context,
+      value,
+      value2.setShowAlert,
+      navigate
+    );
   };
 
   return (
     <div className="d-flex flex-column">
       <Navigator />
-      {showAlert.state ? (
-        <CustomAlert variant={"danger"} value={{ showAlert, setShowAlert }} />
-      ) : null}
+      <CustomAlert variant={"danger"} value={value2} />
       <div className="sheet-upload d-flex flex-column align-items-center align-self-center w-50 mt-3">
         <h3>악보 게시판 업로드</h3>
         <SettingPrice
@@ -114,21 +122,5 @@ function UploadSheet() {
       </div>
     </div>
   );
-
-  function setGenre() {
-    setSheetInfo((prev) => ({
-      ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
-        genres: {
-          genre1: value.sheetInfo.sheetDto.genres[0],
-          genre2:
-            value.sheetInfo.sheetDto.genres.length > 1
-              ? value.sheetInfo.sheetDto.genres[1]
-              : null,
-        },
-      },
-    }));
-  }
 }
 export default UploadSheet;

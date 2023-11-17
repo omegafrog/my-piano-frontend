@@ -30,3 +30,19 @@ function DifficultySelection({ setSheetInfo }) {
   );
 }
 export default DifficultySelection;
+
+export const difficultyDict = {
+  VERY_EASY: "매우 쉬움",
+  EASY: "쉬움",
+  MEDIUM: "보통",
+  HARD: "어려움",
+  VERY_HARD: "매우 어려움",
+};
+
+export const difficultyIdDict = {
+  0: "VERY_EASY",
+  1: "EASY",
+  2: "MEDIUM",
+  3: "HARD",
+  4: "VERY_HARD",
+};

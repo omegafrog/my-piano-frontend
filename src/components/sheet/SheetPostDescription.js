@@ -1,4 +1,4 @@
-import Editor from "./Editor";
+import Editor from "./editor";
 import { Col, Form, InputGroup } from "react-bootstrap";
 
 function SheetPostDescription({ setSheetInfo, sheetInfo, className }) {

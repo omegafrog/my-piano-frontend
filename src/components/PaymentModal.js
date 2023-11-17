@@ -3,7 +3,8 @@ import { Button, Modal } from "react-bootstrap";
 import { UserContext } from "./User-context";
 import axios from "axios";
 
-export default function PaymentModal({ item }) {
+export default function PaymentModal({ item, target }) {
+  console.log("item:", item);
   const context = useContext(UserContext);
   const [show, setShow] = useState(false);
   const hideModal = () => setShow(false);
@@ -20,7 +21,7 @@ export default function PaymentModal({ item }) {
 
   useEffect(() => {
     const payBtn = document.querySelector("#payment-btn");
-    if (context.loggedUser.id === item.author.id) {
+    if (context.loggedUser.id === item.artist.id) {
       payBtn.innerHTML = "내 악보입니다.";
       payBtn.disabled = true;
       return;
@@ -29,7 +30,7 @@ export default function PaymentModal({ item }) {
       payBtn.disabled = false;
     }
     axios
-      .get(`http://localhost:8080/order/sheet/${item.id}`, {
+      .get(`http://localhost:8080/order/${target}/${item.id}`, {
         headers: {
           Authorization: context.accessToken,
         },
@@ -49,7 +50,7 @@ export default function PaymentModal({ item }) {
   const purchase = () => {
     axios
       .post(
-        "http://localhost:8080/order/sheet",
+        `http://localhost:8080/order/${target}`,
         {
           itemId: item.id,
           buyerId: context.loggedUser.id,
@@ -73,7 +74,7 @@ export default function PaymentModal({ item }) {
         hideModal();
       })
       .finally(() => {
-        window.location.replace(`/sheet/${item.id}`);
+        window.location.replace(`/${target}/${item.id}`);
       });
   };
   const restCashColor = restCash < 0 ? "red" : "black";
@@ -93,7 +94,7 @@ export default function PaymentModal({ item }) {
         <Modal.Header closeButton>
           <Modal.Title>
             <h3>{item.price === 0 ? "무료입니다." : `${item.price}원`}</h3>
-            <h5>{item.sheet.title}</h5>
+            <h5>{target === "sheet" ? item.sheet.title : item.title}</h5>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="mx-4">

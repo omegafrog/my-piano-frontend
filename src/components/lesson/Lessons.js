@@ -65,7 +65,7 @@ function LessonList({ lessons }) {
                     <Col xs={"auto"} style={{ paddingRight: "0px" }}>
                       <Image
                         className="sm"
-                        src={item.lessonProvider.profileSrc}
+                        src={item.artist.profileSrc}
                         roundedCircle
                         style={{ width: "30px", height: "auto" }}
                       />
@@ -77,7 +77,7 @@ function LessonList({ lessons }) {
                       className="d-flex align-items-center"
                     >
                       <span style={{ textAlign: "baseline" }}>
-                        {item.lessonProvider.name}
+                        {item.artist.name}
                       </span>
                     </Col>
                   </Row>

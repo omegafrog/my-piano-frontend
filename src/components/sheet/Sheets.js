@@ -5,54 +5,23 @@ import useAlert from "../../hook/useAlert";
 import {
   Accordion,
   ButtonGroup,
-  ListGroup,
+  Col,
+  Container,
   Row,
-  Table,
   ToggleButton,
   ToggleButtonGroup,
 } from "react-bootstrap";
 import { genreDict, genreIdDict } from "../../components/sheet/GenreSelection";
-import { instrumentDict } from "./InstrumentSelection";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { difficultyDict, difficultyIdDict } from "./DifficultySelection";
 import { UserContext } from "../User-context";
-
-function SheetList({ sheetPosts }) {
-  if (sheetPosts.length > 0) {
-    return (
-      <Table>
-        <thead>
-          <th>곡 정보</th>
-          <th>아티스트</th>
-          <th>악기</th>
-          <th>난이도</th>
-          <th>조회수</th>
-          <th>가격</th>
-        </thead>
-        <tbody>
-          {sheetPosts.map((item) => {
-            return (
-              <ListGroup.Item variant="light">
-                {/* <a href={`/sheet/${item.id}`}>{item.title}</a> */}
-
-                {item.title}
-              </ListGroup.Item>
-            );
-          })}
-        </tbody>
-      </Table>
-    );
-  } else {
-    return <h1>아직 올린 악보가 없습니다.</h1>;
-  }
-}
+import SheetList from "./SheetList";
 
 function Sheets() {
   const [sheetPosts, setSheetPosts] = useState();
-  const [genreDefault, setGenreDefault] = useState(false);
-  const [difficultyDefault, setDifficultyDefault] = useState(false);
   const context = useContext(UserContext);
   const location = useLocation();
+  const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const genres = params.get("genre");
   const difficulties = params.get("difficulty");
@@ -79,7 +48,7 @@ function Sheets() {
       {sheetPosts === undefined ? (
         <h1>Loading...</h1>
       ) : (
-        <div className="m-2 w-100">
+        <Container className="w-75 my-4">
           <Row className="m-1 ">
             <h1>악보 리스트</h1>
           </Row>
@@ -91,15 +60,17 @@ function Sheets() {
                   <Row className="m-2">
                     <strong>장르</strong>
                     <hr />
-                    <ToggleButtonGroup type="checkbox">
+                    <ButtonGroup className="d-flex ">
                       {Object.values(genreDict).map((item, idx) => {
                         return (
                           <ToggleButton
+                            className="flex-grow-1"
                             variant="outline-primary"
                             key={idx}
                             id={`genre-${idx}`}
                             type={"checkbox"}
                             name="checkbox"
+                            checked={filter.genres.includes(genreIdDict[idx])}
                             value={genreIdDict[idx]}
                             onChange={(e) => {
                               console.log(e.target.value);
@@ -122,7 +93,7 @@ function Sheets() {
                           </ToggleButton>
                         );
                       })}
-                    </ToggleButtonGroup>
+                    </ButtonGroup>
                   </Row>
                   <Row className="m-2">
                     <strong>난이도</strong>
@@ -169,10 +140,10 @@ function Sheets() {
               </Accordion.Item>
             </Accordion>
           </Row>
-          <Row className="m-1">
-            <SheetList sheetPosts={sheetPosts} />
+          <Row className="m-4 d-flex justify-content-center">
+            <SheetList sheetPosts={sheetPosts} navigate={navigate} />
           </Row>
-        </div>
+        </Container>
       )}
     </Layout>
   );

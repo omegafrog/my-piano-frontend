@@ -389,7 +389,7 @@ export default function UploadLesson() {
                 })
                 .then((response) => {
                   if (response.data.status === 200) {
-                    navigate("/lessons");
+                    navigate("/lesson");
                   }
                 });
             }}

@@ -1,7 +1,5 @@
-import { useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import Carousel from "react-bootstrap/Carousel";
-import { genreDict, genreIdDict } from "./GenreSelection";
-import { instrumentDict } from "./InstrumentSelection";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { useContext, useEffect, useState } from "react";
@@ -12,6 +10,10 @@ import Layout from "../Layout";
 import revalidate from "../../util/revalidate";
 import useAlert from "../../hook/useAlert";
 import { Button, Col, Form, Image, Row } from "react-bootstrap";
+import LikeBtn from "../LikeBtn";
+import ScrapBtn from "../ScrapBtn";
+import Metadata from "./Metadata";
+import PaymentModal from "../PaymentModal";
 
 function SheetContent({ item }) {
   console.log(item);
@@ -105,14 +107,14 @@ function Comment({ item }) {
                 <Col xs={"auto"} style={{ paddingRight: "0px" }}>
                   <Image
                     className="sm"
-                    src={item.author.profileSrc}
+                    src={item.artist.profileSrc}
                     roundedCircle
                     style={{ width: "30px", height: "auto" }}
                   />
                 </Col>
                 <Col style={{ paddingLeft: "3px" }}>
                   <span className="user-name" style={{ fontSize: "20px" }}>
-                    {item.author.name}
+                    {item.artist.name}
                   </span>
                 </Col>
               </Row>
@@ -142,13 +144,15 @@ function SheetInfo() {
 
   const [sheetPost, setSheetPost] = useState();
   const alertValue = useAlert();
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`http://localhost:8080/sheet/${id}`).then((response) => {
       if (response.data.status === 200) {
         setSheetPost(response.data.serializedData.sheetPost);
         if (context.loggedIn === true) {
-          const { accessToken, error } = revalidate(context);
+          const response = revalidate(context) || {};
+          const { accessToken, error } = response;
           if (accessToken) {
             axios
               .get(`http://localhost:8080/sheet/${id}/like`, {
@@ -177,6 +181,8 @@ function SheetInfo() {
               });
           }
         }
+      } else {
+        navigate("/404");
       }
     });
   }, []);
@@ -195,14 +201,14 @@ function SheetInfo() {
                 <Col xs={"auto"} className="p-0">
                   <Image
                     className="sm"
-                    src={sheetPost.author.profileSrc}
+                    src={sheetPost.artist.profileSrc}
                     roundedCircle
                     style={{ width: "30px", height: "auto" }}
                   />
                 </Col>
                 <Col className="">
                   <span className="user-name" style={{ fontSize: "20px" }}>
-                    {sheetPost.author.name}
+                    {sheetPost.artist.name}
                   </span>
                 </Col>
               </Row>
@@ -226,193 +232,20 @@ function SheetInfo() {
                 className="content align-self-start"
               />
             </Col>
-            <Col xs={4} className="h-100 d-flex justify-center ">
-              <div
-                className="sheet-info w-100"
-                id="metadata"
-                style={{ width: "300px", paddingTop: "60px" }}
-              >
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <span>가격</span>
-                  </Col>
-                  <Col>
-                    <span>장르</span>
-                  </Col>
-                </Row>
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <div id="price">
-                      {sheetPost.price === 0 ? "무료" : sheetPost.price}
-                    </div>
-                  </Col>
-                  <Col>
-                    <Button
-                      size="sm"
-                      className="genre"
-                      id={genreIdDict[sheetPost.sheet.genres.genre1]}
-                      variant="outline-secondary"
-                      disabled
-                    >
-                      {genreDict[sheetPost.sheet.genres.genre1]}
-                    </Button>
-                    {sheetPost.sheet.genres.genre2 ? (
-                      <Button
-                        size="sm"
-                        className="genre"
-                        id={genreDict[sheetPost.sheet.genres.genre2]}
-                        variant="outline-secondary"
-                      >
-                        {genreDict[sheetPost.sheet.genres.genre2]}
-                      </Button>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <span id="difficulty">난이도</span>
-                  </Col>
-                  <Col>
-                    <span id="instrument">악기</span>
-                  </Col>
-                </Row>
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <span>{sheetPost.sheet.difficulty}</span>
-                  </Col>
-                  <Col>
-                    <span>{instrumentDict[sheetPost.sheet.instrument]}</span>
-                  </Col>
-                </Row>
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <span>솔로/듀엣</span>
-                  </Col>
-                  <Col>
-                    <span>가사 여부</span>
-                  </Col>
-                </Row>
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <span id="solo">
-                      {sheetPost.sheet.solo ? "솔로" : "듀엣"}
-                    </span>
-                  </Col>
-                  <Col>
-                    {sheetPost.sheet.lyrics ? "가사 없음" : "가사 있음"}
-                  </Col>
-                </Row>
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <span>페이지 수</span>
-                  </Col>
-                  <Col>
-                    <span>곡 이름</span>
-                  </Col>
-                </Row>
-                <Row style={{ margin: "5px" }}>
-                  <Col>
-                    <span id="page-num">{sheetPost.sheet.pageNum}</span>
-                  </Col>
-                  <Col>
-                    <span id="sheet-title">{sheetPost.sheet.title}</span>
-                  </Col>
-                </Row>
-              </div>
+            <Col xs={3} className="h-100">
+              <PaymentModal item={sheetPost} target={"sheet"} />
+              <Metadata item={sheetPost} />
             </Col>
           </Row>
           <Row>
             <Col>
               <div className="sheet-info scrap like d-flex justify-content-between">
-                <button
-                  style={{ border: "1px solid gray", borderRadius: "20px" }}
-                  id="like-count"
-                  onClick={(e) => {
-                    const { accessToken, error } = revalidate(context);
-                    const likeBtn = document.querySelector("#like-count");
-                    if (likeBtn.classList.contains("active")) {
-                      axios
-                        .put(
-                          `http://localhost:8080/sheet/${sheetPost.id}/like`,
-                          null,
-                          {
-                            validateStatus: false,
-                            withCredentials: true,
-                            headers: {
-                              Authorization: accessToken,
-                            },
-                          }
-                        )
-                        .then((response) => {
-                          if (response.data.status === 200) {
-                            console.log("success");
-                            setSheetPost((prev) => ({
-                              ...prev,
-                              likeCount: sheetPost.likeCount + 1,
-                            }));
-                            likeBtn.style.backgroundColor = "#74b9ff";
-                            likeBtn.classList.add("active");
-                          }
-                        })
-                        .catch((error) => {
-                          console.log("예상하지 못한 에러입니다.");
-                          console.log("error:", error);
-                        });
-                    } else {
-                      axios
-                        .delete(
-                          `http://localhost:8080/sheet/${sheetPost.id}/like`,
-                          {
-                            validateStatus: false,
-                            withCredentials: true,
-                            headers: {
-                              Authorization: accessToken,
-                            },
-                          }
-                        )
-                        .then((response) => {
-                          if (response.data.status === 200) {
-                            setSheetPost((prev) => ({
-                              ...prev,
-                              likeCount: sheetPost.likeCount - 1,
-                            }));
-                            likeBtn.style.backgroundColor = "white";
-                            likeBtn.classList.remove("active");
-                          }
-                        });
-                    }
-                  }}
-                >
-                  ❤️<span>{sheetPost.likeCount}</span>
-                </button>
-                <button
-                  style={{ border: "1px solid gray", borderRadius: "20px" }}
-                  id="scrap-btn"
-                  onClick={(e) => {
-                    const { accessToken, error } = revalidate(context);
-                    axios
-                      .put(
-                        `http://localhost:8080/sheet/${sheetPost.id}/scrap`,
-                        null,
-                        {
-                          headers: {
-                            Authorization: accessToken,
-                          },
-                          withCredentials: true,
-                          validateStatus: false,
-                        }
-                      )
-                      .then((response) => {
-                        if (response.data.status === 200) {
-                          const scrapBtn = document.querySelector("#scrap-btn");
-                          scrapBtn.style.backgroundColor = "#74b9ff";
-                          scrapBtn.innerHTML = "scrapped";
-                        }
-                      });
-                  }}
-                >
-                  <span>🔖scrap</span>
-                </button>
+                <LikeBtn
+                  target={"sheet"}
+                  id={sheetPost.id}
+                  value={[sheetPost, setSheetPost]}
+                />
+                <ScrapBtn target={"sheet"} id={sheetPost.id} />
               </div>
             </Col>
           </Row>

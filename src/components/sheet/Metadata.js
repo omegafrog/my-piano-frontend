@@ -2,16 +2,17 @@ import { Button, Col, Row } from "react-bootstrap";
 import PaymentModal from "../PaymentModal";
 import { genreDict, genreIdDict } from "./GenreSelection";
 import { instrumentDict } from "./InstrumentSelection";
+import { useNavigate } from "react-router";
 
 export default function Metadata({ item }) {
+  const navigate = useNavigate();
   return (
-    <Col xs={3} className="h-100 d-flex justify-center ">
+    <div className="h-100 d-flex justify-center ">
       <div
         className="sheet-info w-100"
         id="metadata"
         style={{ width: "300px", paddingTop: "20px" }}
       >
-        <PaymentModal item={item} />
         <Row style={{ margin: "5px" }}>
           <Col>
             <span>가격</span>
@@ -30,7 +31,9 @@ export default function Metadata({ item }) {
               className="genre"
               id={genreIdDict[item.sheet.genres.genre1]}
               variant="outline-secondary"
-              disabled
+              onClick={() => {
+                navigate(`/sheet?genre=${item.sheet.genres.genre1}`);
+              }}
             >
               {genreDict[item.sheet.genres.genre1]}
             </Button>
@@ -40,6 +43,9 @@ export default function Metadata({ item }) {
                 className="genre"
                 id={genreDict[item.sheet.genres.genre2]}
                 variant="outline-secondary"
+                onClick={() => {
+                  navigate(`/sheet?genre=${item.sheet.genres.genre2}`);
+                }}
               >
                 {genreDict[item.sheet.genres.genre2]}
               </Button>
@@ -93,6 +99,6 @@ export default function Metadata({ item }) {
           </Col>
         </Row>
       </div>
-    </Col>
+    </div>
   );
 }

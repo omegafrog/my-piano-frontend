@@ -23,7 +23,8 @@ export default function LikeBtn({ target, id, value }) {
             const likeBtn = document.querySelector("#like-count");
             likeBtn.classList.add("active");
           }
-        });
+        })
+        .catch((error) => {});
     }
   }, []);
   return (

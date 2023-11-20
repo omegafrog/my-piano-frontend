@@ -1,4 +1,6 @@
-#root{
-    display: flex;
-    flex-direction: column;
+html,
+body,
+#root,
+#root > div {
+  height: 100%;
 }

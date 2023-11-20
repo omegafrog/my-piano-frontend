@@ -77,6 +77,7 @@ export default function PaymentModal({ item, target }) {
         window.location.replace(`/${target}/${item.id}`);
       });
   };
+
   const restCashColor = restCash < 0 ? "red" : "black";
   return (
     <>
@@ -90,6 +91,7 @@ export default function PaymentModal({ item, target }) {
       >
         지금 구매
       </Button>
+
       <Modal show={show} onHide={hideModal}>
         <Modal.Header closeButton>
           <Modal.Title>

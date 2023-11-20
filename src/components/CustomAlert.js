@@ -3,7 +3,7 @@ import { Alert } from "react-bootstrap";
 
 export default function CustomAlert({ variant, value }) {
   useEffect(() => {
-    if (value.showAlert.state) {
+    if (value.showAlert.state === true) {
       setTimeout(() => {
         value.setShowAlert({ state: false, text: "" });
       }, 3000);

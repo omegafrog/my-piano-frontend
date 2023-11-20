@@ -1,30 +1,25 @@
 import { Button } from "react-bootstrap";
-import Navigator from "../components/Navigator";
-import axios from "axios";
-import elasticsearch from "elasticsearch";
+import Layout from "../components/Layout";
+import { useContext } from "react";
+import useAlert from "../hook/useAlert";
+import { UserContext } from "../components/User-context";
+import revalidate from "../util/revalidate";
 
 function Main() {
-  let client = new elasticsearch.Client({
-    host: "localhost:9200",
-    log: "trace",
-  });
+  const alertValue = useAlert();
+  const context = useContext(UserContext);
   return (
-    <div className="Main">
-      <Navigator />
+    <Layout alertValue={alertValue}>
       <Button
-        onClick={(e) => {
-          client
-            .search({
-              q: "인생의 회전목마",
-            })
-            .then((response) => {
-              console.log("response:", response);
-            });
+        onClick={() => {
+          const { accessToken, error } = revalidate(context);
+          console.log("accessToken:", accessToken);
+          console.log("error:", error);
         }}
       >
-        하이
+        revalidate test
       </Button>
-    </div>
+    </Layout>
   );
 }
 export default Main;

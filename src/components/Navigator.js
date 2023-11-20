@@ -63,7 +63,7 @@ function Navigator() {
           <Navbar.Brand href="b">
             <NavigationBtn img={"/img/notification.png"} />
           </Navbar.Brand>
-          <Navbar.Brand href="c">
+          <Navbar.Brand href="/cart">
             <NavigationBtn img={"/img/shopping-cart.png"} />
           </Navbar.Brand>
           {context.loggedIn ? (

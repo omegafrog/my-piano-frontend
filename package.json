@@ -11,12 +11,11 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.0",
     "bootstrap": "^5.3.2",
-    "elasticsearch": "^16.7.3",
-    "http-proxy-middleware": "^2.0.6",
     "https": "^1.0.0",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
+    "mdb-react-ui-kit": "^6.3.0",
     "node-sass": "^9.0.0",
     "npm": "^10.1.0",
     "popper": "^1.0.1",
@@ -30,13 +29,13 @@
     "react-router": "^6.15.0",
     "react-router-dom": "^6.15.0",
     "react-router-hash-link": "^2.4.3",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.1",
     "sass": "^1.68.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start2": "cross-env HTTPS=true SSL_CRT_FILE=./.cert/http_ca.crt react-scripts start",
-    "start": "react-scripts start",
+    "start2": "cross-env  SSL_CRT_FILE=./.cert/http_ca.crt react-scripts start",
+    "start": " react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -60,6 +59,7 @@
     ]
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.27",
     "cross-env": "^7.0.3"
   }
 }

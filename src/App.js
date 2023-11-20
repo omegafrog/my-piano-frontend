@@ -17,6 +17,7 @@ import Lessons from "./components/lesson/Lessons";
 import UploadLesson from "./components/lesson/UploadLesson";
 import LessonInfo from "./components/lesson/LessonInfo";
 import PurchasedSheets from "./components/user/PurchasedSheets";
+import CartInfo from "./components/cart/CartInfo";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/lesson" element={<Lessons />} />
             <Route path="/lesson/upload" element={<UploadLesson />} />
             <Route path="/lesson/:id" element={<LessonInfo />} />
+            <Route path="/cart" element={<CartInfo />} />
             <Route
               path="/user/register/success"
               element={<RegisterSuccessPage />}

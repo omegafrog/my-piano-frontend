@@ -36,7 +36,7 @@ export async function UploadSheetInfo(context, value, setShowAlert, navigate) {
       if (response.data.status !== 200) {
         setShowAlert({ state: true, text: response.data.message });
       } else {
-        navigate("/sheet");
+        window.location.href = "/sheet";
       }
     })
     .catch(function (error) {
@@ -101,8 +101,8 @@ export async function Logout(context) {
   console.log("response:", response);
   const { error, accessToken } = response;
   if (error !== null) {
-    alert("로그인이 만료되었습니다. 다시 로그인하세요.");
     context.initialize();
+    alert("로그인이 만료되었습니다. 다시 로그인하세요.");
   } else {
     axios
       .get("http://localhost:8080/user/logout", {
@@ -113,9 +113,7 @@ export async function Logout(context) {
       .then((response) => {
         console.log("response:", response);
         if (response.data.status === 200) {
-          console.log(context);
           context.initialize();
-          console.log("initialized");
         } else {
           alert("error");
         }

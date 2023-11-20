@@ -1,4 +1,4 @@
-import { Navigate, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import Carousel from "react-bootstrap/Carousel";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -14,6 +14,8 @@ import LikeBtn from "../LikeBtn";
 import ScrapBtn from "../ScrapBtn";
 import Metadata from "./Metadata";
 import PaymentModal from "../PaymentModal";
+import Comment from "../comment/Comment";
+import CartBtn from "../CartBtn";
 
 function SheetContent({ item }) {
   console.log(item);
@@ -33,108 +35,6 @@ function SheetContent({ item }) {
         </Carousel.Item>
       ))}
     </Carousel>
-  );
-}
-
-function Comment({ item }) {
-  const [comment, setComment] = useState("");
-  const [commentList, setCommentList] = useState(item.comments);
-  const context = useContext(UserContext);
-  const removeComment = async (event) => {
-    const commentDiv = event.target.parentElement;
-
-    const { accessToken, error } = revalidate(context);
-
-    const response = await axios.delete(
-      `http://localhost:8080/sheet/${item.id}/comment/${commentDiv.id}`,
-      {
-        headers: {
-          Authorization: accessToken,
-        },
-      }
-    );
-    console.log(response);
-
-    const removedCommentList = commentList.filter((comment) => {
-      return comment.id !== parseInt(commentDiv.id);
-    });
-    setCommentList(removedCommentList);
-  };
-  const sendComment = async (event) => {
-    console.log(context);
-    const { accessToken, error } = revalidate(context);
-    const response = await axios.post(
-      `http://localhost:8080/sheet/${item.id}/comment`,
-      { content: comment },
-      {
-        headers: {
-          Authorization: accessToken,
-        },
-      }
-    );
-    console.log(response);
-    if (response.data.status === 200) {
-      setCommentList(response.data.serializedData.comments);
-    }
-  };
-
-  return (
-    <div className="comment form">
-      <h2>댓글 {commentList.length}건</h2>
-      <hr />
-      <div className="input d-flex">
-        <Col className="m-1">
-          <Form.Control
-            as={"textarea"}
-            rows={2}
-            placeholder="댓글을 작성하세요"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            style={{ resize: "none" }}
-          />
-        </Col>
-        <Col xs={"auto"} className="m-1">
-          <Button className="h-100" onClick={sendComment}>
-            댓글 쓰기
-          </Button>
-        </Col>
-      </div>
-      <div className="comments">
-        {commentList.map((comment, idx) => (
-          <div className="comment m-3" key={comment.id} id={comment.id}>
-            <div className="sheet-info" id="author">
-              <Row>
-                <Col xs={"auto"} style={{ paddingRight: "0px" }}>
-                  <Image
-                    className="sm"
-                    src={item.artist.profileSrc}
-                    roundedCircle
-                    style={{ width: "30px", height: "auto" }}
-                  />
-                </Col>
-                <Col style={{ paddingLeft: "3px" }}>
-                  <span className="user-name" style={{ fontSize: "20px" }}>
-                    {item.artist.name}
-                  </span>
-                </Col>
-              </Row>
-            </div>
-            <div className="sheet-info content">{comment.content}</div>
-            <Button size="sm" className="m-1">
-              답글
-            </Button>
-            <Button
-              size="sm"
-              className="m-1"
-              variant="danger"
-              onClick={removeComment}
-            >
-              삭제
-            </Button>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -234,6 +134,7 @@ function SheetInfo() {
             </Col>
             <Col xs={3} className="h-100">
               <PaymentModal item={sheetPost} target={"sheet"} />
+              <CartBtn item={sheetPost} alertValue={alertValue} />
               <Metadata item={sheetPost} />
             </Col>
           </Row>

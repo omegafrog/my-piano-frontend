@@ -9,7 +9,7 @@ import Layout from "../Layout";
 
 import revalidate from "../../util/revalidate";
 import useAlert from "../../hook/useAlert";
-import { Button, Col, Form, Image, Row } from "react-bootstrap";
+import { Col, Image, Row } from "react-bootstrap";
 import LikeBtn from "../LikeBtn";
 import ScrapBtn from "../ScrapBtn";
 import Metadata from "./Metadata";
@@ -152,7 +152,7 @@ function SheetInfo() {
           </Row>
           <Row>
             <div className="sheet-info comment">
-              <Comment item={sheetPost} />
+              <Comment item={sheetPost} target={"sheet"} />
             </div>
           </Row>
         </div>

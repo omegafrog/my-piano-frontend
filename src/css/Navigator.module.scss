@@ -1,14 +1,27 @@
-.NavBtn{
-    height: 10vh;
-    
+.NavBtn {
+  height: 10vh;
 }
-.list-group{
-    padding-right:0px;
-    overflow:scroll;
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: none; // IE에서 스크롤바 감춤
-  &::-webkit-scrollbar { 
+.list-group {
+  padding-right: 0px;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none; // IE에서 스크롤바 감춤
+  &::-webkit-scrollbar {
     display: none !important; // 윈도우 크롬 등
   }
-    max-height: 40vh;
+  max-height: 40vh;
+}
+
+.cash-select.btn {
+  border: 1px solid #e74c3c;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.active {
+  border: 1px solid #e74c3c;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
 }

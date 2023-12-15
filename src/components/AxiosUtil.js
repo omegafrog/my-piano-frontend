@@ -1,6 +1,10 @@
 import axios from "axios";
 import revalidate from "../util/revalidate";
 
+const instance = axios.create({
+  baseURL: "http://localhost:8080",
+});
+
 export async function UploadFile(context, fileFormData) {
   const { accessToken } = await revalidate(context);
   return await axios({
@@ -122,4 +126,48 @@ export async function Logout(context) {
         if (error.request || error.response) console.log("error:", error);
       });
   }
+}
+
+export async function createCashOrder(context, orderId, amount) {
+  const response = revalidate(context) || {};
+  const { accessToken, error } = response;
+
+  const result = await instance.get(
+    `/cash/create?orderId=${orderId}&amount=${amount}`,
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+      withCredentials: true,
+      validateStatus: false,
+    }
+  );
+  if (result && result.data.status !== 200) {
+    return Error("결제 정보 저장 실패.");
+  }
+}
+
+export async function requestPayment(context, paymentKey, orderId, amount) {
+  const response = revalidate(context) || {};
+  const { accessToken, error } = response;
+
+  const result = await instance.post(
+    "/cash/request",
+    {
+      paymentKey: paymentKey,
+      orderId: orderId,
+      amount: amount,
+    },
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+      withCredentials: true,
+      validateStatus: false,
+    }
+  );
+
+  if (!result || result.data.status !== 200) {
+    return Error("결제 승인 실패.");
+  } else return result;
 }

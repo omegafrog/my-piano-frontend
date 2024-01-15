@@ -20,7 +20,7 @@ export default function revalidate(context) {
         if (response.data.status === 200) {
           const newToken = response.data.serializedData["access token"];
           context.setAccessToken(newToken);
-          localStorage.setItem("userState", JSON.stringify(context));
+          sessionStorage.setItem("userState", JSON.stringify(context));
         } else {
           return {
             accessToken: null,

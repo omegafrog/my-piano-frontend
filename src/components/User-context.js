@@ -63,13 +63,13 @@ export const UserProvider = ({ children }) => {
   };
 
   const [state, setState] = useState(
-    localStorage.getItem("userState") &&
-      JSON.parse(localStorage.getItem("userState")).loggedIn === true &&
+    sessionStorage.getItem("userState") &&
+      JSON.parse(sessionStorage.getItem("userState")).loggedIn === true &&
       Date.now() / 1000 <
-        decodeToken(JSON.parse(localStorage.getItem("userState")).accessToken)
+        decodeToken(JSON.parse(sessionStorage.getItem("userState")).accessToken)
           .exp
       ? {
-          ...JSON.parse(localStorage.getItem("userState")),
+          ...JSON.parse(sessionStorage.getItem("userState")),
           setLoggedIn,
           setLoggedUser,
           setAccessToken,
@@ -78,11 +78,11 @@ export const UserProvider = ({ children }) => {
         }
       : initialState
   );
-  // state가 변경되면 localStorage에 자동으로 저장됨
+  // state가 변경되면 sessionStorage에 자동으로 저장됨
   useEffect(() => {
     console.log("state change", state);
-    if (state !== localStorage.getItem("userState")) {
-      localStorage.setItem("userState", JSON.stringify(state));
+    if (state !== sessionStorage.getItem("userState")) {
+      sessionStorage.setItem("userState", JSON.stringify(state));
     }
   }, [state]);
   const value = useMemo(() => state, [state]);

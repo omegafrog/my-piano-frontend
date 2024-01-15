@@ -37,7 +37,7 @@ function SheetContent({ item }) {
     </Carousel>
   );
 }
-
+// TODO : 자신의 sheet일 경우 cart에 넣지 못하도록 비활성화
 function SheetInfo() {
   const { id } = useParams();
   const context = useContext(UserContext);

@@ -6,7 +6,7 @@ export function ItemListUserInfo({ profileSrc, name }) {
       <Col xs={"auto"} style={{ paddingRight: "0px" }}>
         <Image
           className="sm"
-          src={profileSrc}
+          src={profileSrc !== "" ? profileSrc : "/img/defaultUserImg.png"}
           roundedCircle
           style={{ width: "30px", height: "auto" }}
         />

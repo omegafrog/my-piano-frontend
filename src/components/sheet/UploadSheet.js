@@ -47,7 +47,7 @@ function UploadSheet() {
   );
 
   useEffect(() => {
-    const localContext = JSON.parse(localStorage.getItem("userState"));
+    const localContext = JSON.parse(sessionStorage.getItem("userState"));
     if (!localContext || localContext.loggedIn === false) {
       alert("로그인하고 이용해주세요.");
       navigate("/main");

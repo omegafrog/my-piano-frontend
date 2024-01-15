@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router";
-import Main from "./router/Main";
+import Main from "./components/main/Main";
 import Login from "./components/Login";
 import Register from "./components/user/Register";
 import { UserProvider } from "./components/User-context";
@@ -18,6 +18,11 @@ import UploadLesson from "./components/lesson/UploadLesson";
 import LessonInfo from "./components/lesson/LessonInfo";
 import PurchasedSheets from "./components/user/PurchasedSheets";
 import CartInfo from "./components/cart/CartInfo";
+import CheckoutPage from "./components/payment/CheckoutPage";
+import PaymentSuccessPage from "./components/payment/PaymentSuccessPage";
+import ConfirmPayment from "./components/payment/ConfirmPayment";
+import { PayCartSuccess } from "./components/cart/PayCartSuccess";
+import React from "react";
 
 function App() {
   return (
@@ -37,10 +42,14 @@ function App() {
             <Route path="/lesson/upload" element={<UploadLesson />} />
             <Route path="/lesson/:id" element={<LessonInfo />} />
             <Route path="/cart" element={<CartInfo />} />
+            <Route path="/cart/success" element={<PayCartSuccess />} />
             <Route
               path="/user/register/success"
               element={<RegisterSuccessPage />}
             />
+            <Route path="/cash/success" element={<PaymentSuccessPage />} />
+            <Route path="/cash/confirm" element={<ConfirmPayment />} />
+            <Route path="/cash/checkout" element={<CheckoutPage />} />
             <Route path="/search" element={<SearchResult />} />
             <Route path="/sheet/scrapped" element={<ScrappedSheetList />} />
             <Route path="*" element={<NotFound />} />

@@ -34,7 +34,7 @@ function Login({ show, handleClose }) {
   const navigate = useNavigate();
   useEffect(() => {
     if (context.accessToken !== "") {
-      localStorage.setItem("userState", JSON.stringify(context));
+      sessionStorage.setItem("userState", JSON.stringify(context));
       navigate("/main");
     }
   }, [context.accessToken]);
@@ -81,6 +81,10 @@ function Login({ show, handleClose }) {
               context.syncUserInfo(
                 response.data.serializedData["access token"]
               );
+            } else if (response.data.status === 403) {
+              console.log("로그인 실패");
+              alert(response.data.message);
+              handleClose();
             }
           }}
           onError={() => {

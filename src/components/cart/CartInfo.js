@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../User-context";
 import axios from "axios";
 import $ from "jquery";
+import revalidate from "../../util/revalidate";
 
 export default function CartInfo() {
   const alertValue = useAlert();
@@ -210,6 +211,33 @@ export default function CartInfo() {
                   </span>
                 </div>
               </div>
+              <Button
+                className="w-100 my-2"
+                onClick={() => {
+                  const response = revalidate(context) || {};
+                  const { accessToken, error } = response;
+                  var requestURI = `cart?`;
+                  selectedOrderList.forEach((order) => {
+                    requestURI += `orderId=${order.id}&`;
+                  });
+
+                  console.log(requestURI.slice(0, requestURI.length - 2));
+                  axios
+                    .patch(`http://localhost:8080/${requestURI}`, null, {
+                      headers: {
+                        Authorization: accessToken,
+                      },
+                      validateStatus: false,
+                    })
+                    .then((response) => {
+                      if (response && response.data.status === 200) {
+                        window.location.href = `/cart/success?payCnt=${response.data.serializedData.payCnt}`;
+                      }
+                    });
+                }}
+              >
+                결제하기
+              </Button>
             </div>
           </Col>
         </Row>

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { UserContext } from "./User-context";
+import $ from "jquery";
 import axios from "axios";
 
 export default function PaymentModal({ item, target }) {
@@ -42,6 +43,9 @@ export default function PaymentModal({ item, target }) {
           if (response.data.serializedData.isOrdered === true) {
             payBtn.innerHTML = "이미 구매하신 상품입니다.";
             payBtn.disabled = true;
+            $("#cart-btn").html("이미 카트에 추가된 상품입니다.");
+            $("#cart-btn").css("font-size", "16px");
+            $("#cart-btn").addClass("disabled");
           }
         }
       });

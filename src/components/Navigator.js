@@ -97,7 +97,7 @@ function Navigator() {
       <Navbar
         sticky="top"
         expand="lg"
-        className="bg-body-tertiary border-bottom border-5"
+        className="bg-body-tertiary "
         bg="light"
         data-bs-theme="light"
         style={{ height: "70px" }}
@@ -150,7 +150,7 @@ function Navigator() {
                     <UserInfo />
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    <Dropdown.Item href="aa">유저 정보</Dropdown.Item>
+                    <Dropdown.Item href="/user">유저 정보</Dropdown.Item>
                     <Dropdown.Item
                       onClick={() => {
                         Logout(context);

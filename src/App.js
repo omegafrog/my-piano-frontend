@@ -2,12 +2,13 @@ import { Navigate, Route, Routes } from "react-router";
 import Main from "./components/main/Main";
 import Login from "./components/Login";
 import Register from "./components/user/Register";
-import { UserProvider } from "./components/User-context";
+import { UserContext, UserProvider } from "./components/User-context";
 import Sheets from "./components/sheet/Sheets";
 import UploadSheet from "./components/sheet/UploadSheet";
 import SheetInfo from "./components/sheet/SheetInfo";
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+
 import "./css/App.css";
 import RegisterSuccessPage from "./components/user/RegisterSuccessPage";
 import ScrappedSheetList from "./components/user/ScrappedSheetList";
@@ -23,8 +24,17 @@ import PaymentSuccessPage from "./components/payment/PaymentSuccessPage";
 import ConfirmPayment from "./components/payment/ConfirmPayment";
 import { PayCartSuccess } from "./components/cart/PayCartSuccess";
 import React from "react";
+import UserDetailPage from "./components/user/UserDetailPage";
+import AuthRouter from "./AuthRouter";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "./firebase";
 
 function App() {
+  onMessage(messaging, (payload) => {
+    console.log("hihihihi");
+    console.log("payload:", payload);
+  });
+
   return (
     <GoogleOAuthProvider clientId="25240194686-nd0b27v2dcvv9e458hhssip100630t74.apps.googleusercontent.com">
       <UserProvider>
@@ -35,7 +45,14 @@ function App() {
             <Route path="/user/login" element={<Login />} />
             <Route path="/user/register" element={<Register />} />
             <Route path="/sheet" element={<Sheets />} />
-            <Route path="/sheet/upload" element={<UploadSheet />} />
+            <Route
+              path="/sheet/upload"
+              element={
+                <AuthRouter>
+                  <UploadSheet />
+                </AuthRouter>
+              }
+            />
             <Route path="/sheet/:id" element={<SheetInfo />} />
             <Route path="/sheet/purchased" element={<PurchasedSheets />} />
             <Route path="/lesson" element={<Lessons />} />
@@ -46,6 +63,14 @@ function App() {
             <Route
               path="/user/register/success"
               element={<RegisterSuccessPage />}
+            />
+            <Route
+              path="/user"
+              element={
+                <AuthRouter>
+                  <UserDetailPage />
+                </AuthRouter>
+              }
             />
             <Route path="/cash/success" element={<PaymentSuccessPage />} />
             <Route path="/cash/confirm" element={<ConfirmPayment />} />

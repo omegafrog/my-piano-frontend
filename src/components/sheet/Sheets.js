@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from "react-router";
 import { difficultyDict, difficultyIdDict } from "./DifficultySelection";
 import { UserContext } from "../User-context";
 import SheetList from "./SheetList";
+import LeftNavigator from "../LeftNavigator";
 
 function Sheets() {
   const [sheetPosts, setSheetPosts] = useState();
@@ -44,7 +45,7 @@ function Sheets() {
   }, [filter]);
 
   return (
-    <Layout alertValue={alertValue} leftNav={true}>
+    <Layout alertValue={alertValue} leftNav={<LeftNavigator />}>
       {sheetPosts === undefined ? (
         <h1>Loading...</h1>
       ) : (

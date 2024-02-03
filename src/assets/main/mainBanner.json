@@ -1,0 +1,42 @@
+[
+  {
+    "href": "/sheet/1",
+    "thumbnailSrc": "/img/main/thumbnail1.webp",
+    "imgSrc": "/img/main/logo1.webp",
+    "title": "유료 악보 판매 신청 안내",
+    "body": "피아노 악보 국내 최대 플랫폼",
+    "backgroundColor": "rgb(236,220,213)"
+  },
+  {
+    "href": "/sheet/2",
+    "thumbnailSrc": "/img/main/thumbnail2.webp",
+    "imgSrc": "/img/main/logo2.webp",
+    "title": "마음만은 피아니스트 초보자 가이드",
+    "body": "피아노 악보 국내 최대 플랫폼",
+    "backgroundColor": "rgb(223,215,195)"
+  },
+  {
+    "href": "/sheet/3",
+    "thumbnailSrc": "/img/main/thumbnail3.webp",
+    "imgSrc": "/img/main/logo3.webp",
+    "title": "2023년 TOP 20",
+    "body": "피아노 악보 국내 최대 플랫폼",
+    "backgroundColor": "rgb(255,227,177)"
+  },
+  {
+    "href": "/sheet/4",
+    "thumbnailSrc": "/img/main/thumbnail4.webp",
+    "imgSrc": "/img/main/logo4.webp",
+    "title": "계이름과 함께하는 클래식 악보",
+    "body": "피아노 악보 국내 최대 플랫폼",
+    "backgroundColor": "rgb(232,241,232)"
+  },
+  {
+    "href": "/sheet/5",
+    "thumbnailSrc": "/img/main/thumbnail5.webp",
+    "imgSrc": "/img/main/logo5.webp",
+    "title": "지브리를 벗어난 히사이시 조 명곡",
+    "body": "피아노 악보 국내 최대 플랫폼",
+    "backgroundColor": "rgb(239,234,215)"
+  }
+]

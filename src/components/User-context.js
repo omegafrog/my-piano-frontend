@@ -23,6 +23,13 @@ export const UserProvider = ({ children }) => {
         }
       });
   };
+
+  const setPushNotification = (boolean) => {
+    setState((prevState) => ({
+      ...prevState,
+      pushNotification: boolean,
+    }));
+  };
   const setLoggedUser = (data) => {
     setState((prevState) => ({
       ...prevState,
@@ -55,10 +62,12 @@ export const UserProvider = ({ children }) => {
     loggedUser: {},
     loggedIn: false,
     accessToken: "",
+    pushNotification: false,
     setLoggedUser,
     setLoggedIn,
     setAccessToken,
     initialize,
+    setPushNotification,
     syncUserInfo,
   };
 
@@ -74,6 +83,7 @@ export const UserProvider = ({ children }) => {
           setLoggedUser,
           setAccessToken,
           initialize,
+          setPushNotification,
           syncUserInfo,
         }
       : initialState

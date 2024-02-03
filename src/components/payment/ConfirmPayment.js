@@ -12,6 +12,7 @@ export default function ConfirmPayment() {
   const orderId = params.get("orderId");
   const amount = Number(params.get("amount"));
   const paymentType = params.get("paymentType");
+
   // TODO : parameter 검증
 
   useEffect(() => {

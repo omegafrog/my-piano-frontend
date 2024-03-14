@@ -19,7 +19,7 @@ export default function NavSearchBar({
     if (searchTerm.length >= 2) {
       axios
         .post(
-          "https://localhost:9200/sheets/_search",
+          `https://${process.env.REACT_APP_ELASTIC_HOSTNAME}:${process.env.REACT_APP_ELASTIC_PORT}/sheetpost/_search`,
           {
             query: {
               bool: {
@@ -53,9 +53,10 @@ export default function NavSearchBar({
           },
           {
             headers: {
-              Authorization:
-                "ApiKey MVFLWjI0c0JLWGtCSW5Eb1ZaR2Q6b1BQUVVfaDFUU2lXTmVQOTBVUHhnZw==",
+              Authorization: `ApiKey ${process.env.REACT_APP_ELASTIC_APIKEY}`,
             },
+            withCredentials: false,
+            validateStatus: false,
           }
         )
         .then((response) => {

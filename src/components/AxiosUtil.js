@@ -92,7 +92,7 @@ export function GetSheetPosts({
     })
     .then((response) => {
       console.log(response);
-      setSheetPosts(response.data.serializedData.sheetPosts);
+      setSheetPosts(response.data.data.sheetPosts);
     })
     .catch(function (error) {
       console.log("error:", error);
@@ -128,12 +128,12 @@ export async function Logout(context) {
   }
 }
 
-export async function createCashOrder(context, orderId, amount) {
+export async function createCashOrder(context, orderId, amount, name) {
   const response = revalidate(context) || {};
   const { accessToken, error } = response;
 
   const result = await instance.get(
-    `/cash/create?orderId=${orderId}&amount=${amount}`,
+    `/cash/info?orderId=${orderId}&amount=${amount}&name=${name}`,
     {
       headers: {
         Authorization: accessToken,
@@ -170,4 +170,32 @@ export async function requestPayment(context, paymentKey, orderId, amount) {
   if (!result || result.data.status !== 200) {
     return Error("결제 승인 실패.");
   } else return result;
+}
+
+export async function getPosts(pageable) {
+  console.log("pagebale", pageable);
+  const result = await instance.get(
+    `/community/posts?page=${pageable.page}&size=${pageable.size}`,
+    {
+      withCredentials: true,
+      validateStatus: false,
+    }
+  );
+  if (result.status === 200 && result.data.status) {
+    return result.data;
+  }
+}
+
+export async function writePost(context, body) {
+  const response = revalidate(context) || {};
+  const { accessToken, error } = response;
+
+  const result = await instance.post("/community/posts", body, {
+    headers: {
+      Authorization: accessToken,
+    },
+    withCredentials: true,
+    validateStatus: false,
+  });
+  return result;
 }

@@ -24,62 +24,82 @@ import PaymentSuccessPage from "./components/payment/PaymentSuccessPage";
 import ConfirmPayment from "./components/payment/ConfirmPayment";
 import { PayCartSuccess } from "./components/cart/PayCartSuccess";
 import React from "react";
-import UserDetailPage from "./components/user/UserDetailPage";
+import ChangeUserDetailPage from "./components/user/ChangeUserDetailPage";
 import AuthRouter from "./AuthRouter";
-import { onMessage } from "firebase/messaging";
-import { messaging } from "./firebase";
+import { AlertProvider } from "./context/AlertContext";
+import CashPaymentListPage from "./components/user/CashPaymentList";
+import { Posts } from "./components/post/Posts";
+import WritePost from "./components/post/WritePost";
+import PostInfo from "./components/post/PostInfo";
 
 function App() {
-  onMessage(messaging, (payload) => {
-    console.log("hihihihi");
-    console.log("payload:", payload);
-  });
-
   return (
     <GoogleOAuthProvider clientId="25240194686-nd0b27v2dcvv9e458hhssip100630t74.apps.googleusercontent.com">
       <UserProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Navigate to={"/main"} />} />
-            <Route path="/main" element={<Main />} />
-            <Route path="/user/login" element={<Login />} />
-            <Route path="/user/register" element={<Register />} />
-            <Route path="/sheet" element={<Sheets />} />
-            <Route
-              path="/sheet/upload"
-              element={
-                <AuthRouter>
-                  <UploadSheet />
-                </AuthRouter>
-              }
-            />
-            <Route path="/sheet/:id" element={<SheetInfo />} />
-            <Route path="/sheet/purchased" element={<PurchasedSheets />} />
-            <Route path="/lesson" element={<Lessons />} />
-            <Route path="/lesson/upload" element={<UploadLesson />} />
-            <Route path="/lesson/:id" element={<LessonInfo />} />
-            <Route path="/cart" element={<CartInfo />} />
-            <Route path="/cart/success" element={<PayCartSuccess />} />
-            <Route
-              path="/user/register/success"
-              element={<RegisterSuccessPage />}
-            />
-            <Route
-              path="/user"
-              element={
-                <AuthRouter>
-                  <UserDetailPage />
-                </AuthRouter>
-              }
-            />
-            <Route path="/cash/success" element={<PaymentSuccessPage />} />
-            <Route path="/cash/confirm" element={<ConfirmPayment />} />
-            <Route path="/cash/checkout" element={<CheckoutPage />} />
-            <Route path="/search" element={<SearchResult />} />
-            <Route path="/sheet/scrapped" element={<ScrappedSheetList />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AlertProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Navigate to={"/main"} />} />
+              <Route path="/main" element={<Main />} />
+              <Route path="/user/login" element={<Login />} />
+              <Route path="/user/register" element={<Register />} />
+              <Route path="/sheet" element={<Sheets />} />
+              <Route
+                path="/sheet/upload"
+                element={
+                  <AuthRouter>
+                    <UploadSheet />
+                  </AuthRouter>
+                }
+              />
+              <Route path="/sheet/:id" element={<SheetInfo />} />
+              <Route path="/sheet/purchased" element={<PurchasedSheets />} />
+              <Route path="/lesson" element={<Lessons />} />
+              <Route path="/lesson/upload" element={<UploadLesson />} />
+              <Route path="/lesson/:id" element={<LessonInfo />} />
+              <Route path="/post" element={<Posts />} />
+              <Route path="/post/:id" element={<PostInfo />} />
+              <Route path="/post/write" element={<WritePost />} />
+
+              <Route path="/cart" element={<CartInfo />} />
+              <Route path="/cart/success" element={<PayCartSuccess />} />
+              <Route
+                path="/user/register/success"
+                element={<RegisterSuccessPage />}
+              />
+              <Route
+                path="/user"
+                element={
+                  <AuthRouter>
+                    <ChangeUserDetailPage />
+                  </AuthRouter>
+                }
+              ></Route>
+              <Route
+                path="/user/purchased"
+                element={
+                  <AuthRouter>
+                    <ChangeUserDetailPage />
+                  </AuthRouter>
+                }
+              />
+              <Route
+                path="/user/cash"
+                element={
+                  <AuthRouter>
+                    <CashPaymentListPage />
+                  </AuthRouter>
+                }
+              />
+              <Route path="/cash/success" element={<PaymentSuccessPage />} />
+              <Route path="/cash/confirm" element={<ConfirmPayment />} />
+              <Route path="/cash/checkout" element={<CheckoutPage />} />
+              <Route path="/search" element={<SearchResult />} />
+              <Route path="/sheet/scrapped" element={<ScrappedSheetList />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AlertProvider>
       </UserProvider>
     </GoogleOAuthProvider>
   );

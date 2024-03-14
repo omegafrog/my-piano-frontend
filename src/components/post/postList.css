@@ -1,0 +1,28 @@
+.table tbody .title {
+  width: 800px;
+  overflow: hidden;
+  padding-left: 20px;
+}
+
+.table tbody .author-name {
+  width: 200px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.table tbody .view-count {
+  width: 100px;
+  text-align: center;
+}
+.table tbody .created-at {
+  text-align: center;
+}
+
+.table thead {
+  text-align: center;
+}
+
+.table tbody tr:hover td {
+  background-color: #ced6e0;
+  cursor: pointer;
+}

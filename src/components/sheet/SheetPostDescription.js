@@ -1,6 +1,8 @@
 import Editor from "./editor";
 import { Col, Form, InputGroup } from "react-bootstrap";
 
+import "./Editor.css";
+
 function SheetPostDescription({ setSheetInfo, sheetInfo, className }) {
   const changeSheetTitle = (event) => {
     event.preventDefault();

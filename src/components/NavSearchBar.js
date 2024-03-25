@@ -69,25 +69,23 @@ export default function NavSearchBar({
     }
   };
   return (
-    <Row>
-      <Form.Control
-        type="text"
-        placeholder="Search"
-        onChange={changeSearchResult}
-        onKeyUp={(e) => {
-          if (e.key === "Enter") {
-            navigate(`/search?q=${e.target.value}`);
-          }
-        }}
-        onFocus={() => {
-          setFocus(true);
-          console.log(focus);
-        }}
-        onBlur={() => {
-          setTimeout(() => setFocus(false), 500);
-        }}
-        value={searchTerm}
-      />
-    </Row>
+    <Form.Control
+      type="text"
+      placeholder="Search"
+      onChange={changeSearchResult}
+      onKeyUp={(e) => {
+        if (e.key === "Enter") {
+          navigate(`/search?q=${e.target.value}`);
+        }
+      }}
+      onFocus={() => {
+        setFocus(true);
+        console.log(focus);
+      }}
+      onBlur={() => {
+        setTimeout(() => setFocus(false), 500);
+      }}
+      value={searchTerm}
+    />
   );
 }

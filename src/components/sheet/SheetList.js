@@ -8,36 +8,21 @@ export default function SheetList({ sheetPosts, noContentMessage, navigate }) {
     return (
       <Table className="w-100">
         <thead>
-          <th>
-            <span>곡 정보</span>
-          </th>
-          <th>
-            <span>아티스트</span>
-          </th>
-          <th>
-            <span>악기</span>
-          </th>
-          <th>
-            <span>난이도</span>
-          </th>
-          <th>
-            <span>조회수</span>
-          </th>
-          <th>
-            <span>가격</span>
-          </th>
+          <th>곡 정보</th>
+          <th>아티스트</th>
+          <th>악기</th>
+          <th>난이도</th>
+          <th>조회수</th>
+          <th>가격</th>
         </thead>
         <tbody>
           {sheetPosts.map((item) => (
-            <tr>
-              <td
-                onClick={(e) => {
-                  navigate(`/sheet/${item.id}`);
-                }}
-                style={{
-                  cursor: "pointer",
-                }}
-              >
+            <tr
+              onClick={() => {
+                navigate(`/sheet/${item.id}`);
+              }}
+            >
+              <td>
                 <span>{item.title}</span>
               </td>
               <td>
@@ -48,10 +33,18 @@ export default function SheetList({ sheetPosts, noContentMessage, navigate }) {
                   />
                 </div>
               </td>
-              <td>{instrumentDict[item.sheet.instrument]}</td>
-              <td>{difficultyDict[item.sheet.difficulty]}</td>
-              <td>{item.viewCount}회</td>
-              <td>{item.price}원</td>
+              <td>
+                <span>{instrumentDict[item.sheet.instrument]}</span>
+              </td>
+              <td>
+                <span>{difficultyDict[item.sheet.difficulty]}</span>
+              </td>
+              <td>
+                <span>{item.viewCount}회</span>
+              </td>
+              <td>
+                <span>{item.price}원</span>
+              </td>
             </tr>
           ))}
         </tbody>

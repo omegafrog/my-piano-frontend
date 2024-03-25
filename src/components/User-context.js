@@ -16,7 +16,7 @@ export const UserProvider = ({ children }) => {
         if (response.data.status === 200) {
           setState((prev) => ({
             ...prev,
-            loggedUser: response.data.serializedData.user,
+            loggedUser: response.data.data.user,
             loggedIn: true,
             accessToken: accessToken,
           }));
@@ -73,10 +73,7 @@ export const UserProvider = ({ children }) => {
 
   const [state, setState] = useState(
     sessionStorage.getItem("userState") &&
-      JSON.parse(sessionStorage.getItem("userState")).loggedIn === true &&
-      Date.now() / 1000 <
-        decodeToken(JSON.parse(sessionStorage.getItem("userState")).accessToken)
-          .exp
+      JSON.parse(sessionStorage.getItem("userState")).loggedIn === true
       ? {
           ...JSON.parse(sessionStorage.getItem("userState")),
           setLoggedIn,

@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import CustomAlert from "./CustomAlert";
+import CustomAlert from "./alert/CustomAlert";
 import LeftNavigator from "./LeftNavigator";
 import { getApp, initializeApp } from "firebase/app";
 import { getToken } from "firebase/messaging";
@@ -92,7 +92,7 @@ export default function Layout({ alertValue, children, leftNav }) {
     <div className="w-100">
       <Navigator />
       <div className="d-flex h-100">
-        <CustomAlert variant={"danger"} value={alertValue} />
+        <CustomAlert />
         {leftNav}
         {children}
       </div>

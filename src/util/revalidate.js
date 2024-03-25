@@ -18,7 +18,7 @@ export default function revalidate(context) {
       .then((response) => {
         console.log("a");
         if (response.data.status === 200) {
-          const newToken = response.data.serializedData["access token"];
+          const newToken = response.data.data["access token"];
           context.setAccessToken(newToken);
           sessionStorage.setItem("userState", JSON.stringify(context));
         } else {

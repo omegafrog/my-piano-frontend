@@ -3,13 +3,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import useAlert from "../../hook/useAlert";
 import "./main.css";
 import MainBanner from "./MainBanner";
-import MainBannerListContent from "./MainBannerList";
-import WeeklyPopularSheetsTab from "./PopulateSheetsTabs";
 import MainBannerList from "./MainBannerList";
 import axios from "axios";
 import { Col, Container, Row, Tab, Tabs } from "react-bootstrap";
 import { ItemListUserInfo } from "../user/userInfo";
-import PopularSheetsTabs from "./PopulateSheetsTabs";
+import PopularSheetsTabs from "./PopularSheetsTabs";
 
 function Main() {
   const alertValue = useAlert();
@@ -34,11 +32,6 @@ function Main() {
     console.log(mainBanners);
     setMainBannerList(mainBanners);
   };
-  const loadWeeklyPopularSheetBanner = async () => {};
-  const loadPastPopularSheetBannerList = () => {};
-  const loadPopularLessonList = () => {};
-  const loadPopularArtistList = () => {};
-  const loadPopularCommunityPostList = () => {};
 
   useEffect(() => {
     loadMainBanner();
@@ -84,7 +77,7 @@ function Main() {
           className={"d-flex my-5 flex-column align-items-center"}
           style={{ width: "1200px" }}
         >
-          <h3 className="align-self-start">인기 악보</h3>
+          <h3 className="align-self-start">주간 인기 악보</h3>
           <PopularSheetsTabs />
         </div>
       </div>

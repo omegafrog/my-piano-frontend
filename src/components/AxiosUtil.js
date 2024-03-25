@@ -1,5 +1,7 @@
 import axios from "axios";
 import revalidate from "../util/revalidate";
+import { data } from "jquery";
+import { access } from "fs";
 
 const instance = axios.create({
   baseURL: "http://localhost:8080",
@@ -92,7 +94,7 @@ export function GetSheetPosts({
     })
     .then((response) => {
       console.log(response);
-      setSheetPosts(response.data.data.sheetPosts);
+      setSheetPosts(response.data.data);
     })
     .catch(function (error) {
       console.log("error:", error);
@@ -198,4 +200,46 @@ export async function writePost(context, body) {
     validateStatus: false,
   });
   return result;
+}
+export async function getPost(context, id) {
+  const result = await instance.get(`/community/posts/${id}`, {
+    withCredentials: true,
+    validateStatus: false,
+  });
+  if (result.status === 200 && result.data.status === 200)
+    return result.data.data;
+}
+export async function updatePost(context, id, data) {
+  const response = revalidate(context) || {};
+  const { accessToken, error } = response;
+
+  const result = await instance.post(`/community/posts/${id}`, data, {
+    headers: {
+      Authorization: accessToken,
+    },
+    withCredentials: true,
+    validateStatus: false,
+  });
+
+  if (result.status === 200 && result.data.status === 200) {
+    return result.data;
+  } else {
+    return new Error(result.message);
+  }
+}
+
+export async function deletePost(context, id) {
+  const response = revalidate(context) || {};
+  const { accessToken, error } = response;
+
+  const result = await instance.delete(`/community/posts/${id}`, {
+    headers: {
+      Authorization: accessToken,
+    },
+    withCredentials: true,
+    validateStatus: false,
+  });
+  if (result.status !== 200) {
+    return new Error(result.message);
+  }
 }

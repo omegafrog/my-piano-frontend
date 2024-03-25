@@ -20,20 +20,39 @@ import CartBtn from "../CartBtn";
 function SheetContent({ item }) {
   console.log(item);
   let filePaths = item.sheet.sheetUrl.split(",");
-  const bucketName = process.env.REACT_APP_S3_BUCKET_NAME;
-  const region = process.env.REACT_APP_REGION;
-  filePaths.map((file, idx) => {
-    filePaths[idx] = `https://${bucketName}.s3.${region}.amazonaws.com/${file}`;
-  });
   filePaths.pop();
 
   return (
-    <Carousel className="d-flex align-items-center">
-      {filePaths.map((file, idx) => (
-        <Carousel.Item key={idx}>
-          <img className="d-block w-100" src={file} alt="Second slide" />
-        </Carousel.Item>
-      ))}
+    <Carousel
+      className="d-flex align-items-center"
+      style={{
+        width: "700px",
+        height: "1000px",
+      }}
+    >
+      {filePaths.map((file, idx) => {
+        const fileNameChunks = file.split(".");
+        const extensions = fileNameChunks[fileNameChunks.length - 1];
+        if (extensions === "pdf") {
+          return (
+            <Carousel.Item key={idx}>
+              <embed
+                className="d-block w-100 h-100"
+                src={file}
+                type={"application/pdf"}
+                scrolling={"none"}
+                alt="Second slide"
+              />
+            </Carousel.Item>
+          );
+        } else {
+          return (
+            <Carousel.Item key={idx}>
+              <img className="d-block w-100" src={file} alt="Second slide" />
+            </Carousel.Item>
+          );
+        }
+      })}
     </Carousel>
   );
 }
@@ -49,7 +68,7 @@ function SheetInfo() {
   useEffect(() => {
     axios.get(`http://localhost:8080/sheet/${id}`).then((response) => {
       if (response.data.status === 200) {
-        setSheetPost(response.data.serializedData.sheetPost);
+        setSheetPost(response.data.data.sheetPost);
         if (context.loggedIn === true) {
           const response = revalidate(context) || {};
           const { accessToken, error } = response;
@@ -61,7 +80,7 @@ function SheetInfo() {
                 },
               })
               .then((response) => {
-                if (response.data.serializedData.isLikedPost === true) {
+                if (response.data.data.isLikedPost === true) {
                   const likeBtn = document.querySelector("#like-count");
                   likeBtn.style.backgroundColor = "#74b9ff";
                 }
@@ -73,7 +92,7 @@ function SheetInfo() {
                 },
               })
               .then((response) => {
-                if (response.data.serializedData.isScrapped === true) {
+                if (response.data.data.isScrapped === true) {
                   const scrapBtn = document.querySelector("#scrap-btn");
                   scrapBtn.style.backgroundColor = "#74b9ff";
                   scrapBtn.innerHTML = "scrapped";

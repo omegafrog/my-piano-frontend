@@ -8,7 +8,7 @@ export function ItemListUserInfo({ profileSrc, name }) {
           className="sm"
           src={profileSrc !== "" ? profileSrc : "/img/defaultUserImg.png"}
           roundedCircle
-          style={{ width: "30px", height: "auto" }}
+          style={{ width: "30px", height: "30px" }}
         />
       </Col>
 

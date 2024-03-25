@@ -1,15 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import {
-  PaymentWidgetInstance,
-  loadPaymentWidget,
-  ANONYMOUS,
-} from "@tosspayments/payment-widget-sdk";
-import axios from "axios";
+import { loadPaymentWidget } from "@tosspayments/payment-widget-sdk";
 import { UserContext } from "../User-context";
-import { createCashOrder } from "../AxiosUtil";
-import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
-import { param } from "jquery";
 
 const clientKey = "test_ck_kYG57Eba3G6jzE0Rmam58pWDOxmA";
 const customerKey = "OECBFXtWmvdXZEnYR_pCJ";

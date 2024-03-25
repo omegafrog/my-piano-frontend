@@ -7,36 +7,42 @@ import { UserContext } from "../User-context";
 import { ItemListUserInfo } from "../user/userInfo";
 import styles from "../../css/Comment.module.scss";
 import $ from "jquery";
+import { AlertContext } from "../../context/AlertContext";
 
-export default function Comment({ item, target }) {
+export default function Comment({ target }) {
   const { id } = useParams();
   const [content, setContent] = useState("");
   const context = useContext(UserContext);
   const [commentList, setCommentList] = useState([]);
+  const alertContext = useContext(AlertContext);
 
   const writeComment = (e) => {
-    const response = revalidate(context) || {};
-    const { accessToken, error } = response;
-    axios
-      .post(
-        `http://localhost:8080/${target}/${id}/comment`,
-        {
-          content: content,
-        },
-        {
-          headers: {
-            Authorization: accessToken,
+    if (context.loggedIn === false) {
+      alertContext.alert("danger", "로그인이 필요합니다.");
+    } else {
+      const response = revalidate(context) || {};
+      const { accessToken, error } = response;
+      axios
+        .post(
+          `http://localhost:8080/${target}/${id}/comment`,
+          {
+            content: content,
           },
-          validateStatus: false,
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        if (response.data.status === 200) {
-          setCommentList(response.data.serializedData.comments);
-          $(".comment-textarea").val("");
-        }
-      });
+          {
+            headers: {
+              Authorization: accessToken,
+            },
+            validateStatus: false,
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          if (response.data.status === 200) {
+            setCommentList(response.data.data.comments);
+            $(".comment-textarea").val("");
+          }
+        });
+    }
   };
 
   const loadComments = (e) => {
@@ -52,11 +58,10 @@ export default function Comment({ item, target }) {
       })
       .then((response) => {
         if (response.data.status === 200) {
-          setCommentList(response.data.serializedData.comments);
+          setCommentList(response.data.data.comments);
         }
       });
   };
-  const RemoveCommentBtn = ({ idx }) => {};
 
   useEffect(() => {
     loadComments();
@@ -108,7 +113,7 @@ export default function Comment({ item, target }) {
                         idx={idx}
                         context={context}
                         commentListValue={{ commentList, setCommentList }}
-                        target={"sheeet"}
+                        target={"community/posts"}
                         id={id}
                       />
                     ) : null}
@@ -118,7 +123,9 @@ export default function Comment({ item, target }) {
             );
           })
         ) : (
-          <strong>댓글이 없습니다.</strong>
+          <div className={styles.emptyComment}>
+            <span>댓글이 없습니다.</span>
+          </div>
         )}
       </div>
     </div>
@@ -141,7 +148,7 @@ function RemoveCommentBtn({ idx, context, commentListValue, target, id }) {
       })
       .then((response) => {
         if (response && response.data.status === 200) {
-          setCommentList(response.data.serializedData.comments);
+          setCommentList(response.data.data.comments);
         }
       })
       .catch((error) => {
@@ -149,8 +156,8 @@ function RemoveCommentBtn({ idx, context, commentListValue, target, id }) {
       });
   };
   return (
-    <button style={{ border: "none", color: "gray" }} onClick={removeComment}>
+    <Button variant="outline-danger" onClick={removeComment}>
       삭제
-    </button>
+    </Button>
   );
 }

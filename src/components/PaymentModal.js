@@ -40,7 +40,7 @@ export default function PaymentModal({ item, target }) {
       })
       .then((response) => {
         if (response.data.status === 200) {
-          if (response.data.serializedData.isOrdered === true) {
+          if (response.data.data.isOrdered === true) {
             payBtn.innerHTML = "이미 구매하신 상품입니다.";
             payBtn.disabled = true;
             $("#cart-btn").html("이미 카트에 추가된 상품입니다.");

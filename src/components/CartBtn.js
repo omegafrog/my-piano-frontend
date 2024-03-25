@@ -20,7 +20,7 @@ export default function CartBtn({ item, alertValue }) {
       })
       .then((response) => {
         if (response.data.status === 200) {
-          if (response.data.serializedData.isInCart === true) {
+          if (response.data.data.isInCart === true) {
             $("#cart-btn").html("이미 카트에 추가된 상품입니다.");
             $("#cart-btn").css("font-size", "16px");
             $("#cart-btn").addClass("disabled");

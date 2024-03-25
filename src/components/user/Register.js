@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Container, Form, Image, Row } from "react-bootstrap";
-import CustomAlert from "../CustomAlert";
+import CustomAlert from "../alert/CustomAlert";
 
 function CheckPassword({ registerInfo, checkPassword }) {
   if (checkPassword === "") return null;
@@ -34,10 +34,8 @@ function Register() {
   const [profileSrc, setProfileSrc] = useState("/img/defaultUserImg.png");
 
   useEffect(() => {
-    console.log(state);
     if (state !== null) {
       if (state.loginMethod === "GOOGLE") {
-        console.log("his");
         setProfileSrc(state.profileSrc + `?access_token=${googleSecret}`);
       }
       state.phoneNum = "";
@@ -54,7 +52,9 @@ function Register() {
         return;
       }
       setProfileSrc(URL.createObjectURL(file));
-      const newFileName = `profile-${fileName[0]}-${crypto.randomUUID()}.${
+      const newFileName = `https://${process.env.REACT_APP_S3_BUCKET_NAME}.s3.${
+        process.env.REACT_APP_REGION
+      }.amazonaws.com/profile-${fileName[0]}-${crypto.randomUUID()}.${
         fileName[1]
       }`;
       setProfileFile(new File([file], newFileName, { type: file.type }));

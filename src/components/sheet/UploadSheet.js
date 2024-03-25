@@ -12,7 +12,7 @@ import UploadFileForm from "./UploadFileForm";
 
 import Navigator from "../Navigator";
 import { Button } from "react-bootstrap";
-import CustomAlert from "../CustomAlert";
+import CustomAlert from "../alert/CustomAlert";
 import { UploadSheetInfo, UploadFile } from "../AxiosUtil";
 import { sheetInfoValidator } from "./SheetInfoValidator";
 import { useNavigate } from "react-router";
@@ -53,19 +53,12 @@ function UploadSheet() {
 
   const submitSheetPost = async () => {
     // send sheet data
-    console.log("value:", value.sheetInfo);
     const flag = sheetInfoValidator(value.sheetInfo, value2.setShowAlert);
-    console.log("flag:", flag);
     if (flag === false) {
       return;
     }
 
-    let result = await UploadSheetInfo(
-      context,
-      value,
-      value2.setShowAlert,
-      navigate
-    );
+    await UploadSheetInfo(context, value, value2.setShowAlert, navigate);
   };
 
   return (

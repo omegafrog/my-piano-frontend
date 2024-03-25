@@ -22,11 +22,12 @@ function Login({ show, handleClose }) {
     form.append("username", loginInfo.username);
     form.append("password", loginInfo.password);
     const response = await axios.post(url, form, { withCredential: true });
-
     if (response.data.status !== 200) {
       alert("로그인 실패");
     } else {
-      const accessToken = response.data.serializedData["access token"];
+      console.log(response.data);
+      const accessToken = response.data.data["access token"];
+      console.log("accessToken:", accessToken);
       context.syncUserInfo(accessToken);
     }
   };
@@ -74,13 +75,12 @@ function Login({ show, handleClose }) {
               }
             );
             if (response.data.status === 302) {
-              const initialRegisterInfo = response.data.serializedData.userInfo;
+              const initialRegisterInfo = response.data.data.userInfo;
               navigate("/user/register", { state: initialRegisterInfo });
             } else if (response.data.status === 200) {
               console.log("로그인 성공");
-              context.syncUserInfo(
-                response.data.serializedData["access token"]
-              );
+              console.log("response.data", response.data);
+              context.syncUserInfo();
             } else if (response.data.status === 403) {
               console.log("로그인 실패");
               alert(response.data.message);

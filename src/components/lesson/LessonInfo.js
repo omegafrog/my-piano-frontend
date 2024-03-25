@@ -36,7 +36,7 @@ export default function LessonInfo() {
       })
       .then((response) => {
         if (response.data.status === 200) {
-          setLesson(response.data.serializedData.lesson);
+          setLesson(response.data.data.lesson);
         }
       });
   }, []);
@@ -175,7 +175,7 @@ function Comment({ target, item }) {
     );
     console.log(response);
     if (response.data.status === 200) {
-      setCommentList(response.data.serializedData.comments);
+      setCommentList(response.data.data.comments);
     }
   };
 

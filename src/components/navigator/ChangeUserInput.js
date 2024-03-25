@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../User-context";
-import { useLocation, useNavigate } from "react-router";
 import axios from "axios";
-import CustomAlert from "../CustomAlert";
+import CustomAlert from "../alert/CustomAlert";
 import { Button, Container, Form, Image, Row } from "react-bootstrap";
 import revalidate from "../../util/revalidate";
 
@@ -12,41 +10,31 @@ function CheckPassword({ registerInfo, checkPassword }) {
     return <Form.Text>비밀번호 인증 성공</Form.Text>;
   } else return <Form.Text>비밀번호가 다릅니다.</Form.Text>;
 }
-export default function ChangeUserInfo() {
-  const context = useContext(UserContext);
-  console.log(context.loggedUser);
-  const navigate = useNavigate();
-  const { state } = useLocation();
-  const initialRegisterInfo = {
-    username: context.loggedUser.username,
-    currentPassword: "",
-    changedPassword: "",
-    name: context.loggedUser.name,
-    email: context.loggedUser.email,
-    phoneNum: "",
-    loginMethod: "EMAIL",
-    profileSrc: context.loggedUser.profileSrc,
-  };
-  const [updateInfo, setRegisterInfo] = useState(initialRegisterInfo);
+export default function ChangeUserInfo({ context, alertValue }) {
+  const [updateInfo, setRegisterInfo] = useState({});
   const [checkPassword, setCheckPassword] = useState("");
-  const [showAlert, setShowAlert] = useState({ state: false, text: "" });
   const [profileFile, setProfileFile] = useState();
   const googleSecret = process.env.REACT_APP_GOOGLE_API_SECRET;
   const [profileSrc, setProfileSrc] = useState("/img/defaultUserImg.png");
-  const bucketName = process.env.REACT_APP_S3_BUCKET_NAME;
-  const region = process.env.REACT_APP_REGION;
+
   useEffect(() => {
     if (context.loggedUser.loginMethod === "GOOGLE") {
-      console.log("his");
       setProfileSrc(
         context.loggedUser.profileSrc + `?access_token=${googleSecret}`
       );
-    } else {
-      setProfileSrc(
-        `https://${bucketName}.s3.${region}.amazonaws.com/${context.loggedUser.profileSrc}`
-      );
     }
-  }, []);
+    const initialRegisterInfo = {
+      username: context.loggedUser.username,
+      currentPassword: "",
+      changedPassword: "",
+      name: context.loggedUser.name,
+      email: context.loggedUser.email,
+      phoneNum: "",
+      loginMethod: "EMAIL",
+      profileSrc: context.loggedUser.profileSrc,
+    };
+    setRegisterInfo(initialRegisterInfo);
+  }, [context]);
 
   const changeProfile = (event) => {
     const files = event.target.files;
@@ -54,7 +42,7 @@ export default function ChangeUserInfo() {
       const file = files[0];
       const fileName = file.name.split(".");
       if (fileName.length < 2) {
-        setShowAlert({ state: true, text: "invalid filename." });
+        alertValue.alert("danger", "invalid filename.");
         return;
       }
       setProfileSrc(URL.createObjectURL(file));
@@ -82,9 +70,9 @@ export default function ChangeUserInfo() {
     });
     if (res.status === 200) {
       if (res.data.status === 200) {
-        setShowAlert({ state: true, text: "회원정보 수정 성공" });
-        navigate("/user", { state: updateInfo.username });
-      } else setShowAlert({ state: true, text: res.data.message });
+        alertValue.alert("primary", "회원정보 수정 성공");
+        window.location.href = "/main";
+      } else alertValue.alert("danger", res.data.message);
     } else {
       alert("error.");
     }
@@ -98,7 +86,6 @@ export default function ChangeUserInfo() {
   return (
     <Container fluid className="d-flex justify-content-center">
       <div className="d-flex w-50  p-5 ">
-        <CustomAlert value={{ showAlert, setShowAlert }} />
         <Form className="w-100">
           <Form.Group>
             <Form.Label>아이디</Form.Label>
@@ -195,7 +182,7 @@ export default function ChangeUserInfo() {
           <Form.Group className="mb-3 d-flex flex-column ">
             <Form.Label>프로필 사진</Form.Label>
             <Image
-              src={profileSrc}
+              src={updateInfo.profileSrc || "/img/defaultUserImg.png"}
               thumbnail
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
               className="align-self-center"

@@ -1,13 +1,15 @@
 function UploadFileForm({ value }) {
   const renameSheetImg = (event) => {
     const files = event.target.files;
+    const baseUrl = `https://${process.env.REACT_APP_S3_BUCKET_NAME}.s3.${process.env.REACT_APP_REGION}.amazonaws.com/`;
     const newFiles = [];
     for (const file of files) {
       const nameList = file.name.split(".");
       newFiles.push(
         new File(
           [file],
-          "sheet-" +
+          baseUrl +
+            "sheet-" +
             nameList[0] +
             "-" +
             crypto.randomUUID() +

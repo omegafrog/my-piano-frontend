@@ -27,7 +27,7 @@ export default function ScrappedSheetList() {
         })
         .then((response) => {
           if (response.data.status === 200) {
-            setScrappedSheet(response.data.serializedData.sheets);
+            setScrappedSheet(response.data.data.sheets);
           }
         });
     } else {
@@ -45,7 +45,7 @@ export default function ScrappedSheetList() {
           {scrappedSheet.map((item, index) => {
             return (
               <Card
-                style={{ width: "15rem",cursor:"pointer"}}
+                style={{ width: "15rem", cursor: "pointer" }}
                 onClick={() => {
                   window.location.href = `/sheet/${item.id}`;
                 }}

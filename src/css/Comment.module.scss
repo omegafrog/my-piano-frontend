@@ -1,6 +1,13 @@
+@import "./font.scss";
+
 .comment {
   height: 100px;
+  font-family: Pretendard-Regular;
   .col {
     padding-top: 10px;
   }
+}
+.emptyComment {
+  margin-top: 15px;
+  font-family: Pretendard-Regular;
 }

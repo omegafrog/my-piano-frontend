@@ -27,7 +27,7 @@ export default function PurchasedSheets() {
       })
       .then((response) => {
         if (response.data.status === 200) {
-          setSheetPosts(response.data.serializedData.sheets);
+          setSheetPosts(response.data.data.sheets);
         }
       });
   }, [context]);

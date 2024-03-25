@@ -17,7 +17,7 @@ def login(userId):
         response = requests.post(login_url,data=login_data)
         # 로그인 정보
         if response.status_code == 200:
-            jwt_token = response.json().get('serializedData').get('access token')
+            jwt_token = response.json().get('data').get('access token')
             f.close()
         
             return jwt_token

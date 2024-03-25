@@ -109,7 +109,7 @@ export default function UploadLesson() {
         })
         .then((response) => {
           if (response.data.status === 200) {
-            setSheetList(response.data.serializedData.sheets);
+            setSheetList(response.data.data.sheets);
             setLoading(false);
           }
         });

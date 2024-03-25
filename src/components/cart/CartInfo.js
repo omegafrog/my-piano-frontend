@@ -29,8 +29,8 @@ export default function CartInfo() {
       })
       .then((response) => {
         if (response.data.status === 200) {
-          setOrderList(response.data.serializedData.contents);
-          console.log(response.data.serializedData.contents);
+          setOrderList(response.data.data.contents);
+          console.log(response.data.data.contents);
         }
       })
       .catch((error) => {
@@ -231,7 +231,7 @@ export default function CartInfo() {
                     })
                     .then((response) => {
                       if (response && response.data.status === 200) {
-                        window.location.href = `/cart/success?payCnt=${response.data.serializedData.payCnt}`;
+                        window.location.href = `/cart/success?payCnt=${response.data.data.payCnt}`;
                       }
                     });
                 }}

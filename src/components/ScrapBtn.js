@@ -18,7 +18,7 @@ export default function ScrapBtn({ target, id, style, className }) {
           },
         })
         .then((response) => {
-          if (response.data.serializedData.isScrapped === true) {
+          if (response.data.data.isScrapped === true) {
             const scrapBtn = document.querySelector("#scrap-btn");
             scrapBtn.style.backgroundColor = "#74b9ff";
             scrapBtn.innerHTML = "scrapped";

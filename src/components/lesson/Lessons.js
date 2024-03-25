@@ -17,7 +17,7 @@ export default function Lessons() {
       })
       .then((response) => {
         if (response.data.status === 200) {
-          setLessonList(response.data.serializedData.lessons);
+          setLessonList(response.data.data);
         }
       });
   }, []);

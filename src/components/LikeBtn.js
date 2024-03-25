@@ -19,7 +19,7 @@ export default function LikeBtn({ target, id, value }) {
           },
         })
         .then((response) => {
-          if (response.data.serializedData.isLiked === true) {
+          if (response.data.data === true) {
             const likeBtn = document.querySelector("#like-count");
             likeBtn.classList.add("active");
           }

@@ -7,5 +7,4 @@ if [ $PID ]; then
 else
         echo "없음"
 fi
-
-nohup npm start &
+npm start

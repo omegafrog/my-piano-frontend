@@ -7,4 +7,4 @@ if [ $PID ]; then
 else
         echo "없음"
 fi
-npm start
+BUILD_ID=dontKillMe nohup npm start > nohup.out 2&>1 &

@@ -1,11 +1,5 @@
 #!/bin/bash
 
-PID=$(netstat -nap | grep 8080 | awk '{print $7}' | sed 's/\.*//g')
+netstat -nap 2>/dev/null | grep :8080 | awk '{print $7}' | cut -d'/' -f1 | xargs kill
 
-if [ $PID ]; then
-        kill -15 $PID
-else
-        echo "없음"
-fi
-
-nohup npm start > nohup.out 2&>1 &
+npx serve -s ./ -p 8080

@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getMessaging } from "firebase/messaging";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAlIAbvOkxQNg1fzdHyjonk1p23ByFrArc",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "mypiano-b2528.firebaseapp.com",
   projectId: "mypiano-b2528",
   storageBucket: "mypiano-b2528.appspot.com",

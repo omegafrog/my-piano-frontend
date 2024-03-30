@@ -4,7 +4,7 @@ import { difficultyDict } from "./DifficultySelection";
 import { ItemListUserInfo } from "../user/userInfo";
 
 export default function SheetList({ sheetPosts, noContentMessage, navigate }) {
-  if (sheetPosts.length > 0) {
+  if (sheetPosts && sheetPosts.length > 0) {
     return (
       <Table className="w-100">
         <thead>

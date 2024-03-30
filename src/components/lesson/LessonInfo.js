@@ -1,44 +1,35 @@
-import { MDBContainer } from "mdb-react-ui-kit";
-import useAlert from "../../hook/useAlert";
 import Layout from "../Layout";
-import { Route, useLocation, useNavigate, useParams } from "react-router";
-import {
-  Button,
-  Col,
-  Container,
-  Form,
-  Image,
-  NavItem,
-  Row,
-} from "react-bootstrap";
+import { useNavigate, useParams } from "react-router";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { ItemListUserInfo } from "../user/userInfo";
-import axios from "axios";
-import revalidate from "../../util/revalidate";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../User-context";
 import VideoContainer from "./VideoContainer";
 import ScrapBtn from "../ScrapBtn";
 import LikeBtn from "../LikeBtn";
 import PaymentModal from "../PaymentModal";
+import { getLesson } from "../AxiosUtil";
+import Comment from "../comment/Comment";
+import { AlertContext } from "../../context/AlertContext";
 
 export default function LessonInfo() {
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const context = useContext(UserContext);
   const [lesson, setLesson] = useState();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/lesson/${id}`, {
-        withCredentials: true,
-        validateStatus: false,
-      })
-      .then((response) => {
-        if (response.data.status === 200) {
-          setLesson(response.data.data.lesson);
-        }
-      });
+    async function invoke() {
+      try {
+        const data = await getLesson(id);
+        setLesson(data.lesson);
+      } catch (e) {
+        console.error(e);
+        alertValue.alert("danger", e.message);
+      }
+    }
+    invoke();
   }, []);
   return (
     <Layout alertValue={alertValue}>
@@ -126,7 +117,7 @@ export default function LessonInfo() {
           </Row>
           <Row className="py-5">
             <div className="sheet-info comment">
-              <Comment item={lesson} target="lesson" />
+              <Comment target="lesson" />
             </div>
           </Row>
         </Container>
@@ -134,96 +125,5 @@ export default function LessonInfo() {
         <h2>loading</h2>
       )}
     </Layout>
-  );
-}
-
-function Comment({ target, item }) {
-  const [comment, setComment] = useState("");
-  const [commentList, setCommentList] = useState(item.comments);
-  const context = useContext(UserContext);
-  const removeComment = async (event) => {
-    const commentDiv = event.target.parentElement;
-
-    const { accessToken, error } = revalidate(context);
-
-    const response = await axios.delete(
-      `http://localhost:8080/${target}/${item.id}/comment/${commentDiv.id}`,
-      {
-        headers: {
-          Authorization: accessToken,
-        },
-      }
-    );
-    console.log(response);
-
-    const removedCommentList = commentList.filter((comment) => {
-      return comment.id !== parseInt(commentDiv.id);
-    });
-    setCommentList(removedCommentList);
-  };
-  const sendComment = async (event) => {
-    console.log(context);
-    const { accessToken, error } = revalidate(context);
-    const response = await axios.post(
-      `http://localhost:8080/${target}/${item.id}/comment`,
-      { content: comment },
-      {
-        headers: {
-          Authorization: accessToken,
-        },
-      }
-    );
-    console.log(response);
-    if (response.data.status === 200) {
-      setCommentList(response.data.data.comments);
-    }
-  };
-
-  return (
-    <div className="comment form">
-      <h2>댓글 {commentList.length}건</h2>
-      <hr />
-      <div className="input d-flex">
-        <Col className="m-1">
-          <Form.Control
-            as={"textarea"}
-            rows={2}
-            placeholder="댓글을 작성하세요"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            style={{ resize: "none" }}
-          />
-        </Col>
-        <Col xs={"auto"} className="m-1">
-          <Button className="h-100" onClick={sendComment}>
-            댓글 쓰기
-          </Button>
-        </Col>
-      </div>
-      <div className="comments">
-        {commentList.map((comment, idx) => (
-          <div className="comment m-3" key={comment.id} id={comment.id}>
-            <div className="sheet-info" id="author">
-              <ItemListUserInfo
-                profileSrc={comment.author.profileSrc}
-                name={comment.author.name}
-              />
-            </div>
-            <div className="sheet-info content">{comment.content}</div>
-            <Button size="sm" className="m-1">
-              답글
-            </Button>
-            <Button
-              size="sm"
-              className="m-1"
-              variant="danger"
-              onClick={removeComment}
-            >
-              삭제
-            </Button>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }

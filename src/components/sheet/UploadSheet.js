@@ -13,10 +13,10 @@ import UploadFileForm from "./UploadFileForm";
 import Navigator from "../Navigator";
 import { Button } from "react-bootstrap";
 import CustomAlert from "../alert/CustomAlert";
-import { UploadSheetInfo, UploadFile } from "../AxiosUtil";
+import { uploadSheetInfo } from "../AxiosUtil";
 import { sheetInfoValidator } from "./SheetInfoValidator";
 import { useNavigate } from "react-router";
-import useAlert from "../../hook/useAlert";
+import { AlertContext } from "../../context/AlertContext";
 
 function UploadSheet() {
   const [sheetInfo, setSheetInfo] = useState({
@@ -40,7 +40,7 @@ function UploadSheet() {
 
   const context = useContext(UserContext);
   const navigate = useNavigate();
-  const value2 = useAlert();
+  const value2 = useContext(AlertContext);
   const value = useMemo(
     () => ({ sheetInfo, setSheetInfo, sheetFile, setSheetFile }),
     [sheetInfo, setSheetInfo, sheetFile, setSheetFile]
@@ -57,8 +57,12 @@ function UploadSheet() {
     if (flag === false) {
       return;
     }
-
-    await UploadSheetInfo(context, value, value2.setShowAlert, navigate);
+    try {
+      await uploadSheetInfo(context, value, value2.setShowAlert, navigate);
+    } catch (e) {
+      console.error(e);
+      alert("업로드에 실패했습니다.");
+    }
   };
 
   return (

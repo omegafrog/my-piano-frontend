@@ -1,45 +1,37 @@
 import { Button, Col, Container, Image, Row } from "react-bootstrap";
-import useAlert from "../../hook/useAlert";
 import Layout from "../Layout";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../User-context";
-import axios from "axios";
 import $ from "jquery";
-import revalidate from "../../util/revalidate";
+import { deleteItemFromCart, getCart, payAllInCart } from "../AxiosUtil";
+import { AlertContext } from "../../context/AlertContext";
+import { useNavigate } from "react-router";
 
 export default function CartInfo() {
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const context = useContext(UserContext);
   const [orderList, setOrderList] = useState([]);
   const [selectedOrderList, setSelectedOrderList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const bucketName = process.env.REACT_APP_S3_BUCKET_NAME;
   const region = process.env.REACT_APP_REGION;
+  const navigate = useNavigate();
   let restCash;
   let restCashColor;
   useEffect(() => {
-    if (!context || context.loggedIn === false) return;
-    axios
-      .get("http://localhost:8080/cart", {
-        headers: {
-          Authorization: context.accessToken,
-        },
-        validateStatus: false,
-        withCredentials: true,
-      })
-      .then((response) => {
-        if (response.data.status === 200) {
-          setOrderList(response.data.data.contents);
-          console.log(response.data.data.contents);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    async function invoke() {
+      try {
+        const data = await getCart(context);
+        setOrderList(data.contents);
+      } catch (e) {
+        console.error(e);
+        alertValue.alert(e.message);
+      }
+    }
+    invoke();
   }, []);
 
   useEffect(() => {
-    console.log("selectedOrderList:", selectedOrderList);
     if (
       orderList.length === selectedOrderList.length &&
       selectedOrderList.length > 0
@@ -78,29 +70,35 @@ export default function CartInfo() {
       $(".order").removeClass("checked");
     }
   };
-  const removeFromCart = (e) => {
-    axios
-      .delete(`http://localhost:8080/cart/${e.target.id}`, {
-        headers: {
-          Authorization: context.accessToken,
-        },
-        withCredentials: true,
-        validateStatus: false,
-      })
-      .then((response) => {
-        if (response.data.status === 200) {
-          const newOrderList = orderList.filter(
-            (item) => item.id !== Number(e.target.id)
-          );
-          const newSelectedOrderList = selectedOrderList.filter(
-            (item) => item.id !== Number(e.target.id)
-          );
-          console.log("before:", orderList);
-          console.log("new:", newOrderList);
-          setOrderList(newOrderList);
-          setSelectedOrderList(newSelectedOrderList);
-        }
+  const removeFromCart = async (e) => {
+    try {
+      await deleteItemFromCart(context, e.target.id);
+      const newOrderList = orderList.filter(
+        (item) => item.id !== Number(e.target.id)
+      );
+      const newSelectedOrderList = selectedOrderList.filter(
+        (item) => item.id !== Number(e.target.id)
+      );
+      setOrderList(newOrderList);
+      setSelectedOrderList(newSelectedOrderList);
+    } catch (e) {
+      console.error(e);
+      alertValue.alert("danger", e.message);
+    }
+  };
+
+  const payItem = async () => {
+    try {
+      var requestURI = `cart?`;
+      selectedOrderList.forEach((order) => {
+        requestURI += `orderId=${order.id}&`;
       });
+      const data = await payAllInCart(context, requestURI);
+      navigate(`/cart/success?payCnt=${data.payCnt}`);
+    } catch (e) {
+      console.error(e);
+      alertValue.alert("danger", e.message);
+    }
   };
   return (
     <Layout leftNav={false} alertValue={alertValue}>
@@ -214,26 +212,7 @@ export default function CartInfo() {
               <Button
                 className="w-100 my-2"
                 onClick={() => {
-                  const response = revalidate(context) || {};
-                  const { accessToken, error } = response;
-                  var requestURI = `cart?`;
-                  selectedOrderList.forEach((order) => {
-                    requestURI += `orderId=${order.id}&`;
-                  });
-
-                  console.log(requestURI.slice(0, requestURI.length - 2));
-                  axios
-                    .patch(`http://localhost:8080/${requestURI}`, null, {
-                      headers: {
-                        Authorization: accessToken,
-                      },
-                      validateStatus: false,
-                    })
-                    .then((response) => {
-                      if (response && response.data.status === 200) {
-                        window.location.href = `/cart/success?payCnt=${response.data.data.payCnt}`;
-                      }
-                    });
+                  payItem();
                 }}
               >
                 결제하기

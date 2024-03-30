@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-import { decodeToken } from "react-jwt";
 
 export const UserContext = React.createContext();
 
@@ -95,3 +94,10 @@ export const UserProvider = ({ children }) => {
   const value = useMemo(() => state, [state]);
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
+
+export class APIError extends Error {
+  constructor(message, response) {
+    super(message);
+    this.response = response;
+  }
+}

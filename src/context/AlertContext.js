@@ -3,6 +3,11 @@ import React, { useMemo, useState } from "react";
 export const AlertContext = React.createContext();
 
 export const AlertProvider = ({ children }) => {
+  /**
+   *
+   * @param {String} variant
+   * @param {String} text
+   */
   const alert = (variant, text) => {
     setState({ variant: variant, text: text, show: true, alert, off });
     clearTimeout();
@@ -10,6 +15,10 @@ export const AlertProvider = ({ children }) => {
       off();
     }, 3000);
   };
+  /**
+   *
+   * @returns
+   */
   const off = () => setState((prev) => ({ ...prev, show: false }));
   const initialAlertConfig = {
     variant: "danger",

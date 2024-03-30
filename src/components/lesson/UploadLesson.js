@@ -1,13 +1,14 @@
 import Layout from "../Layout";
-import useAlert from "../../hook/useAlert";
+
 import { Button, Container, Form, Tab, Tabs } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../User-context";
 import { useNavigate } from "react-router";
 import revalidate from "../../util/revalidate";
-import Editor from "../sheet/editor";
 import { MDBContainer } from "mdb-react-ui-kit";
+import { AlertContext } from "../../context/AlertContext";
+import { getUserUploadedSheets, uploadLesson } from "../AxiosUtil";
 
 function CategoryInput({ value, setLessonInfo }) {
   const changeCategory = (event) => {
@@ -60,7 +61,7 @@ function InstrumentSelectionInput({ setLessonInfo, value, text }) {
 }
 
 export default function UploadLesson() {
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const [sheetList, setSheetList] = useState();
   const [loading, setLoading] = useState(true);
   const [videoURL, setVideoURL] = useState();
@@ -90,30 +91,17 @@ export default function UploadLesson() {
   }, [lessonInfo]);
 
   useEffect(() => {
-    if (context.loggedIn === false) {
-      alert("로그인이 필요한 기능입니다.");
-      navigate("/main");
-    } else if (context.loggedUser.role !== "CREATOR") {
-      alert("이용할 수 없는 기능입니다.");
-      navigate("/main");
-    } else {
-      const response = revalidate(context) || {};
-      const { accessToken, error } = response;
-      axios
-        .get("http://localhost:8080/user/uploadedSheets", {
-          withCredentials: true,
-          validateStatus: false,
-          headers: {
-            Authorization: accessToken,
-          },
-        })
-        .then((response) => {
-          if (response.data.status === 200) {
-            setSheetList(response.data.data.sheets);
-            setLoading(false);
-          }
-        });
+    async function invoke() {
+      try {
+        const data = await getUserUploadedSheets(context);
+        setSheetList(data.sheets);
+        setLoading(false);
+      } catch (e) {
+        console.error(e);
+        alertValue.alert("danger", e.message);
+      }
     }
+    invoke();
   }, []);
 
   return (
@@ -376,22 +364,14 @@ export default function UploadLesson() {
           </Form.Group>
           <Button
             className="m-2"
-            onClick={() => {
-              const response = revalidate(context) || {};
-              const { accessToken, error } = response;
-              axios
-                .post("http://localhost:8080/lesson", lessonInfo, {
-                  headers: {
-                    Authorization: accessToken,
-                  },
-                  withCredentials: true,
-                  validateStatus: false,
-                })
-                .then((response) => {
-                  if (response.data.status === 200) {
-                    navigate("/lesson");
-                  }
-                });
+            onClick={async () => {
+              try {
+                await uploadLesson(context, lessonInfo);
+                navigate("/lesson");
+              } catch (e) {
+                console.error(e);
+                alertValue.alert("danger", e.message);
+              }
             }}
           >
             {" "}

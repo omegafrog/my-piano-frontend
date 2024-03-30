@@ -1,6 +1,6 @@
 import Layout from "../Layout";
 import { useContext, useEffect, useRef, useState } from "react";
-import useAlert from "../../hook/useAlert";
+
 import "./main.css";
 import MainBanner from "./MainBanner";
 import MainBannerList from "./MainBannerList";
@@ -8,9 +8,10 @@ import axios from "axios";
 import { Col, Container, Row, Tab, Tabs } from "react-bootstrap";
 import { ItemListUserInfo } from "../user/userInfo";
 import PopularSheetsTabs from "./PopularSheetsTabs";
+import { AlertContext } from "../../context/AlertContext";
 
 function Main() {
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const [mainBannerList, setMainBannerList] = useState([]);
   const [pastPopularSheetBannerList, setPastPopularSheetBannerList] = useState(
     []

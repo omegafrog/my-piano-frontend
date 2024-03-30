@@ -8,7 +8,7 @@ import axios from "axios";
 import Layout from "../Layout";
 
 import revalidate from "../../util/revalidate";
-import useAlert from "../../hook/useAlert";
+
 import { Col, Image, Row } from "react-bootstrap";
 import LikeBtn from "../LikeBtn";
 import ScrapBtn from "../ScrapBtn";
@@ -16,6 +16,8 @@ import Metadata from "./Metadata";
 import PaymentModal from "../PaymentModal";
 import Comment from "../comment/Comment";
 import CartBtn from "../CartBtn";
+import { AlertContext } from "../../context/AlertContext";
+import { getSheet, isLikedPost, isScrapped } from "../AxiosUtil";
 
 function SheetContent({ item }) {
   console.log(item);
@@ -62,48 +64,31 @@ function SheetInfo() {
   const context = useContext(UserContext);
 
   const [sheetPost, setSheetPost] = useState();
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/sheet/${id}`).then((response) => {
-      if (response.data.status === 200) {
-        setSheetPost(response.data.data.sheetPost);
-        if (context.loggedIn === true) {
-          const response = revalidate(context) || {};
-          const { accessToken, error } = response;
-          if (accessToken) {
-            axios
-              .get(`http://localhost:8080/sheet/${id}/like`, {
-                headers: {
-                  Authorization: accessToken,
-                },
-              })
-              .then((response) => {
-                if (response.data.data.isLikedPost === true) {
-                  const likeBtn = document.querySelector("#like-count");
-                  likeBtn.style.backgroundColor = "#74b9ff";
-                }
-              });
-            axios
-              .get(`http://localhost:8080/sheet/${id}/scrap`, {
-                headers: {
-                  Authorization: accessToken,
-                },
-              })
-              .then((response) => {
-                if (response.data.data.isScrapped === true) {
-                  const scrapBtn = document.querySelector("#scrap-btn");
-                  scrapBtn.style.backgroundColor = "#74b9ff";
-                  scrapBtn.innerHTML = "scrapped";
-                }
-              });
-          }
+    async function invoke() {
+      try {
+        const data = await getSheet(id);
+        setSheetPost(data.sheetPost);
+        const likedPostData = await isLikedPost(context, "sheet", id);
+        if (likedPostData.isLikedPost === true) {
+          const likeBtn = document.querySelector("#like-count");
+          likeBtn.style.backgroundColor = "#74b9ff";
         }
-      } else {
-        navigate("/404");
+        const isScrappedData = await isScrapped(context, "sheet", id);
+        if (isScrappedData.isScrapped === true) {
+          const scrapBtn = document.querySelector("#scrap-btn");
+          scrapBtn.style.backgroundColor = "#74b9ff";
+          scrapBtn.innerHTML = "scrapped";
+        }
+      } catch (e) {
+        console.error(e);
+        alertValue.alert("danger", e.message);
       }
-    });
+    }
+    invoke();
   }, []);
 
   if (sheetPost !== undefined) {

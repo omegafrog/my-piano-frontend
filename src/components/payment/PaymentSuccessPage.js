@@ -1,10 +1,11 @@
 import { Container } from "react-bootstrap";
-import useAlert from "../../hook/useAlert";
+
 import Layout from "../Layout";
-import { useParams } from "react-router";
+import { AlertContext } from "../../context/AlertContext";
+import { useContext } from "react";
 
 export default function PaymentSuccessPage() {
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   return (
     <Layout alertValue={alertValue} leftNav={false}>
       <Container className="d-flex justify-content-center align-items-center h-100">

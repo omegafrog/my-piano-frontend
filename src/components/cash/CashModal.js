@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   Button,
   Modal,
@@ -7,11 +7,13 @@ import {
 } from "react-bootstrap";
 import { UserContext } from "../User-context";
 import { createCashOrder } from "../AxiosUtil";
+import { useNavigate } from "react-router";
 
 export default function CashModal({ cashModalShow, setCashModalShow }) {
   const [cashAmount, setCashAmount] = useState(0);
   const cashAmounts = [100000, 50000, 10000, 5000, 1000];
   const context = useContext(UserContext);
+  const navigate = useNavigate();
   return (
     <Modal show={cashModalShow} onHide={() => setCashModalShow(false)}>
       <Modal.Header>
@@ -61,7 +63,9 @@ export default function CashModal({ cashModalShow, setCashModalShow }) {
                 cashAmount,
                 `${cashAmount}원 결제`
               );
-              window.location.href = `/cash/checkout?orderId=${orderId}&amount=${cashAmount}`;
+              navigate(
+                `/cash/checkout?orderId=${orderId}&amount=${cashAmount}`
+              );
             } catch (error) {
               console.log(error);
             }

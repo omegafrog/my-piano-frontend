@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
-import useAlert from "../../hook/useAlert";
+
 import Layout from "../Layout";
 import { UserContext } from "../User-context";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import revalidate from "../../util/revalidate";
 import { Card, Col, Container, Image, Row } from "react-bootstrap";
+import { AlertContext } from "../../context/AlertContext";
 
 export default function ScrappedSheetList() {
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const [scrappedSheet, setScrappedSheet] = useState([]);
   const navigate = useNavigate();
   const context = useContext(UserContext);

@@ -1,20 +1,20 @@
 import { useContext, useEffect, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
 import { UserContext } from "./User-context";
-import $ from "jquery";
-import axios from "axios";
+import { isPurcahsed, pay } from "./AxiosUtil";
+import { AlertContext } from "../context/AlertContext";
+import { useNavigate } from "react-router";
+import { Button, Modal } from "react-bootstrap";
 
 export default function PaymentModal({ item, target }) {
-  console.log("item:", item);
   const context = useContext(UserContext);
   const [show, setShow] = useState(false);
+  const alertValue = useContext(AlertContext);
+  const navigate = useNavigate();
   const hideModal = () => setShow(false);
   const showModal = () => {
     if (context.loggedIn !== true) {
       alert("로그인하고 이용해주세요.");
     } else {
-      console.log("clicked");
-      console.log(context);
       context.syncUserInfo();
       setShow(true);
     }
@@ -30,56 +30,19 @@ export default function PaymentModal({ item, target }) {
       payBtn.innerHTML = "구매하기";
       payBtn.disabled = false;
     }
-    axios
-      .get(`http://localhost:8080/order/${target}/${item.id}`, {
-        headers: {
-          Authorization: context.accessToken,
-        },
-        withCredentials: true,
-        validateStatus: false,
-      })
-      .then((response) => {
-        if (response.data.status === 200) {
-          if (response.data.data.isOrdered === true) {
-            payBtn.innerHTML = "이미 구매하신 상품입니다.";
-            payBtn.disabled = true;
-            $("#cart-btn").html("이미 카트에 추가된 상품입니다.");
-            $("#cart-btn").css("font-size", "16px");
-            $("#cart-btn").addClass("disabled");
-          }
-        }
-      });
+    isPurcahsed(context, target, item, payBtn);
   }, [context.loggedUser]);
   const restCash = context.loggedUser.cash - item.price;
-  const purchase = () => {
-    axios
-      .post(
-        `http://localhost:8080/order/${target}`,
-        {
-          itemId: item.id,
-          buyerId: context.loggedUser.id,
-        },
-        {
-          headers: {
-            Authorization: context.accessToken,
-          },
-          withCredentials: true,
-          validateStatus: false,
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        if (response.data.status === 200) {
-          hideModal();
-        }
-      })
-      .catch((error) => {
-        alert("error");
-        hideModal();
-      })
-      .finally(() => {
-        window.location.replace(`/${target}/${item.id}`);
-      });
+  const purchase = async () => {
+    try {
+      await pay(context, target, item);
+    } catch (e) {
+      console.error(e.response);
+      alertValue.alert("danger", e.message);
+    } finally {
+      hideModal();
+      navigate(`/${target}/${item.id}`);
+    }
   };
 
   const restCashColor = restCash < 0 ? "red" : "black";

@@ -1,70 +1,42 @@
-import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useParams } from "react-router";
-import revalidate from "../../util/revalidate";
 import { UserContext } from "../User-context";
 import { ItemListUserInfo } from "../user/userInfo";
 import styles from "../../css/Comment.module.scss";
 import $ from "jquery";
 import { AlertContext } from "../../context/AlertContext";
+import { addComment, deleteComment, getComments } from "../AxiosUtil";
 
 export default function Comment({ target }) {
   const { id } = useParams();
   const [content, setContent] = useState("");
   const context = useContext(UserContext);
   const [commentList, setCommentList] = useState([]);
-  const alertContext = useContext(AlertContext);
+  const alertValue = useContext(AlertContext);
 
-  const writeComment = (e) => {
-    if (context.loggedIn === false) {
-      alertContext.alert("danger", "로그인이 필요합니다.");
-    } else {
-      const response = revalidate(context) || {};
-      const { accessToken, error } = response;
-      axios
-        .post(
-          `http://localhost:8080/${target}/${id}/comment`,
-          {
-            content: content,
-          },
-          {
-            headers: {
-              Authorization: accessToken,
-            },
-            validateStatus: false,
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          if (response.data.status === 200) {
-            setCommentList(response.data.data.comments);
-            $(".comment-textarea").val("");
-          }
-        });
+  const writeComment = async () => {
+    try {
+      const data = await addComment(context, target, id, content);
+      setCommentList(data.comments);
+      $(".comment-textarea").val("");
+    } catch (e) {
+      console.error(e);
+      alertValue.alert("danger", e.message);
     }
   };
 
-  const loadComments = (e) => {
-    const response = revalidate(context) || {};
-    const { accessToken, error } = response;
-    axios
-      .get(`http://localhost:8080/${target}/${id}/comments`, {
-        headers: {
-          Authorization: accessToken,
-        },
-        validateStatus: false,
-        withCredentials: true,
-      })
-      .then((response) => {
-        if (response.data.status === 200) {
-          setCommentList(response.data.data.comments);
-        }
-      });
-  };
-
   useEffect(() => {
-    loadComments();
+    async function invoke() {
+      try {
+        const data = await getComments(context, target, id);
+        setCommentList(data.comments);
+      } catch (e) {
+        console.error(e);
+        alertValue.alert("danger", e.message);
+      }
+    }
+    invoke();
   }, []);
 
   return (
@@ -134,26 +106,16 @@ export default function Comment({ target }) {
 
 function RemoveCommentBtn({ idx, context, commentListValue, target, id }) {
   const { commentList, setCommentList } = commentListValue;
-  const removeComment = (e) => {
-    const response = revalidate(context) || {};
-    const { accessToken, error } = response;
+  const alertValue = useContext(AlertContext);
+  const removeComment = async () => {
     const commentId = commentList[idx].id;
-    axios
-      .delete(`http://localhost:8080/${target}/${id}/comment/${commentId}`, {
-        headers: {
-          Authorization: accessToken,
-        },
-        validateStatus: false,
-        withCredentials: true,
-      })
-      .then((response) => {
-        if (response && response.data.status === 200) {
-          setCommentList(response.data.data.comments);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      const data = await deleteComment(context, target, id, commentId);
+      setCommentList(data.comments);
+    } catch (e) {
+      console.error(e);
+      alertValue.alert("danger", e.message);
+    }
   };
   return (
     <Button variant="outline-danger" onClick={removeComment}>

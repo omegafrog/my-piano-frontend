@@ -1,9 +1,10 @@
 import { useSearchParams } from "react-router-dom";
-import useAlert from "../../hook/useAlert";
 import Layout from "../Layout";
+import { useContext } from "react";
+import { AlertContext } from "../../context/AlertContext";
 
 export function PayCartSuccess() {
-  const alertVal = useAlert();
+  const alertVal = useContext(AlertContext);
   const [params] = useSearchParams();
   const payCnt = params.get("payCnt");
   return (

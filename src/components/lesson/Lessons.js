@@ -1,25 +1,21 @@
-import { useEffect, useState } from "react";
-import useAlert from "../../hook/useAlert";
+import { useContext, useEffect, useState } from "react";
+
 import Layout from "../Layout";
 import axios from "axios";
-import { Card, Col, Container, Image, Row, Table } from "react-bootstrap";
+import { Card, Col, Container, Image, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import { AlertContext } from "../../context/AlertContext";
+import { getLessons } from "../AxiosUtil";
 
 export default function Lessons() {
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const [lessonList, setLessonList] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/lessons", {
-        withCredentials: true,
-        validateStatus: false,
-      })
-      .then((response) => {
-        if (response.data.status === 200) {
-          setLessonList(response.data.data);
-        }
-      });
+    async function invoke() {
+      await getLessons();
+    }
+    invoke();
   }, []);
 
   return (

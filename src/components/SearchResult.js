@@ -1,16 +1,16 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Layout from "./Layout";
-import useAlert from "../hook/useAlert";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { genreDict, genreIdDict } from "./sheet/GenreSelection";
+import { AlertContext } from "../context/AlertContext";
 
 export default function SearchResult() {
   const [searchParam, setSearchParam] = useSearchParams();
   const [searchResult, setSearchResult] = useState([]);
   console.log();
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
   const navigate = useNavigate();
   let content;
   useEffect(() => {

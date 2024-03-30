@@ -1,8 +1,7 @@
-import { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import CustomAlert from "../alert/CustomAlert";
+import { useEffect, useState } from "react";
 import { Button, Container, Form, Image, Row } from "react-bootstrap";
-import revalidate from "../../util/revalidate";
+import { useNavigate } from "react-router";
+import { updateUser } from "../AxiosUtil";
 
 function CheckPassword({ registerInfo, checkPassword }) {
   if (checkPassword === "") return null;
@@ -16,6 +15,7 @@ export default function ChangeUserInfo({ context, alertValue }) {
   const [profileFile, setProfileFile] = useState();
   const googleSecret = process.env.REACT_APP_GOOGLE_API_SECRET;
   const [profileSrc, setProfileSrc] = useState("/img/defaultUserImg.png");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (context.loggedUser.loginMethod === "GOOGLE") {
@@ -53,34 +53,20 @@ export default function ChangeUserInfo({ context, alertValue }) {
       setRegisterInfo((prev) => ({ ...prev, profileSrc: newFileName }));
     }
   };
-
-  const requestRegister = async () => {
+  const submitRegister = async () => {
     const registerForm = new FormData();
     registerForm.append("updateInfo", JSON.stringify(updateInfo));
     if (updateInfo.profileSrc !== "") {
       registerForm.append("profileImg", profileFile);
     }
-    const { accessToken, error } = revalidate(context);
-    const res = await axios.post("http://localhost:8080/user", registerForm, {
-      headers: {
-        Authorization: accessToken,
-      },
-      withCredentials: true,
-      validateStatus: false,
-    });
-    if (res.status === 200) {
-      if (res.data.status === 200) {
-        alertValue.alert("primary", "회원정보 수정 성공");
-        window.location.href = "/main";
-      } else alertValue.alert("danger", res.data.message);
-    } else {
-      alert("error.");
+    try {
+      await updateUser(context, registerForm);
+      alertValue.alert("primary", "회원정보 수정 성공");
+      navigate(0);
+    } catch (e) {
+      alertValue.alert("danger", "회원정보 수정 실패");
+      console.error(e);
     }
-  };
-  const submitRegister = (event) => {
-    event.preventDefault();
-    console.log(updateInfo);
-    requestRegister();
   };
 
   return (

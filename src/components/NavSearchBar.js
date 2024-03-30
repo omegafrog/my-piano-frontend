@@ -1,7 +1,8 @@
-import axios from "axios";
-import { Form, Row } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router";
-
+import { searchQuery } from "./AxiosUtil";
+import { UserContext } from "./User-context";
+import { useContext } from "react";
 export default function NavSearchBar({
   searchTermValue,
   searchResultValue,
@@ -12,60 +13,13 @@ export default function NavSearchBar({
   const { focus, setFocus } = focusValue;
 
   const navigate = useNavigate();
+  const context = useContext(UserContext);
 
   const changeSearchResult = (e) => {
     setSearchTerm(e.target.value);
     console.log("searchTerm:", e.target.value);
     if (searchTerm.length >= 2) {
-      axios
-        .post(
-          `https://${process.env.REACT_APP_ELASTIC_HOSTNAME}:${process.env.REACT_APP_ELASTIC_PORT}/sheetpost/_search`,
-          {
-            query: {
-              bool: {
-                should: [
-                  {
-                    fuzzy: {
-                      name: {
-                        value: e.target.value,
-                        fuzziness: 1,
-                      },
-                    },
-                  },
-                  {
-                    fuzzy: {
-                      title: {
-                        value: e.target.value,
-                        fuzziness: 1,
-                      },
-                    },
-                  },
-                  {
-                    prefix: {
-                      "name.keyword": {
-                        value: e.target.value,
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-          {
-            headers: {
-              Authorization: `ApiKey ${process.env.REACT_APP_ELASTIC_APIKEY}`,
-            },
-            withCredentials: false,
-            validateStatus: false,
-          }
-        )
-        .then((response) => {
-          console.log(response.data.hits.hits);
-          setSearchResult(response.data.hits.hits);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      searchQuery(context, e, setSearchResult);
     }
   };
   return (

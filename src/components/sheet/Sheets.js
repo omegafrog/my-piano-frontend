@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { GetSheetPosts } from "../AxiosUtil";
 import Layout from "../Layout";
-import useAlert from "../../hook/useAlert";
+
 import {
   Accordion,
   ButtonGroup,
-  Col,
   Container,
   Row,
   ToggleButton,
@@ -17,6 +16,7 @@ import { difficultyDict, difficultyIdDict } from "./DifficultySelection";
 import { UserContext } from "../User-context";
 import SheetList from "./SheetList";
 import LeftNavigator from "../LeftNavigator";
+import { AlertContext } from "../../context/AlertContext";
 
 function Sheets() {
   const [sheetPosts, setSheetPosts] = useState();
@@ -32,7 +32,7 @@ function Sheets() {
     difficulties: difficulties ? difficulties.split(" ") : [],
     instruments: instruments ? instruments.split(" ") : [],
   });
-  const alertValue = useAlert();
+  const alertValue = useContext(AlertContext);
 
   useEffect(() => {
     console.log("filter:", filter);

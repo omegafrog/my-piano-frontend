@@ -1,9 +1,9 @@
-import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { UserContext, syncUserInfo } from "./User-context";
+import { UserContext } from "./User-context";
 import { useNavigate } from "react-router";
 import { Button, Form, Modal } from "react-bootstrap";
 import { GoogleLogin } from "@react-oauth/google";
+import { googleLogin, login } from "./AxiosUtil";
 
 function Login({ show, handleClose }) {
   const [loginInfo, setLoginInfo] = useState({ username: "", password: "" });
@@ -21,15 +21,7 @@ function Login({ show, handleClose }) {
     let form = new FormData();
     form.append("username", loginInfo.username);
     form.append("password", loginInfo.password);
-    const response = await axios.post(url, form, { withCredential: true });
-    if (response.data.status !== 200) {
-      alert("로그인 실패");
-    } else {
-      console.log(response.data);
-      const accessToken = response.data.data["access token"];
-      console.log("accessToken:", accessToken);
-      context.syncUserInfo(accessToken);
-    }
+    login(context, form);
   };
 
   const navigate = useNavigate();
@@ -68,24 +60,7 @@ function Login({ show, handleClose }) {
         <GoogleLogin
           onSuccess={async (credentialResponse) => {
             console.log(credentialResponse);
-            const response = await axios.post(
-              "http://localhost:8080/oauth2/google",
-              {
-                code: credentialResponse.credential,
-              }
-            );
-            if (response.data.status === 302) {
-              const initialRegisterInfo = response.data.data.userInfo;
-              navigate("/user/register", { state: initialRegisterInfo });
-            } else if (response.data.status === 200) {
-              console.log("로그인 성공");
-              console.log("response.data", response.data);
-              context.syncUserInfo();
-            } else if (response.data.status === 403) {
-              console.log("로그인 실패");
-              alert(response.data.message);
-              handleClose();
-            }
+            googleLogin(context, navigate, credentialResponse, handleClose);
           }}
           onError={() => {
             console.log("Login Failed");

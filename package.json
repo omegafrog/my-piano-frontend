@@ -10,6 +10,7 @@
   "dependencies": {
     "4": "^0.0.0",
     "@babel/eslint-parser": "^7.5.4",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@react-oauth/google": "^0.11.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -44,7 +45,7 @@
   },
   "scripts": {
     "start2": "cross-env  SSL_CRT_FILE=./.cert/http_ca.crt react-scripts start",
-    "start": " react-scripts start",
+    "start": "PORT=8080 CI=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

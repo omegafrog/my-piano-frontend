@@ -45,7 +45,7 @@
   },
   "scripts": {
     "start2": "cross-env  SSL_CRT_FILE=./.cert/http_ca.crt react-scripts start",
-    "start": "PORT=8080 react-scripts start",
+    "start": "react-scripts start",
     "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -22,6 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
-.env
+.env*
 .cert/http_ca.crt
 mypiano-b2528-firebase-adminsdk-6lsil-b08c822bb1.json

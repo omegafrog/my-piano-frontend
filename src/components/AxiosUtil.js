@@ -1,7 +1,5 @@
 import axios from "axios";
 import revalidate from "../util/revalidate";
-import { data } from "jquery";
-import { access } from "fs";
 
 const instance = axios.create({
   baseURL: "http://localhost:8080",
@@ -22,7 +20,7 @@ export async function UploadFile(context, fileFormData) {
 
 export async function UploadSheetInfo(context, value, setShowAlert, navigate) {
   const response = revalidate(context) || {};
-  const { accessToken, error } = response;
+  const { accessToken } = response;
   const formData = new FormData();
   value.sheetFile.forEach((file) => formData.append("sheetFiles", file));
   formData.append("sheetInfo", JSON.stringify(value.sheetInfo));
@@ -59,7 +57,6 @@ export function GetSheetPosts({
   filter,
   context,
 }) {
-  const url = "http://localhost:8080/sheet";
   const params = {};
   params.page = page;
   let genreParam = "";
@@ -84,8 +81,8 @@ export function GetSheetPosts({
 
   const response = revalidate(context) || {};
 
-  const { accessToken, error } = response;
-  const result = axios
+  const { accessToken } = response;
+  axios
     .get(`http://localhost:8080/sheet`, {
       params: params,
       headers: {
@@ -132,7 +129,7 @@ export async function Logout(context) {
 
 export async function createCashOrder(context, orderId, amount, name) {
   const response = revalidate(context) || {};
-  const { accessToken, error } = response;
+  const { accessToken } = response;
 
   const result = await instance.get(
     `/cash/info?orderId=${orderId}&amount=${amount}&name=${name}`,
@@ -151,7 +148,7 @@ export async function createCashOrder(context, orderId, amount, name) {
 
 export async function requestPayment(context, paymentKey, orderId, amount) {
   const response = revalidate(context) || {};
-  const { accessToken, error } = response;
+  const { accessToken } = response;
 
   const result = await instance.post(
     "/cash/request",
@@ -190,7 +187,7 @@ export async function getPosts(pageable) {
 
 export async function writePost(context, body) {
   const response = revalidate(context) || {};
-  const { accessToken, error } = response;
+  const { accessToken } = response;
 
   const result = await instance.post("/community/posts", body, {
     headers: {
@@ -211,7 +208,7 @@ export async function getPost(context, id) {
 }
 export async function updatePost(context, id, data) {
   const response = revalidate(context) || {};
-  const { accessToken, error } = response;
+  const { accessToken } = response;
 
   const result = await instance.post(`/community/posts/${id}`, data, {
     headers: {
@@ -230,7 +227,7 @@ export async function updatePost(context, id, data) {
 
 export async function deletePost(context, id) {
   const response = revalidate(context) || {};
-  const { accessToken, error } = response;
+  const { accessToken } = response;
 
   const result = await instance.delete(`/community/posts/${id}`, {
     headers: {

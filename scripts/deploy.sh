@@ -8,6 +8,4 @@ else
         echo "없음"
 fi
 
-npm install
-
 nohup npm start > nohup.out 2&>1 &

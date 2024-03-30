@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router";
 import Main from "./components/main/Main";
 import Login from "./components/Login";
 import Register from "./components/user/Register";
-import { UserContext, UserProvider } from "./components/User-context";
+import { UserProvider } from "./components/User-context";
 import Sheets from "./components/sheet/Sheets";
 import UploadSheet from "./components/sheet/UploadSheet";
 import SheetInfo from "./components/sheet/SheetInfo";
@@ -42,7 +42,7 @@ function App() {
   });
 
   return (
-    <GoogleOAuthProvider clientId="25240194686-nd0b27v2dcvv9e458hhssip100630t74.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
       <UserProvider>
         <AlertProvider>
           <BrowserRouter>

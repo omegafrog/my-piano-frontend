@@ -36,10 +36,10 @@ import CashPaymentListPage from "./components/user/CashPaymentList";
 import EditPost from "./components/post/EditPost";
 
 function App() {
-  // onMessage(messaging, (payload) => {
-  //   console.log("hihihihi");
-  //   console.log("payload:", payload);
-  // });
+  onMessage(messaging, (payload) => {
+    console.log("hihihihi");
+    console.log("payload:", payload);
+  });
 
   return (
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>

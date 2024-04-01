@@ -1,7 +1,7 @@
 import axios from "axios";
 import $ from "jquery";
 import { APIError } from "./User-context";
-import revalidate from "../util/revalidate";
+import revalidate, { LoginError } from "../util/revalidate";
 
 const backend = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}`,
@@ -772,6 +772,48 @@ export async function getPurchasedSheets(context) {
     return response.data.data;
   } else {
     throw new APIError("구매한 악보 조회 실패", response);
+  }
+}
+
+export async function getTickets(context) {
+  let accessToken = await refreshAccessToken(context);
+  const response = await backend.get("/tickets", {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+  if (response && response.status === 200 && response.data.status === 200) {
+    return response.data.data;
+  } else if (response.data.status === 401) {
+    throw new LoginError(response.data.message);
+  } else {
+    throw new APIError("티켓 리스트 조회 실패", response);
+  }
+}
+
+export async function adminLogin(context, form) {
+  const result = await backend.post("/admin/login", form);
+  console.log(result);
+  if (result && result.status === 200 && result.data.status === 200) {
+    const accessToken = result.data.data["access token"];
+    console.log("accessToken:", accessToken);
+    await context.syncAdminInfo(accessToken);
+  } else {
+    throw new LoginError("Failed to login");
+  }
+}
+
+export async function countLoggedUsers(context) {
+  let accessToken = await refreshAccessToken(context);
+  const response = await backend.get("/admin/log-in-users/count", {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+  if (response && response.status === 200 && response.data.status === 200) {
+    return response.data.data;
+  } else {
+    throw new APIError("로그인한 유저 카운팅 실패");
   }
 }
 

@@ -34,6 +34,8 @@ import PostInfo from "./components/post/PostInfo";
 import WritePost from "./components/post/WritePost";
 import CashPaymentListPage from "./components/user/CashPaymentList";
 import EditPost from "./components/post/EditPost";
+import DashBoard from "./components/admin/DashBoard";
+import LoginAsAdmin from "./components/admin/LoginAsAdmin";
 
 function App() {
   onMessage(messaging, (payload) => {
@@ -106,6 +108,9 @@ function App() {
               <Route path="/cash/checkout" element={<CheckoutPage />} />
               <Route path="/search" element={<SearchResult />} />
               <Route path="/sheet/scrapped" element={<ScrappedSheetList />} />
+
+              <Route path="/admin/login" element={<LoginAsAdmin />} />
+              <Route path="/admin" element={<DashBoard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

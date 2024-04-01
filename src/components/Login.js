@@ -7,8 +7,6 @@ import { googleLogin, login } from "./AxiosUtil";
 
 function Login({ show, handleClose }) {
   const [loginInfo, setLoginInfo] = useState({ username: "", password: "" });
-  const url = "http://localhost:8080/user/login";
-
   const context = useContext(UserContext);
 
   const getUsername = (event) => {

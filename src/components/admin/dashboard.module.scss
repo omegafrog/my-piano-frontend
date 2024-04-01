@@ -1,0 +1,17 @@
+.chart {
+  width: 40%;
+}
+.ticket_content {
+  font-size: 1.5rem;
+  font-weight: bolder;
+  text-overflow: ellipsis;
+}
+.ticket_item {
+  border: 1px solid rgba(164, 176, 190, 1);
+  border-radius: 10px;
+  padding: 10px 20px 10px 20px;
+  margin: 10px;
+}
+.ticket_item :hover {
+  cursor: pointer;
+}

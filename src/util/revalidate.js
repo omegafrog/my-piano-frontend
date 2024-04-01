@@ -13,7 +13,7 @@ export default async function revalidate(context) {
   }
   let before = context.accessToken;
   if (before === "" || context.loggedIn === false) {
-    throw new Error("로그인이 필요합니다");
+    throw new LoginError("로그인이 필요합니다");
   }
   const token = decodeToken(before);
   if (Date.now() / 1000 >= token.exp) {
@@ -35,3 +35,4 @@ export default async function revalidate(context) {
     return before;
   }
 }
+export class LoginError extends Error {}

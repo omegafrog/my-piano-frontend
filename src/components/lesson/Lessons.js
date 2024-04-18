@@ -6,6 +6,7 @@ import { Card, Col, Container, Image, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { AlertContext } from "../../context/AlertContext";
 import { getLessons } from "../AxiosUtil";
+import LeftNavigator from "../LeftNavigator";
 
 export default function Lessons() {
   const alertValue = useContext(AlertContext);
@@ -19,16 +20,25 @@ export default function Lessons() {
   }, []);
 
   return (
-    <Layout leftNav={true} alertValue={alertValue}>
+    <Layout leftNav={<LeftNavigator />} alertValue={alertValue}>
       <Container className="w-75" style={{ paddingTop: "30px" }}>
         <div
           style={{
             height: "200px",
-            border: "1px solid blue",
             marginBottom: "30px",
+            backgroundColor: "#F9EBDE",
           }}
+          className="d-flex  align-items-center"
         >
-          배너
+          <div style={{ paddingLeft: "70px" }}>
+            <span style={{ fontSize: "1.8rem", fontWeight: "bold" }}>
+              마이 피아노 레슨
+            </span>
+            <br />
+            <span style={{ fontSize: "1.4rem", color: "#815854" }}>
+              레슨과 함께 쉽게 완성하는 한 곡!
+            </span>
+          </div>
         </div>
         <LessonList lessons={lessonList}></LessonList>
       </Container>

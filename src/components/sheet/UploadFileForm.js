@@ -1,15 +1,14 @@
 function UploadFileForm({ value }) {
   const renameSheetImg = (event) => {
     const files = event.target.files;
-    const baseUrl = `https://${process.env.REACT_APP_S3_BUCKET_NAME}.s3.${process.env.REACT_APP_REGION}.amazonaws.com/`;
     const newFiles = [];
+
     for (const file of files) {
       const nameList = file.name.split(".");
       newFiles.push(
         new File(
           [file],
-          baseUrl +
-            "sheet-" +
+          "sheet-" +
             nameList[0] +
             "-" +
             crypto.randomUUID() +
@@ -30,7 +29,6 @@ function UploadFileForm({ value }) {
       sheetDto: {
         ...prev.sheetDto,
         filePath: imageListItems,
-        pageNum: newFiles.length,
       },
     }));
     value.setSheetFile(newFiles);
@@ -43,7 +41,6 @@ function UploadFileForm({ value }) {
         id="inputGroupFile02"
         name="imgFiles"
         onChange={renameSheetImg}
-        multiple
       />
       <label className="input-group-text" htmlFor="inputGroupFile02">
         Upload

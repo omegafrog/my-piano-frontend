@@ -6,7 +6,10 @@ function UserInfo() {
   const { loggedUser } = useContext(UserContext);
   const [userProfile, setUserProfile] = useState("/img/defaultUserImg.png");
   useEffect(() => {
-    if (loggedUser.profileSrc !== "") setUserProfile(loggedUser.profileSrc);
+    if (loggedUser.profileSrc && loggedUser.profileSrc !== "")
+      setUserProfile(
+        `https://${process.env.REACT_APP_S3_BUCKET_NAME}.s3.${process.env.REACT_APP_REGION}.amazonaws.com/${loggedUser.profileSrc}`
+      );
   }, []);
 
   return (

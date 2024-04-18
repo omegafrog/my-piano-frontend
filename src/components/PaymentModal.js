@@ -30,7 +30,9 @@ export default function PaymentModal({ item, target }) {
       payBtn.innerHTML = "구매하기";
       payBtn.disabled = false;
     }
-    isPurcahsed(context, target, item, payBtn);
+    if (context.loggedIn === true) {
+      isPurcahsed(context, target, item, payBtn);
+    }
   }, [context.loggedUser]);
   const restCash = context.loggedUser.cash - item.price;
   const purchase = async () => {

@@ -29,7 +29,7 @@ export default function Comment({ target }) {
   useEffect(() => {
     async function invoke() {
       try {
-        const data = await getComments(context, target, id);
+        const data = await getComments(target, id);
         setCommentList(data.comments);
       } catch (e) {
         console.error(e);

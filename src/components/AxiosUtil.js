@@ -4,7 +4,7 @@ import { APIError } from "./User-context";
 import revalidate, { LoginError } from "../util/revalidate";
 
 const backend = axios.create({
-  baseURL: `${process.env.REACT_APP_BACKEND_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}`,
+  baseURL: `http://${process.env.REACT_APP_BACKEND_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}`,
   withCredentials: true,
   validateStatus: false,
 });
@@ -38,7 +38,9 @@ export async function uploadSheetInfo(context, value, navigate) {
     value.sheetFile.forEach((file) => formData.append("sheetFiles", file));
     formData.append("sheetInfo", JSON.stringify(value.sheetInfo));
     const result = await backend.post("/sheet/write", formData, {
-      Authorization: accessToken,
+      headers: {
+        Authorization: accessToken,
+      },
     });
 
     if (result.data.status === 200) {
@@ -53,14 +55,14 @@ export async function uploadSheetInfo(context, value, navigate) {
 
 export async function GetSheetPosts({
   setSheetPosts,
-  setShowAlert,
-  page = 0,
-  size = 20,
+  alertValue,
+
   filter,
-  context,
+  pageable,
 }) {
   const params = {};
-  params.page = page;
+  params.page = pageable.page;
+  params.size = pageable.size;
   let genreParam = "";
   let instrumentParam = "";
   let difficultyParam = "";
@@ -81,50 +83,47 @@ export async function GetSheetPosts({
     params.difficulty = difficultyParam;
   }
 
-  const accessToken = (await refreshAccessToken(context)) || {};
-
-  backend
-    .get("/sheet", {
-      params: params,
-      headers: {
-        Authorization: accessToken,
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      setSheetPosts(response.data.data);
-    })
-    .catch(function (error) {
-      console.log("error:", error);
-      setShowAlert({ state: true, text: "network error" });
-    });
+  const result = await backend.get("/sheet", {
+    params: params,
+  });
+  if (result && result.status === 200 && result.data.status === 200) {
+    return result.data.data;
+  } else if (result.data.status === 401 || result.data.status === 403) {
+    throw new LoginError("인증이 필요합니다.");
+  } else {
+    throw new APIError("악보 조회 실패", result);
+  }
 }
 
 export async function Logout(context) {
-  const response = refreshAccessToken(context) || {};
-  console.log("response:", response);
-  const { error, accessToken } = response;
-  if (error !== null) {
-    context.initialize();
-    alert("로그인이 만료되었습니다. 다시 로그인하세요.");
-  } else {
-    backend
-      .get("/user/logout", {
-        headers: {
-          Authorization: accessToken,
-        },
-      })
-      .then((response) => {
-        console.log("response:", response);
-        if (response.data.status === 200) {
-          context.initialize();
-        } else {
-          alert("error");
-        }
-      })
-      .catch(function (error) {
-        if (error.request || error.response) console.log("error:", error);
-      });
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const result = await backend.get("/user/logout", {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (result && result.status === 200 && result.data.status === 200)
+      context.initialize();
+    else throw new APIError("로그아웃 실패");
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function adminLogout(context) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const result = await backend.get("/admin/logout", {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (result && result.status === 200 && result.data.status === 200)
+      context.initialize();
+    else throw APIError("로그아웃 실패");
+  } catch (e) {
+    throw e;
   }
 }
 
@@ -179,15 +178,19 @@ export async function getPosts(pageable) {
 }
 
 export async function writePost(context, body) {
-  const response = refreshAccessToken(context) || {};
-  const { accessToken } = response;
-
-  const result = await backend.post("/community/posts", body, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
-  return result;
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const result = await backend.post("/community/posts", body, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (result && result.status === 200 && result.data.status === 200) {
+      return result.data.page;
+    }
+  } catch (e) {
+    throw e;
+  }
 }
 export async function getPost(context, id) {
   const result = await backend.get(`/community/posts/${id}`, {});
@@ -217,7 +220,7 @@ export async function updatePost(context, id, data) {
 export async function deletePost(context, id) {
   try {
     const accessToken = refreshAccessToken(context);
-    const result = await backend.delete(`/community/posts/${id}`, {
+    const result = await backend.put(`/community/posts/${id}`, {
       headers: {
         Authorization: accessToken,
       },
@@ -329,7 +332,7 @@ export async function validate(context) {
 
 export async function checkIsLiked(context, target, id) {
   try {
-    const accessToken = refreshAccessToken(context);
+    const accessToken = await refreshAccessToken(context);
     const result = await backend.get(`/${target}/${id}/like`, {
       headers: {
         Authorization: accessToken,
@@ -344,28 +347,45 @@ export async function checkIsLiked(context, target, id) {
   }
 }
 
-export async function likePost(context, target, targetDOM, id, setState) {
+export async function likePost(context, target, id) {
   try {
-    const accessToken = refreshAccessToken(context);
+    const accessToken = await refreshAccessToken(context);
+
     const result = await backend.put(`/${target}/${id}/like`, null, {
-      validateStatus: false,
-      withCredentials: true,
       headers: {
         Authorization: accessToken,
       },
     });
-    if (result.data.status === 200) {
-      console.log("success");
-      setState((prev) => ({
-        ...prev,
-        likeCount: prev.likeCount + 1,
-      }));
-      targetDOM.style.backgroundColor = "#74b9ff";
-      targetDOM.classList.add("active");
+
+    console.log("result:", result);
+    if (result && result.status === 200 && result.data.status === 200) {
+      return;
+    } else if (result.data.status === 403) {
+      throw new LoginError("로그인 실패");
+    } else {
+      throw new APIError("글에 좋아요 주기 실패", result);
     }
   } catch (e) {
-    console.log("예상하지 못한 에러입니다.");
-    console.log("error:", e);
+    throw e;
+  }
+}
+export async function dislikePost(context, target, id) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const result = await backend.delete(`/${target}/${id}/like`, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (result && result.status === 200 && result.data.status === 200) {
+      return;
+    } else if (result.data.status === 401 || result.data.status === 403) {
+      throw new LoginError("로그인이 필요합니다");
+    } else {
+      throw new APIError("좋아요 취소 실패");
+    }
+  } catch (e) {
+    throw e;
   }
 }
 
@@ -403,8 +423,8 @@ export async function googleLogin(
       navigate("/user/register", { state: initialRegisterInfo });
     } else if (response.data.status === 200) {
       console.log("로그인 성공");
-      console.log("response.data", response.data);
-      context.syncUserInfo();
+      console.log("access token", response.data.data["access token"]);
+      context.syncUserInfo(response.data.data["access token"]);
     } else if (response.data.status === 403) {
       console.log("로그인 실패");
       alert(response.data.message);
@@ -468,13 +488,13 @@ export async function searchQuery(context, e, setSearchResult) {
 
 export async function isPurcahsed(context, target, item, buttonDOM) {
   try {
-    const accessToken = refreshAccessToken(context) || {};
-    const result = backend.get(`/order/${target}/${item.id}`, {
+    const accessToken = (await refreshAccessToken(context)) || {};
+    const result = await backend.get(`/order/${target}/${item.id}`, {
       headers: {
         Authorization: accessToken,
       },
     });
-    if (result.data.status === 200) {
+    if (result && result.status === 200 && result.data.status === 200) {
       if (result.data.data.isOrdered === true) {
         buttonDOM.innerHTML = "이미 구매하신 상품입니다.";
         buttonDOM.disabled = true;
@@ -664,13 +684,8 @@ export async function addComment(context, target, id, content) {
   }
 }
 
-export async function getComments(context, target, id) {
-  let accessToken = await refreshAccessToken(context);
-  const result = await backend.get(`/${target}/${id}/comments`, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+export async function getComments(target, id) {
+  const result = await backend.get(`/${target}/${id}/comments`, {});
   if (result && result.status === 200 && result.data.status === 200) {
     return result.data.data;
   } else {
@@ -711,16 +726,20 @@ export async function getLessons() {
 }
 
 export async function getUserUploadedSheets(context) {
-  let accessToken = await refreshAccessToken(context);
-  const result = await backend.get("/user/uploadedSheets", {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
-  if (result && result.status === 200 && result.data.status === 200) {
-    return result.data.data;
-  } else {
-    throw new APIError("유저가 업로드한 악보 조회 실패", result);
+  try {
+    let accessToken = await refreshAccessToken(context);
+    const result = await backend.get("/user/uploadedSheets", {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (result && result.status === 200 && result.data.status === 200) {
+      return result.data.data;
+    } else {
+      throw new APIError("유저가 업로드한 악보 조회 실패", result);
+    }
+  } catch (e) {
+    throw e;
   }
 }
 
@@ -740,6 +759,7 @@ export async function uploadLesson(context, lessonInfo) {
 
 export async function getSheet(id) {
   const result = await backend.get(`/sheet/${id}`);
+  console.log("result:", result);
   if (result && result.status === 200 && result.data.status === 200) {
     return result.data.data;
   } else {
@@ -775,13 +795,16 @@ export async function getPurchasedSheets(context) {
   }
 }
 
-export async function getTickets(context) {
+export async function getTickets(context, filter) {
   let accessToken = await refreshAccessToken(context);
-  const response = await backend.get("/tickets", {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+  const response = await backend.get(
+    `/tickets?id=${filter.id}&type=${filter.type}&status=${filter.status}&startDate=${filter.startDate}&endDate=${filter.endDate}`,
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
+  );
   if (response && response.status === 200 && response.data.status === 200) {
     return response.data.data;
   } else if (response.data.status === 401) {
@@ -814,6 +837,261 @@ export async function countLoggedUsers(context) {
     return response.data.data;
   } else {
     throw new APIError("로그인한 유저 카운팅 실패");
+  }
+}
+export async function getSessions(context, page, size) {
+  try {
+    let accessToken = await refreshAccessToken(context);
+    const response = await backend.get(
+      `/admin/sessions?page=${page}&size=${size}`,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else {
+      throw new APIError("세션 목록 불러오기 실패");
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function disconnectUser(context, userId, role) {
+  try {
+    let accessToken = await refreshAccessToken(context);
+    const response = await backend.delete(
+      `/admin/users?userId=${userId}&role=${role}`,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else {
+      throw new APIError("유저 연결 해제 실패");
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function getUsers(context, filter, { page, size }) {
+  try {
+    let accessToken = await refreshAccessToken(context);
+    const response = await backend.get(
+      `/admin/users?id=${filter.id}&email=${filter.email}&loginMethod=${filter.loginMethod}&dateStart=${filter.dateStart}&dateEnd=${filter.dateEnd}&locked=${filter.locked}&page=${page}&size=${size}`,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else if (response.data.status === 401) {
+      throw new LoginError(response.data.message);
+    } else {
+      throw new APIError("모든 유저 조회 실패");
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function changeUserInfo(context, id, changed) {
+  try {
+    let accessToken = await refreshAccessToken(context);
+    const response = await backend.post(`/admin/users/${id}`, changed, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (response && response.status === 200 && response.data.status === 200) {
+      return;
+    } else if (response.data.status === 401) {
+      throw new LoginError(response.data.message);
+    } else {
+      throw new APIError("유저 관리 실패");
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function sendReply(context, id, content) {
+  try {
+    let accessToken = await refreshAccessToken(context);
+    const response = await backend.put(
+      `/tickets/${id}`,
+      { content: content },
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else if (response.data.status === 401) {
+      throw new LoginError(response.data.message);
+    } else {
+      throw new APIError("티켓 답변 실패");
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function closeTicket(context, id) {
+  try {
+    let accessToken = await refreshAccessToken(context);
+    const response = await backend.delete(`/tickets/${id}`, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (response && response.status === 200 && response.data.status === 200) {
+      return;
+    } else if (response.data.status === 401) {
+      throw new LoginError(response.data.message);
+    } else {
+      throw new APIError("문의 닫기 실패");
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function getPostsAdmin(context, filter, pageable) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const filterQueryString = `id=${filter.id}&authorId=${filter.authorId}&startDate=${filter.startDate}&endDate=${filter.endDate}`;
+    const pageableString = `page=${pageable.page}&size=${pageable.size}`;
+    const response = await backend.get(
+      `/admin/posts?${filterQueryString}&${pageableString}`,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function deletePostAdmin(context, id) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const response = await backend.delete(`/admin/posts/${id}`, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (response && response.status === 200 && response.data.status === 200) {
+      return;
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function updatePostAdmin(context, id, option) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const response = await backend.put(`/admin/posts/${id}`, option, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function getSheets(context, filter, pageable) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const filterMap = new Map(Object.entries(filter));
+    var filterParam = "";
+    filterMap.forEach((value, key) => {
+      filterParam += `${key}=${value}&`;
+    });
+    if (filterParam.length > 0)
+      filterParam = filterParam.slice(0, filterParam.length - 1);
+    console.log("filterParam:", filterParam);
+    // const filterParam = `id=${filter.id}&title=${filter.title}&username=${filter.username}&sheetId=${filter.sheetId}&instrument=${filter.instrument}&difficulty=${filter.difficulty}&dateStart=${filter.dateStart}&dateEnd=${filter.dateEnd}`;
+    const pageParam = `page=${pageable.page}&size=${pageable.size}`;
+    const response = await backend.get(
+      `/admin/sheets?${filterParam}&${pageParam}`,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else if (response.data.status === 401 || response.data.status === 403) {
+      throw new LoginError(response.data.message);
+    } else {
+      throw new APIError("악보 리스트 조회 실패", response);
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function updateSheetPostAdmin(context, id, option) {
+  const accessToken = await refreshAccessToken(context);
+  const response = await backend.put(`/admin/sheets/${id}`, option, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+  if (response && response.status === 200 && response.data.status === 200) {
+    return response.data.data;
+  } else if (response.data.status === 401 || response.data.status === 403) {
+    throw new LoginError(response.data.message);
+  } else {
+    throw new APIError("악보 수정 실패", response);
+  }
+}
+
+export async function deleteSheetPostAdmin(context, id) {
+  const accessToken = await refreshAccessToken(context);
+  const response = await backend.delete(`/admin/sheets/${id}`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+  if (response && response.status === 200 && response.data.status === 200) {
+    return response.data.data;
+  } else if (response.data.status === 401 || response.data.status === 403) {
+    throw new LoginError(response.data.message);
+  } else {
+    throw new APIError("악보 삭제 실패", response);
+  }
+}
+
+export async function getLessonsAdmin(context) {
+  const accessToken = await refreshAccessToken(context);
+  const response = await backend.get(`/admin/lessons`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+  if (response && response.status === 200 && response.data.status === 200) {
+    return response.data.data;
+  } else if (response.data.status === 401 || response.data.status === 403) {
+    throw new LoginError(response.data.message);
+  } else {
+    throw new APIError("레슨 조회 실패", response);
   }
 }
 

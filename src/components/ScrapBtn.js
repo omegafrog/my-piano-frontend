@@ -10,28 +10,36 @@ export default function ScrapBtn({ target, id, style, className }) {
   useEffect(() => {
     async function invoke() {
       if (context.loggedIn === true) {
-        try {
-          const data = await isScrapped(context, target, id);
-          if (data.isScrapped === true) {
-            const scrapBtn = document.querySelector("#scrap-btn");
-            scrapBtn.style.backgroundColor = "#74b9ff";
-            scrapBtn.innerHTML = "scrapped";
-            scrapBtn.classList.add("active");
+        if (
+          context.loggedUser.role === "USER" ||
+          context.loggedUser.role === "CREATOR"
+        ) {
+          try {
+            const data = await isScrapped(context, target, id);
+            if (data.isScrapped === true) {
+              const scrapBtn = document.querySelector("#scrap-btn");
+              scrapBtn.style.backgroundColor = "#74b9ff";
+              scrapBtn.innerHTML = "scrapped";
+              scrapBtn.classList.add("active");
+            }
+          } catch (e) {
+            alertContext.alert("danger", e.message);
           }
-        } catch (e) {
-          console.error(e);
-          alertContext.alert("danger", e.message);
         }
       }
     }
     invoke();
-  });
+  }, []);
   return (
     <Button
       className={className}
       style={style}
       variant="outline-secondary"
       id="scrap-btn"
+      disabled={
+        context.loggedUser.role === "ADMIN" ||
+        context.loggedUser.role === "SU_ADMIN"
+      }
       onClick={async () => {
         const scrapBtn = document.querySelector("#scrap-btn");
         if (scrapBtn.classList.contains("active") === true) {

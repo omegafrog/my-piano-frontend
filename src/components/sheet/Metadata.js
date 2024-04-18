@@ -14,10 +14,10 @@ export default function Metadata({ item }) {
         style={{ width: "300px", paddingTop: "20px" }}
       >
         <Row style={{ margin: "5px" }}>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span>가격</span>
           </Col>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span>장르</span>
           </Col>
         </Row>
@@ -53,10 +53,10 @@ export default function Metadata({ item }) {
           </Col>
         </Row>
         <Row style={{ margin: "5px" }}>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span id="difficulty">난이도</span>
           </Col>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span id="instrument">악기</span>
           </Col>
         </Row>
@@ -69,10 +69,10 @@ export default function Metadata({ item }) {
           </Col>
         </Row>
         <Row style={{ margin: "5px" }}>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span>솔로/듀엣</span>
           </Col>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span>가사 여부</span>
           </Col>
         </Row>
@@ -83,10 +83,10 @@ export default function Metadata({ item }) {
           <Col>{item.sheet.lyrics ? "가사 없음" : "가사 있음"}</Col>
         </Row>
         <Row style={{ margin: "5px" }}>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span>페이지 수</span>
           </Col>
-          <Col>
+          <Col style={{ backgroundColor: "rgba(206, 214, 224,1.0)" }}>
             <span>곡 이름</span>
           </Col>
         </Row>

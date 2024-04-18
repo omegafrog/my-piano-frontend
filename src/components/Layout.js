@@ -5,6 +5,7 @@ import Navigator from "./Navigator";
 import { UserContext } from "./User-context";
 import { messaging } from "./../firebase";
 import { subscribeNoti, validate } from "./AxiosUtil";
+import { LoginError } from "../util/revalidate";
 
 export default function Layout({ alertValue, children, leftNav }) {
   const context = useContext(UserContext);
@@ -22,12 +23,17 @@ export default function Layout({ alertValue, children, leftNav }) {
     // Your web app's Firebase configuration
 
     if (context.loggedIn) {
-      if (Notification.permission === "granted") {
-        grantPushNotification();
-      } else {
-        Notification.requestPermission().then((result) => {
-          if (result === "granted") grantPushNotification();
-        });
+      if (
+        context.loggedUser.role !== "ADMIN" ||
+        context.loggedUser.role !== "SU_ADMIN"
+      ) {
+        if (Notification.permission === "granted") {
+          grantPushNotification();
+        } else {
+          Notification.requestPermission().then((result) => {
+            if (result === "granted") grantPushNotification();
+          });
+        }
       }
     }
 

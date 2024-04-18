@@ -1,12 +1,11 @@
 import { Button, Container, Table } from "react-bootstrap";
 import Layout from "../Layout";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getPosts } from "../AxiosUtil";
-import { UserContext } from "../User-context";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
 
-import "./postList.css";
+import "./postList.module.css";
 import CustomPagenation from "../Pagenation";
 import queryString from "query-string";
 
@@ -15,15 +14,12 @@ export function Posts() {
   const [posts, setPosts] = useState([]);
   const { search } = useLocation();
 
-  const [paginationEnd, setPaginationEnd] = useState(0);
+  const [count, setCount] = useState(0);
   const [pageable, setPageable] = useState({ page: 0, size: 10 });
   useEffect(() => {
     async function a() {
-      console.log("search:", search);
       const { size = 10, page = 0 } = queryString.parse(search);
-      //   const size = search.size ? search.size : 10;
-      //   const page = search.page ? search.page : 0;
-      console.log("page, size:", page, size);
+
       if (search.page !== undefined && search.size !== undefined) {
         setPageable({ page: page, size: size });
       }
@@ -32,14 +28,10 @@ export function Posts() {
         size: size,
       });
       setPosts(data.data.postListDtos);
-      setPaginationEnd(
-        data.data.totalPostCount % size === 0
-          ? data.data.totalPostCount / size
-          : parseInt(data.data.totalPostCount / size) + 1
-      );
+      setCount(data.data.totalPostCount);
     }
     a();
-  }, [search]);
+  }, [search, pageable]);
   return (
     <Layout>
       <Container className="w-75 my-5 d-flex flex-column align-items-center">
@@ -66,9 +58,18 @@ export function Posts() {
             <tbody className="contents">
               {posts.map((post, idx) => {
                 return (
-                  <tr key={idx} onClick={() => navigate(`/post/${post.id}`)}>
+                  <tr
+                    key={idx}
+                    onClick={() => {
+                      if (post.disabled === false) navigate(`/post/${post.id}`);
+                    }}
+                  >
                     <td>{post.id}</td>
-                    <td className="title">{post.title}</td>
+                    <td className="title">
+                      {post.disabled === true
+                        ? "비공개된 글입니다."
+                        : post.title}
+                    </td>
                     <td className="author-name">{post.authorName}</td>
                     <td className="view-count">{post.viewCount}</td>
                     <td className="created-at">
@@ -82,11 +83,14 @@ export function Posts() {
             </tbody>
           </Table>
         </div>
-        <CustomPagenation
-          pageable={pageable}
-          endNum={paginationEnd}
-          pageBtnSize={5}
-        />
+        <div className="w-100 d-flex justify-content-center ">
+          <CustomPagenation
+            pageable={pageable}
+            setPageable={setPageable}
+            count={count}
+            pageBtnSize={5}
+          />
+        </div>
       </Container>
     </Layout>
   );

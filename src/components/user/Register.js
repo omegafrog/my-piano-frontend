@@ -52,9 +52,7 @@ function Register() {
         return;
       }
       setProfileSrc(URL.createObjectURL(file));
-      const newFileName = `https://${process.env.REACT_APP_S3_BUCKET_NAME}.s3.${
-        process.env.REACT_APP_REGION
-      }.amazonaws.com/profile-${fileName[0]}-${crypto.randomUUID()}.${
+      const newFileName = `profile-${fileName[0]}-${crypto.randomUUID()}.${
         fileName[1]
       }`;
       setProfileFile(new File([file], newFileName, { type: file.type }));

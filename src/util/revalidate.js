@@ -3,7 +3,7 @@ import axios from "axios";
 import { APIError } from "../components/User-context";
 
 const instance = axios.create({
-  aseURL: process.env.REACT_APP_BACKEND_HOSTNAME,
+  baseURL: `http://${process.env.REACT_APP_BACKEND_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}`,
   validateStatus: false,
 });
 
@@ -26,6 +26,8 @@ export default async function revalidate(context) {
       const newToken = result.data.data["access token"];
       context.setAccessToken(newToken);
       sessionStorage.setItem("userState", JSON.stringify(context));
+    } else if (result.data.status === 401) {
+      throw new LoginError(result.data.message);
     } else {
       throw new APIError("revalidate fail", result);
     }

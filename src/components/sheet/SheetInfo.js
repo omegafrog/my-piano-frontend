@@ -7,9 +7,9 @@ import { UserContext } from "../User-context";
 import axios from "axios";
 import Layout from "../Layout";
 
-import revalidate from "../../util/revalidate";
+import revalidate, { LoginError } from "../../util/revalidate";
 
-import { Col, Image, Row } from "react-bootstrap";
+import { Button, Col, Container, Image, Row } from "react-bootstrap";
 import LikeBtn from "../LikeBtn";
 import ScrapBtn from "../ScrapBtn";
 import Metadata from "./Metadata";
@@ -17,45 +17,45 @@ import PaymentModal from "../PaymentModal";
 import Comment from "../comment/Comment";
 import CartBtn from "../CartBtn";
 import { AlertContext } from "../../context/AlertContext";
-import { getSheet, isLikedPost, isScrapped } from "../AxiosUtil";
-
+import {
+  deletePostAdmin,
+  deleteSheetPostAdmin,
+  getSheet,
+  isLikedPost,
+  isScrapped,
+  updatePostAdmin,
+  updateSheetPostAdmin,
+} from "../AxiosUtil";
+import $ from "jquery";
 function SheetContent({ item }) {
   console.log(item);
-  let filePaths = item.sheet.sheetUrl.split(",");
-  filePaths.pop();
-
+  let filePaths = item.sheet.sheetUrl.split(".");
+  const thumbnails = [];
+  for (let i = 0; i < item.sheet.pageNum; i += 1) {
+    thumbnails.push(
+      `https://mypianobucket.s3.ap-northeast-2.amazonaws.com/${filePaths[0]}-${i}.jpg`
+    );
+  }
+  console.log("thumbnails:", thumbnails);
   return (
-    <Carousel
-      className="d-flex align-items-center"
-      style={{
-        width: "700px",
-        height: "1000px",
-      }}
-    >
-      {filePaths.map((file, idx) => {
-        const fileNameChunks = file.split(".");
-        const extensions = fileNameChunks[fileNameChunks.length - 1];
-        if (extensions === "pdf") {
+    <div style={{ maxWidth: "350px" }}>
+      <Carousel
+        data-bs-theme="dark"
+        className="d-flex align-items-center"
+        interval={null}
+      >
+        {thumbnails.map((item, idx) => {
           return (
-            <Carousel.Item key={idx}>
-              <embed
-                className="d-block w-100 h-100"
-                src={file}
-                type={"application/pdf"}
-                scrolling={"none"}
-                alt="Second slide"
+            <Carousel.Item>
+              <Image
+                style={{ objectFit: "contain", width: "100%" }}
+                src={item}
               />
             </Carousel.Item>
           );
-        } else {
-          return (
-            <Carousel.Item key={idx}>
-              <img className="d-block w-100" src={file} alt="Second slide" />
-            </Carousel.Item>
-          );
-        }
-      })}
-    </Carousel>
+        })}
+      </Carousel>
+    </div>
   );
 }
 // TODO : 자신의 sheet일 경우 cart에 넣지 못하도록 비활성화
@@ -72,17 +72,6 @@ function SheetInfo() {
       try {
         const data = await getSheet(id);
         setSheetPost(data.sheetPost);
-        const likedPostData = await isLikedPost(context, "sheet", id);
-        if (likedPostData.isLikedPost === true) {
-          const likeBtn = document.querySelector("#like-count");
-          likeBtn.style.backgroundColor = "#74b9ff";
-        }
-        const isScrappedData = await isScrapped(context, "sheet", id);
-        if (isScrappedData.isScrapped === true) {
-          const scrapBtn = document.querySelector("#scrap-btn");
-          scrapBtn.style.backgroundColor = "#74b9ff";
-          scrapBtn.innerHTML = "scrapped";
-        }
       } catch (e) {
         console.error(e);
         alertValue.alert("danger", e.message);
@@ -137,6 +126,65 @@ function SheetInfo() {
               />
             </Col>
             <Col xs={3} className="h-100">
+              {context.loggedUser.role === "ADMIN" ? (
+                <>
+                  <Button
+                    className="mx-1"
+                    variant="danger"
+                    onClick={async () => {
+                      try {
+                        if (window.confirm("삭제하시겠습니까?")) {
+                          await deleteSheetPostAdmin(context, id);
+                          alert("삭제되었습니다.");
+                          navigate("/admin/sheets");
+                        }
+                      } catch (e) {
+                        console.error(e);
+                        if (e instanceof LoginError) {
+                          alert("로그인이 필요합니다.");
+                          context.initialize();
+                          navigate("/admin/login");
+                        }
+                      }
+                    }}
+                  >
+                    삭제
+                  </Button>
+                  <Button
+                    className="mx-1"
+                    variant="danger"
+                    id="disable"
+                    onClick={async () => {
+                      try {
+                        const button = $("button#disable").get()[0];
+                        button.classList.toggle("active");
+
+                        //활성화 상태라면
+                        if (button.classList.contains("active")) {
+                          button.innerHTML = "비공개 됨";
+                          await updateSheetPostAdmin(context, id, {
+                            disable: true,
+                          });
+                        } else {
+                          button.innerHTML = "공개 됨";
+                          await updateSheetPostAdmin(context, id, {
+                            disable: false,
+                          });
+                        }
+                      } catch (e) {
+                        if (e instanceof LoginError) {
+                          console.error(e);
+                          alert("로그인이 필요합니다.");
+                          context.initialize();
+                          navigate("/admin/login");
+                        }
+                      }
+                    }}
+                  >
+                    {sheetPost.disabled === true ? "비공개 됨" : "공개됨"}
+                  </Button>
+                </>
+              ) : null}
               <PaymentModal item={sheetPost} target={"sheet"} />
               <CartBtn item={sheetPost} alertValue={alertValue} />
               <Metadata item={sheetPost} />

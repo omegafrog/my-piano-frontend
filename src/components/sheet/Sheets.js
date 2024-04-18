@@ -32,16 +32,21 @@ function Sheets() {
     difficulties: difficulties ? difficulties.split(" ") : [],
     instruments: instruments ? instruments.split(" ") : [],
   });
+  const [pageable, setPageable] = useState({ size: 30, page: 0 });
   const alertValue = useContext(AlertContext);
 
   useEffect(() => {
-    console.log("filter:", filter);
-    GetSheetPosts({
-      setSheetPosts: setSheetPosts,
-      setShowAlert: alertValue.setShowAlert,
-      context: context,
-      filter,
-    });
+    async function invoke() {
+      const data = await GetSheetPosts({
+        setSheetPosts: setSheetPosts,
+        alertValue: alertValue,
+        context: context,
+        filter,
+        pageable: pageable,
+      });
+      setSheetPosts(data.content);
+    }
+    invoke();
   }, [filter]);
 
   return (

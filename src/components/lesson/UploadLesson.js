@@ -94,7 +94,8 @@ export default function UploadLesson() {
     async function invoke() {
       try {
         const data = await getUserUploadedSheets(context);
-        setSheetList(data.sheets);
+        console.log(data);
+        setSheetList(data);
         setLoading(false);
       } catch (e) {
         console.error(e);

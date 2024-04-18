@@ -24,6 +24,13 @@ export default function DashBoard() {
   Chart.register(BarElement); // 접속 유저 수
   var datesArray = [];
   var currentDate = new Date();
+  const [filter, setFilter] = useState({
+    id: "",
+    type: "",
+    status: "",
+    startDate: "",
+    endDate: "",
+  });
   const chartRef = useRef(null);
   for (var i = 0; i < 7; i++) {
     var date = new Date(currentDate);
@@ -38,8 +45,8 @@ export default function DashBoard() {
   useEffect(() => {
     async function invoke() {
       try {
-        const data = await getTickets(context);
-        setTicketData(data);
+        const data = await getTickets(context, filter);
+        setTicketData(data.data);
         setLoading(true);
         const loggedInUsers = await countLoggedUsers(context);
         setCount(loggedInUsers);
@@ -101,7 +108,7 @@ export default function DashBoard() {
                 }}
               >
                 <div>
-                  <span className={styles.ticket_content}>{data.content}</span>
+                  <span className={styles.ticket_content}>{data.title}</span>
                 </div>
                 <div>
                   <div className="d-flex flex-column align-items-end">
@@ -123,7 +130,9 @@ export default function DashBoard() {
     <div className="card w-100 h-100" style={{ overflowY: "scroll" }}>
       <div className="card-body">
         <div className="clearfix mb-4">
-          <h4 className="card-title float-left">현재 로그인한 유저</h4>
+          <h4 className="card-title float-left">
+            현재 로그인한 유저 : {count}명
+          </h4>
         </div>
       </div>
     </div>
@@ -132,13 +141,19 @@ export default function DashBoard() {
   // 최근 보낸 알림
   return (
     <AdminLayout>
-      <Row>
-        <Col>{users}</Col>
-        <Col>{tickets}</Col>
-      </Row>
-      <Row>
-        <Col>{currentUsers}</Col>
-      </Row>
+      {loading === true ? (
+        <>
+          <Row>
+            <Col>{users}</Col>
+            <Col>{tickets}</Col>
+          </Row>
+          <Row className="my-5">
+            <Col xs={5}>{currentUsers}</Col>
+          </Row>
+        </>
+      ) : (
+        <h2>Loading...</h2>
+      )}
     </AdminLayout>
   );
 }

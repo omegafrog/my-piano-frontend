@@ -36,6 +36,13 @@ import CashPaymentListPage from "./components/user/CashPaymentList";
 import EditPost from "./components/post/EditPost";
 import DashBoard from "./components/admin/DashBoard";
 import LoginAsAdmin from "./components/admin/LoginAsAdmin";
+import { Sessions } from "./components/admin/Sessions";
+import Users from "./components/admin/Users";
+import Tickets from "./components/admin/Tickets";
+import AdminLessons from "./components/admin/Lessons";
+import AdminSheets from "./components/admin/Sheets";
+import AdminPosts from "./components/admin/Posts";
+import AdminTicket from "./components/admin/AdminTicketInfo";
 
 function App() {
   onMessage(messaging, (payload) => {
@@ -111,6 +118,13 @@ function App() {
 
               <Route path="/admin/login" element={<LoginAsAdmin />} />
               <Route path="/admin" element={<DashBoard />} />
+              <Route path="/admin/sessions" element={<Sessions />} />
+              <Route path="/admin/users" element={<Users />} />
+              <Route path="/admin/tickets" element={<Tickets />} />
+              <Route path="/admin/posts" element={<AdminPosts />} />
+              <Route path="/admin/sheets" element={<AdminSheets />} />
+              <Route path="/admin/lessons" element={<AdminLessons />} />
+              <Route path="/admin/tickets/:id" element={<AdminTicket />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

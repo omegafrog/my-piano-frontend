@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import Layout from "../Layout";
-import { getPost } from "../AxiosUtil";
+import { deletePostAdmin, getPost, updatePostAdmin } from "../AxiosUtil";
 import { UserContext } from "../User-context";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { Col, Container, Image, Row } from "react-bootstrap";
+import { Button, Col, Container, Image, Row } from "react-bootstrap";
 import styles from "./postInfo.module.scss";
 import Comment from "../comment/Comment";
 import LikeBtn from "../LikeBtn";
+import { LoginError } from "../../util/revalidate";
+import $ from "jquery";
 
 export default function PostInfo() {
   const [data, setData] = useState();
@@ -16,11 +18,20 @@ export default function PostInfo() {
   const [timeDiffString, setTimeDiffString] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
-    async function a() {
-      console.log(id);
+    async function invoke() {
       const data = await getPost(context, id);
       setData(data);
       setLoading(true);
+      if (
+        context.loggedIn === false ||
+        context.loggedUser.role === "USER" ||
+        context.loggedUser.role === "CREATOR"
+      ) {
+        if (data.disabled === true) {
+          alert("비공개 처리된 글입니다.");
+          navigate(-1);
+        }
+      }
       const createdAt = new Date(
         `${data.createdAt[0]}-` +
           `${data.createdAt[1]}-` +
@@ -51,7 +62,7 @@ export default function PostInfo() {
         setTimeDiffString(`${current.getDate() - createdAt.getDate()}일 전`);
       }
     }
-    a();
+    invoke();
   }, []);
   return (
     <Layout>
@@ -79,15 +90,78 @@ export default function PostInfo() {
                     {timeDiffString} • 조회수 {data.viewCount} 회
                   </span>
                 </Col>
+
                 <Col className="d-flex justify-content-end">
-                  <button
-                    className={styles.editBtn}
-                    onClick={() => {
-                      navigate("edit");
-                    }}
-                  >
-                    <img src="/img/edit-button.png" />
-                  </button>
+                  {context.loggedIn &&
+                  context.loggedUser.id === data.author.id ? (
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => {
+                        navigate("edit");
+                      }}
+                    >
+                      <img src="/img/edit-button.png" />
+                    </button>
+                  ) : null}
+                  {context.loggedUser.role === "ADMIN" ? (
+                    <>
+                      <Button
+                        className="mx-1"
+                        variant="danger"
+                        onClick={async () => {
+                          try {
+                            if (window.confirm("삭제하시겠습니까?")) {
+                              await deletePostAdmin(context, id);
+                              alert("삭제되었습니다.");
+                              navigate("/admin/posts");
+                            }
+                          } catch (e) {
+                            console.error(e);
+                            if (e instanceof LoginError) {
+                              alert("로그인이 필요합니다.");
+                              context.initialize();
+                              navigate("/admin/login");
+                            }
+                          }
+                        }}
+                      >
+                        삭제
+                      </Button>
+                      <Button
+                        className="mx-1"
+                        variant="danger"
+                        id="disable"
+                        onClick={async () => {
+                          try {
+                            const button = $("button#disable").get()[0];
+                            button.classList.toggle("active");
+
+                            //활성화 상태라면
+                            if (button.classList.contains("active")) {
+                              button.innerHTML = "비공개 됨";
+                              await updatePostAdmin(context, id, {
+                                disable: true,
+                              });
+                            } else {
+                              button.innerHTML = "공개 됨";
+                              await updatePostAdmin(context, id, {
+                                disable: false,
+                              });
+                            }
+                          } catch (e) {
+                            if (e instanceof LoginError) {
+                              console.error(e);
+                              alert("로그인이 필요합니다.");
+                              context.initialize();
+                              navigate("/admin/login");
+                            }
+                          }
+                        }}
+                      >
+                        {data.disabled === true ? "비공개 됨" : "공개됨"}
+                      </Button>
+                    </>
+                  ) : null}
                 </Col>
               </Row>
             </div>

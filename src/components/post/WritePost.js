@@ -16,10 +16,8 @@ export default function WritePost() {
 
   const submitPost = async () => {
     const body = { title: title, content: content };
-    const result = await writePost(context, body);
-    if (result.status === 200 && result.data.status === 200) {
-      navigate("/post");
-    }
+    console.log(await writePost(context, body));
+    navigate("/post");
   };
   return (
     <Layout>

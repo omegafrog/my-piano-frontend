@@ -1,5 +1,4 @@
 import axios from "axios";
-import { parse } from "path-browserify";
 import React, { useEffect, useMemo, useState } from "react";
 
 export const UserContext = React.createContext();

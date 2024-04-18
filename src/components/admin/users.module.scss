@@ -1,0 +1,11 @@
+.fold {
+  cursor: default;
+  td div {
+    background-color: rgb(229, 232, 245);
+  }
+}
+
+table tbody tr:hover:not(.fold) td {
+  background-color: #ced6e0;
+  cursor: pointer;
+}

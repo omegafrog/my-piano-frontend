@@ -53,12 +53,12 @@ function UploadSheet() {
 
   const submitSheetPost = async () => {
     // send sheet data
-    const flag = sheetInfoValidator(value.sheetInfo, value2.setShowAlert);
+    const flag = sheetInfoValidator(value.sheetInfo, value2);
     if (flag === false) {
       return;
     }
     try {
-      await uploadSheetInfo(context, value, value2.setShowAlert, navigate);
+      await uploadSheetInfo(context, value, navigate);
     } catch (e) {
       console.error(e);
       alert("업로드에 실패했습니다.");

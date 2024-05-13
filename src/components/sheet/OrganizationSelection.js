@@ -1,17 +1,17 @@
-function OrganizationSelection({ setSheetInfo }) {
+function OrganizationSelection({ sheetInfo, setSheetInfo }) {
   const changeOrganization = (event) => {
     console.log("event", event);
     console.log("event.target:", event.target);
     setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
+      sheet: {
+        ...prev.sheet,
         isSolo: event.target.value,
       },
     }));
   };
   return (
-    <div className="w-100 m-2">
+    <div className="w-75 m-2">
       <h3>편성</h3>
       <div className="btn-group" role="group" aria-label="organization">
         <input
@@ -20,7 +20,7 @@ function OrganizationSelection({ setSheetInfo }) {
           className="btn-check"
           autoComplete="off"
           id={`organization${1}`}
-          value={true}
+          value={sheetInfo.sheet ? sheetInfo.sheet.solo : true}
           onClick={changeOrganization}
         />
         <label htmlFor={`organization${1}`} className="btn btn-primary">

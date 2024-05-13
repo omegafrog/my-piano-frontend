@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Layout from "../Layout";
 import { deletePostAdmin, getPost, updatePostAdmin } from "../AxiosUtil";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { Button, Col, Container, Image, Row } from "react-bootstrap";
 import styles from "./postInfo.module.scss";
@@ -176,9 +176,6 @@ export default function PostInfo() {
                 id={data.id}
                 value={[data, setData]}
               />
-              {/* <div>
-                👍 <span className={styles.likeCount}>{data.likeCount}</span>
-              </div> */}
             </div>
             <hr />
             <div>

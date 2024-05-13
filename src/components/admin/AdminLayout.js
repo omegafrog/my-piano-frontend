@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import CustomAlert from "../alert/CustomAlert";
 import styles from "./AdminLayout.module.scss";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { Col, Image, Row } from "react-bootstrap";
 import { adminLogout } from "../AxiosUtil";
 import { useNavigate } from "react-router";

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Image, Row, Col, Form, Button } from "react-bootstrap";
 import { closeTicket, getTickets, sendReply } from "../AxiosUtil";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { AlertContext } from "../../context/AlertContext";
 import AdminLayout from "./AdminLayout";
 import { LoginError } from "../../util/revalidate";

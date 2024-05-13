@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { BarElement, CategoryScale, Chart, LinearScale } from "chart.js";
 import styles from "./dashboard.module.scss";
 import { AlertContext } from "../../context/AlertContext";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 
 import { countLoggedUsers, getTickets } from "../AxiosUtil";
 import { LoginError } from "../../util/revalidate";

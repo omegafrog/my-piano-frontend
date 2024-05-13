@@ -1,6 +1,6 @@
 import axios from "axios";
 import $ from "jquery";
-import { APIError } from "./User-context";
+import { APIError } from "../context/User-context";
 import revalidate, { LoginError } from "../util/revalidate";
 
 const backend = axios.create({
@@ -19,7 +19,7 @@ export async function uploadFile(context, fileFormData) {
     const accessToken = await refreshAccessToken(context);
     return await backend({
       method: "post",
-      url: "/sheet/file",
+      url: "/sheet-post/file",
       withCredentials: true,
       headers: {
         Authorization: accessToken,
@@ -30,14 +30,28 @@ export async function uploadFile(context, fileFormData) {
     throw e;
   }
 }
+export async function searchQuery(searchQuery) {
+  try {
+    console.log(searchQuery);
+    const result = await backend.get(
+      `/sheet-post?searchSentence=${searchQuery}`
+    );
+
+    if (result && result.status === 200 && result.data.status === 200) {
+      return result.data.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export async function uploadSheetInfo(context, value, navigate) {
   try {
     const accessToken = await refreshAccessToken(context);
     const formData = new FormData();
-    value.sheetFile.forEach((file) => formData.append("sheetFiles", file));
+    formData.append("sheetFiles", value.sheetFile);
     formData.append("sheetInfo", JSON.stringify(value.sheetInfo));
-    const result = await backend.post("/sheet/write", formData, {
+    const result = await backend.post("/sheet-post/write", formData, {
       headers: {
         Authorization: accessToken,
       },
@@ -53,13 +67,7 @@ export async function uploadSheetInfo(context, value, navigate) {
   }
 }
 
-export async function GetSheetPosts({
-  setSheetPosts,
-  alertValue,
-
-  filter,
-  pageable,
-}) {
+export async function GetSheetPosts({ filter, pageable }) {
   const params = {};
   params.page = pageable.page;
   params.size = pageable.size;
@@ -83,7 +91,7 @@ export async function GetSheetPosts({
     params.difficulty = difficultyParam;
   }
 
-  const result = await backend.get("/sheet", {
+  const result = await backend.get("/sheet-post", {
     params: params,
   });
   if (result && result.status === 200 && result.data.status === 200) {
@@ -292,7 +300,7 @@ export async function addToCart(context, item, alertValue) {
 
 export async function subscribeNoti(context, token) {
   try {
-    const accessToken = refreshAccessToken(context);
+    const accessToken = await refreshAccessToken(context);
     const result = await backend.post(
       `/notification/token`,
       { token: token },
@@ -308,6 +316,24 @@ export async function subscribeNoti(context, token) {
     }
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function getNoti(context) {
+  try {
+    const refreshToken = await refreshAccessToken(context);
+    const response = await backend.get("/notification", {
+      headers: {
+        Authorization: refreshToken,
+      },
+    });
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else {
+      throw new APIError("Notification 가져오기 실패.", response);
+    }
+  } catch (e) {
+    throw e;
   }
 }
 
@@ -357,7 +383,6 @@ export async function likePost(context, target, id) {
       },
     });
 
-    console.log("result:", result);
     if (result && result.status === 200 && result.data.status === 200) {
       return;
     } else if (result.data.status === 403) {
@@ -436,55 +461,6 @@ export async function googleLogin(
 }
 
 // TODO : backend에서 쿼리하도록 변경
-export async function searchQuery(context, e, setSearchResult) {
-  try {
-    const result = await es.post(
-      `/sheetpost/_search`,
-      {
-        query: {
-          bool: {
-            should: [
-              {
-                fuzzy: {
-                  name: {
-                    value: e.target.value,
-                    fuzziness: 1,
-                  },
-                },
-              },
-              {
-                fuzzy: {
-                  title: {
-                    value: e.target.value,
-                    fuzziness: 1,
-                  },
-                },
-              },
-              {
-                prefix: {
-                  "name.keyword": {
-                    value: e.target.value,
-                  },
-                },
-              },
-            ],
-          },
-        },
-      },
-      {
-        headers: {
-          Authorization: `ApiKey ${process.env.REACT_APP_ELASTIC_APIKEY}`,
-        },
-      }
-    );
-    if (result.status === 200 && result.data.status === 200) {
-      console.log(result.data.hits.hits);
-      setSearchResult(result.data.hits.hits);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 export async function isPurcahsed(context, target, item, buttonDOM) {
   try {
@@ -495,13 +471,9 @@ export async function isPurcahsed(context, target, item, buttonDOM) {
       },
     });
     if (result && result.status === 200 && result.data.status === 200) {
-      if (result.data.data.isOrdered === true) {
-        buttonDOM.innerHTML = "이미 구매하신 상품입니다.";
-        buttonDOM.disabled = true;
-        $("#cart-btn").html("이미 카트에 추가된 상품입니다.");
-        $("#cart-btn").css("font-size", "16px");
-        $("#cart-btn").addClass("disabled");
-      }
+      return result.data.data;
+    } else {
+      throw new APIError("구매여부 확인 실패", result);
     }
   } catch (e) {
     console.log(e);
@@ -672,7 +644,7 @@ export async function addComment(context, target, id, content) {
   const body = {
     content: content,
   };
-  const result = await backend.post(`${target}/${id}/comment`, body, {
+  const result = await backend.post(`${target}/${id}/comments`, body, {
     headers: {
       Authorization: accessToken,
     },
@@ -684,8 +656,10 @@ export async function addComment(context, target, id, content) {
   }
 }
 
-export async function getComments(target, id) {
-  const result = await backend.get(`/${target}/${id}/comments`, {});
+export async function getComments(target, id, pageable) {
+  const result = await backend.get(
+    `/${target}/${id}/comments?page=${pageable.page}&size=${pageable.size}`
+  );
   if (result && result.status === 200 && result.data.status === 200) {
     return result.data.data;
   } else {
@@ -695,11 +669,14 @@ export async function getComments(target, id) {
 
 export async function deleteComment(context, target, id, commentId) {
   let accessToken = await refreshAccessToken(context);
-  const result = await backend.delete(`/${target}/${id}/comment/${commentId}`, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+  const result = await backend.delete(
+    `/${target}/${id}/comments/${commentId}`,
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
+  );
   if (result && result.status === 200 && result.data.status === 200) {
     return result.data.data;
   } else {
@@ -717,7 +694,7 @@ export async function getLesson(id) {
 }
 
 export async function getLessons() {
-  const result = await backend.get("/lessons", {});
+  const result = await backend.get("/lessons");
   if (result && result.status === 200 && result.data.status === 200) {
     return result.data.data;
   } else {
@@ -728,7 +705,7 @@ export async function getLessons() {
 export async function getUserUploadedSheets(context) {
   try {
     let accessToken = await refreshAccessToken(context);
-    const result = await backend.get("/user/uploadedSheets", {
+    const result = await backend.get("/user/uploadedSheets?unPaged=true", {
       headers: {
         Authorization: accessToken,
       },
@@ -758,8 +735,7 @@ export async function uploadLesson(context, lessonInfo) {
 }
 
 export async function getSheet(id) {
-  const result = await backend.get(`/sheet/${id}`);
-  console.log("result:", result);
+  const result = await backend.get(`/sheet-post/${id}`);
   if (result && result.status === 200 && result.data.status === 200) {
     return result.data.data;
   } else {
@@ -1092,6 +1068,85 @@ export async function getLessonsAdmin(context) {
     throw new LoginError(response.data.message);
   } else {
     throw new APIError("레슨 조회 실패", response);
+  }
+}
+export async function updateSheetPost(context, id, formdata) {
+  const accessToken = await refreshAccessToken(context);
+  const response = await backend.put(`/sheet-post/${id}`, formdata, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+  if (response && response.status === 200 && response.data.status === 200) {
+    return response.data.data;
+  } else if (response.data.status === 401 || response.data.status === 403) {
+    throw new LoginError(response.data.message);
+  } else {
+    throw new APIError("악보 업데이트 실패", response);
+  }
+}
+
+export async function deleteSheetPost(context, id) {
+  const accessToken = await refreshAccessToken(context);
+  const response = await backend.delete(`/sheet-post/${id}`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+  if (response && response.status === 200 && response.data.status === 200) {
+    return response.data.data;
+  } else if (response.data.status === 401 || response.data.status === 403) {
+    throw new LoginError(response.data.message);
+  } else {
+    throw new APIError("악보 삭제 실패", response);
+  }
+}
+export async function getFileUrl(context, id) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const response = await backend.get(`/sheet-post/${id}/sheet`, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else if (response.data.status === 401 || response.data.status === 403) {
+      throw new LoginError(response.data.message);
+    } else {
+      throw new APIError("악보 파일 받기 실패", response);
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function replyComment(
+  context,
+  target,
+  id,
+  commentId,
+  replyContent
+) {
+  try {
+    const accessToken = await refreshAccessToken(context);
+    const formData = new FormData();
+    formData.append("content", replyContent);
+    const response = await backend.post(
+      `/${target}/${id}/comments/${commentId}`,
+      formData,
+      {
+        headers: {
+          Authorization: accessToken,
+        },
+      }
+    );
+    if (response && response.status === 200 && response.data.status === 200) {
+      return response.data.data;
+    } else {
+      throw new APIError("답글 달기 실패");
+    }
+  } catch (e) {
+    throw e;
   }
 }
 

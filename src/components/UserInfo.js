@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 import styles from "../css/UserInfo.module.css";
 
 function UserInfo() {

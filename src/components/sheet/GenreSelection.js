@@ -28,8 +28,8 @@ function GenreSelectionInput({ value, text, setSheetInfo }) {
     }
     setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
+      sheet: {
+        ...prev.sheet,
         genres: {
           genre1: tmp[0],
           genre2: tmp.length > 1 ? tmp[1] : null,
@@ -40,7 +40,7 @@ function GenreSelectionInput({ value, text, setSheetInfo }) {
 
   return (
     <Button
-      variant="secondary"
+      variant="primary"
       className="m-1"
       data-bs-toggle="button"
       value={value}
@@ -51,79 +51,79 @@ function GenreSelectionInput({ value, text, setSheetInfo }) {
   );
 }
 
-function GenreSelection({ value }) {
+function GenreSelection({ sheetInfo, setSheetInfo }) {
   return (
     <div id="sheet-upload-genre">
       <h3>장르</h3>
       <div>
         <GenreSelectionInput
           value={0}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"캐롤"}
         />
         <GenreSelectionInput
           value={1}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"K-POP"}
         />
         <GenreSelectionInput
           value={2}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"해외 POP"}
         />
         <GenreSelectionInput
           value={3}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"뉴에이지"}
         />
         <GenreSelectionInput
           value={4}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"클래식"}
         />
         <GenreSelectionInput
           value={5}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"자작곡"}
         />
         <GenreSelectionInput
           value={6}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"재즈"}
         />
         <GenreSelectionInput
           value={7}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"연탄곡"}
         />
         <GenreSelectionInput
           value={9}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"OST"}
         />
         <GenreSelectionInput
           value={8}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"게임/애니"}
         />
         <GenreSelectionInput
           value={10}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"동요"}
         />
         <GenreSelectionInput
           value={11}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"BGM"}
         />
         <GenreSelectionInput
           value={12}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"뮤지컬"}
         />
         <GenreSelectionInput
           value={13}
-          setSheetInfo={value.setSheetInfo}
+          setSheetInfo={setSheetInfo}
           text={"종교"}
         />
       </div>

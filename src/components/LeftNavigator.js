@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Accordion, Col, Nav, Navbar, Row } from "react-bootstrap";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 
 function LeftNavigator() {
   const context = useContext(UserContext);

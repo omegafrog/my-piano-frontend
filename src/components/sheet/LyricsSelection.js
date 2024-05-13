@@ -2,14 +2,14 @@ function LyricsSelection({ setSheetInfo }) {
   const changeLyrics = (event) => {
     setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
+      sheet: {
+        ...prev.sheet,
         lyrics: event.target.value,
       },
     }));
   };
   return (
-    <div className="w-100">
+    <div className="w-75">
       <h3>가사 여부</h3>
       <div className="btn-group" role="group" aria-label="Lyrics">
         <input

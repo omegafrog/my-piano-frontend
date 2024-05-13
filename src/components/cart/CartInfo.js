@@ -1,7 +1,7 @@
 import { Button, Col, Container, Image, Row } from "react-bootstrap";
 import Layout from "../Layout";
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import $ from "jquery";
 import { deleteItemFromCart, getCart, payAllInCart } from "../AxiosUtil";
 import { AlertContext } from "../../context/AlertContext";

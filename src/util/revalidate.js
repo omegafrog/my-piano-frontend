@@ -1,6 +1,6 @@
 import { decodeToken } from "react-jwt";
 import axios from "axios";
-import { APIError } from "../components/User-context";
+import { APIError } from "../context/User-context";
 
 const instance = axios.create({
   baseURL: `http://${process.env.REACT_APP_BACKEND_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}`,
@@ -32,8 +32,6 @@ export default async function revalidate(context) {
       throw new APIError("revalidate fail", result);
     }
   } else {
-    console.log("revalidation is not needed.");
-    console.log(context.accessToken);
     return before;
   }
 }

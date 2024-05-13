@@ -10,7 +10,7 @@ import {
 } from "react-bootstrap";
 import AdminLayout from "./AdminLayout";
 import { getTickets } from "../AxiosUtil";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { LoginError } from "../../util/revalidate";
 import { useNavigate } from "react-router-dom";
 import $ from "jquery";

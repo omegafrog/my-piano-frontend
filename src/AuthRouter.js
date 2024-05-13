@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { UserContext } from "./components/User-context";
+import { UserContext } from "./context/User-context";
 import { useNavigate } from "react-router";
 function AuthRouter({ children }) {
   const context = useContext(UserContext);

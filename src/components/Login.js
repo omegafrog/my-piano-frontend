@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 import { useNavigate } from "react-router";
 import { Button, Form, Modal } from "react-bootstrap";
 import { GoogleLogin } from "@react-oauth/google";

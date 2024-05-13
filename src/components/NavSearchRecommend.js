@@ -16,10 +16,10 @@ export default function NavSearchRecommend({ focus, searchResult }) {
             <ListGroup.Item
               eventKey={index}
               key={index}
-              href={`/sheet/${result._id}`}
+              href={`/sheet/${result.id}`}
               action
             >
-              {result._source.name}
+              {result.title}
             </ListGroup.Item>
           );
         })}

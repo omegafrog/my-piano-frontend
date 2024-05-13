@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function SettingPrice({ sheetInfo, setSheetInfo, className }) {
   const [isFree, setFree] = useState(true);
@@ -9,12 +9,19 @@ function SettingPrice({ sheetInfo, setSheetInfo, className }) {
       price: event.target.value,
     }));
   };
+  useEffect(() => {
+    if (sheetInfo.price > 0) setFree(false);
+  }, []);
+  useEffect(() => {
+    console.log(sheetInfo);
+  }, [sheetInfo]);
   return (
     <div className={className}>
       <input
         type="radio"
         id="free"
         name="cost-radio"
+        checked={isFree}
         value={"free"}
         onClick={() => setFree(true)}
       />
@@ -25,6 +32,7 @@ function SettingPrice({ sheetInfo, setSheetInfo, className }) {
         id="pay"
         name="cost-radio"
         value={"pay"}
+        checked={!isFree}
         onClick={() => setFree(false)}
       />
       <label htmlFor="pay">유료</label>

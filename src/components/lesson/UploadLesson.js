@@ -3,7 +3,7 @@ import Layout from "../Layout";
 import { Button, Container, Form, Tab, Tabs } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { useNavigate } from "react-router";
 import revalidate from "../../util/revalidate";
 import { MDBContainer } from "mdb-react-ui-kit";
@@ -94,8 +94,7 @@ export default function UploadLesson() {
     async function invoke() {
       try {
         const data = await getUserUploadedSheets(context);
-        console.log(data);
-        setSheetList(data);
+        setSheetList(data.content);
         setLoading(false);
       } catch (e) {
         console.error(e);
@@ -154,7 +153,7 @@ export default function UploadLesson() {
                 console.log(e.target.value);
                 setLessonInfo((prev) => ({
                   ...prev,
-                  sheetId: e.target.value,
+                  sheetPostId: e.target.value,
                 }));
               }}
             >

@@ -2,7 +2,7 @@ import DifficultyInput from "./DifficultyInput";
 
 function DifficultySelection({ setSheetInfo }) {
   return (
-    <div className="w-100">
+    <div className="w-75">
       <h3>난이도</h3>
       <div className="btn-group" role="group" aria-label="Difficulty">
         <DifficultyInput setSheetInfo={setSheetInfo} value={0} />

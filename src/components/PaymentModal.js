@@ -1,39 +1,59 @@
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "./User-context";
-import { isPurcahsed, pay } from "./AxiosUtil";
+import { UserContext } from "../context/User-context";
+import { getFileUrl, isPurcahsed, pay } from "./AxiosUtil";
 import { AlertContext } from "../context/AlertContext";
 import { useNavigate } from "react-router";
 import { Button, Modal } from "react-bootstrap";
+import $ from "jquery";
 
 export default function PaymentModal({ item, target }) {
   const context = useContext(UserContext);
   const [show, setShow] = useState(false);
+  const [option, setOption] = useState("purchase");
+  const [fileUrl, setFileUrl] = useState();
+  const [modalLoading, setModalLoading] = useState(false);
   const alertValue = useContext(AlertContext);
   const navigate = useNavigate();
   const hideModal = () => setShow(false);
   const showModal = () => {
-    if (context.loggedIn !== true) {
-      alert("로그인하고 이용해주세요.");
-    } else {
-      context.syncUserInfo();
-      setShow(true);
-    }
+    setShow(true);
   };
-
+  const download = async () => {
+    const url = await getFileUrl(context, item.id);
+    setFileUrl(url);
+    setModalLoading(true);
+  };
   useEffect(() => {
-    const payBtn = document.querySelector("#payment-btn");
-    if (context.loggedUser.id === item.artist.id) {
-      payBtn.innerHTML = "내 악보입니다.";
-      payBtn.disabled = true;
-      return;
-    } else if (context.loggedIn === false) {
-      payBtn.innerHTML = "구매하기";
-      payBtn.disabled = false;
+    async function invoke() {
+      const payBtn = document.querySelector("#payment-btn");
+      if (context.loggedUser.id === item.artist.id) {
+        payBtn.innerHTML = "내 악보입니다.";
+        payBtn.disabled = true;
+        return;
+      } else if (context.loggedIn === false) {
+        payBtn.innerHTML = "구매하기";
+        payBtn.disabled = false;
+      }
+      if (context.loggedIn === true) {
+        const data = await isPurcahsed(context, target, item, payBtn);
+        if (data.isOrdered === true) {
+          payBtn.innerHTML = "다운로드";
+          payBtn.addEventListener("click", () => {
+            setOption("download");
+          });
+          await download();
+          $("#cart-btn").html("이미 카트에 추가된 상품입니다.");
+          $("#cart-btn").css("font-size", "16px");
+          $("#cart-btn").addClass("disabled");
+        }
+      } else {
+        $("#cart-btn").html("카트에 추가하기");
+        $("#cart-btn").css("font-size", "");
+        $("#cart-btn").removeClass("disabled");
+      }
     }
-    if (context.loggedIn === true) {
-      isPurcahsed(context, target, item, payBtn);
-    }
-  }, [context.loggedUser]);
+    invoke();
+  }, [context]);
   const restCash = context.loggedUser.cash - item.price;
   const purchase = async () => {
     try {
@@ -43,25 +63,15 @@ export default function PaymentModal({ item, target }) {
       alertValue.alert("danger", e.message);
     } finally {
       hideModal();
-      navigate(`/${target}/${item.id}`);
+      navigate(0);
     }
   };
 
   const restCashColor = restCash < 0 ? "red" : "black";
-  return (
-    <>
-      <Button
-        variant="outline-danger"
-        className="w-100"
-        id="payment-btn"
-        size="lg"
-        style={{ margin: "5px" }}
-        onClick={showModal}
-      >
-        지금 구매
-      </Button>
 
-      <Modal show={show} onHide={hideModal}>
+  const PurchaseModal = () => {
+    return (
+      <>
         <Modal.Header closeButton>
           <Modal.Title>
             <h3>{item.price === 0 ? "무료입니다." : `${item.price}원`}</h3>
@@ -96,6 +106,58 @@ export default function PaymentModal({ item, target }) {
             </Button>
           )}
         </Modal.Footer>
+      </>
+    );
+  };
+  const DownloadModal = () => {
+    return (
+      <>
+        <Modal.Header>악보 다운로드</Modal.Header>
+        <Modal.Body>
+          {modalLoading === true ? (
+            <div
+              style={{
+                cursor: "pointer",
+                backgroundColor: "rgba(189, 195, 199,0.6)",
+                height: "40px",
+                alignContent: "center",
+                padding: "20px",
+                borderRadius: "5px",
+              }}
+              onClick={async () => {
+                const data = await fetch(`${fileUrl}`);
+                const blob = await data.blob();
+                const anchorElement = document.createElement("a");
+                document.body.appendChild(anchorElement);
+                anchorElement.download = item.sheet.originalFileName; // a tag에 download 속성을 줘서 클릭할 때 다운로드가 일어날 수 있도록 하기
+                anchorElement.href = URL.createObjectURL(blob); // href에 url 달아주기
+                anchorElement.click();
+              }}
+            >
+              {item.sheet.originalFileName}
+            </div>
+          ) : (
+            <h3>loading</h3>
+          )}
+        </Modal.Body>
+      </>
+    );
+  };
+  return (
+    <>
+      <Button
+        variant="outline-danger"
+        className="w-100"
+        id="payment-btn"
+        size="lg"
+        style={{ margin: "5px" }}
+        onClick={showModal}
+      >
+        지금 구매
+      </Button>
+
+      <Modal show={show} onHide={hideModal}>
+        {option === "purchase" ? <PurchaseModal /> : <DownloadModal />}
       </Modal>
     </>
   );

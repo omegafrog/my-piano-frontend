@@ -2,17 +2,19 @@ import { Button, Col, Dropdown, Navbar, Row } from "react-bootstrap";
 import LogoBtn from "./LogoBtn";
 import NavigationBtn from "./NavigationBtn";
 import UserInfo from "./UserInfo";
+import { messaging } from "../firebase";
 
 import { useContext, useMemo, useState } from "react";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 import { useNavigate } from "react-router";
 import Login from "./Login";
 import CustomToggle from "./navs/CustomNavToggle";
-import { Logout } from "./AxiosUtil";
+import { Logout, getNoti } from "./AxiosUtil";
 import NavSearchRecommend from "./NavSearchRecommend";
 import NavSearchBar from "./NavSearchBar";
 import CashModal from "./cash/CashModal";
-
+import { NotiContext } from "../context/NotiContext";
+import { onMessage } from "firebase/messaging";
 function Navigator() {
   const context = useContext(UserContext);
   const [clickLogin, setClickLogin] = useState(false);
@@ -74,9 +76,12 @@ function SearchBar() {
   return (
     <>
       <NavSearchBar
-        searchTermValue={{ searchTerm, setSearchTerm }}
-        searchResultValue={{ searchResult, setSearchResult }}
-        focusValue={{ focus, setFocus }}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        searchResult={searchResult}
+        setSearchResult={setSearchResult}
+        focus={focus}
+        setFocus={setFocus}
       />
       <NavSearchRecommend focus={focus} searchResult={searchResult} />
     </>
@@ -104,6 +109,14 @@ function NavLeftButtons() {
   );
 }
 function NavRightButtons({ setCashModalShow }) {
+  const context = useContext(UserContext);
+  const notiContext = useContext(NotiContext);
+  onMessage(messaging, (body) => {
+    console.log(body);
+    const notice = JSON.parse(body.data.body);
+    notiContext.addNotificaiton(notice.body, notice.topic);
+  });
+
   return (
     <>
       <Navbar.Brand
@@ -114,8 +127,27 @@ function NavRightButtons({ setCashModalShow }) {
       >
         <NavigationBtn img={"/img/coin-stack.png"} />
       </Navbar.Brand>
-      <Navbar.Brand href="b">
-        <NavigationBtn img={"/img/notification.png"} />
+      <Navbar.Brand>
+        <Dropdown
+          onClick={async () => {
+            const data = await getNoti(context);
+            const notices = [];
+            data.map((item, idx) =>
+              notices.push({ id: item.id, body: item.body, topic: item.topic })
+            );
+            notiContext.setNotification(notices);
+          }}
+          align={"end"}
+        >
+          <Dropdown.Toggle as={CustomToggle}>
+            <NavigationBtn img={"/img/notification.png"} />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {notiContext.notices.map((item, idx) => {
+              return <Dropdown.Item key={idx}>{item.body}</Dropdown.Item>;
+            })}
+          </Dropdown.Menu>
+        </Dropdown>
       </Navbar.Brand>
       <Navbar.Brand href="/cart">
         <NavigationBtn img={"/img/shopping-cart.png"} />

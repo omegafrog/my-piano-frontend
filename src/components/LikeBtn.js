@@ -1,6 +1,6 @@
 import { Button } from "react-bootstrap";
 import { useContext, useEffect } from "react";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 import { checkIsLiked, dislikePost, isLikedPost, likePost } from "./AxiosUtil";
 import { LoginError } from "../util/revalidate";
 import { useNavigate } from "react-router";
@@ -18,10 +18,11 @@ export default function LikeBtn({ target, id, value }) {
           context.loggedUser.role === "USER" ||
           context.loggedUser.role === "CREATOR"
         ) {
-          const likedPostData = await isLikedPost(context, "sheet", id);
-          if (likedPostData.isLikedPost === true) {
+          const likedPostData = await isLikedPost(context, target, id);
+          if (likedPostData.isLiked === true) {
             const likeBtn = document.querySelector("#like-count");
             likeBtn.style.backgroundColor = "#74b9ff";
+            likeBtn.classList.toggle("active");
           }
         }
       }

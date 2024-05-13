@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import AdminLayout from "./AdminLayout";
 import { disconnectUser, getSessions } from "../AxiosUtil";
 import { Button, Table } from "react-bootstrap";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { LoginError } from "../../util/revalidate";
 import { useNavigate } from "react-router";
 import styles from "./sessions.module.scss";

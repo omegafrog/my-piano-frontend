@@ -8,7 +8,7 @@ function SheetPostDescription({ setSheetInfo, sheetInfo, className }) {
     event.preventDefault();
     setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: { ...prev.sheetDto, title: event.target.value },
+      sheet: { ...prev.sheet, title: event.target.value },
     }));
   };
   const changeTitle = (event) => {
@@ -25,7 +25,7 @@ function SheetPostDescription({ setSheetInfo, sheetInfo, className }) {
           <InputGroup.Text id="sheet-name">곡 제목</InputGroup.Text>
           <Form.Control
             type="text"
-            value={sheetInfo.sheetDto.title || ""}
+            value={sheetInfo.sheet.title}
             onChange={changeSheetTitle}
             aria-describedby="sheet-name"
           />
@@ -34,7 +34,7 @@ function SheetPostDescription({ setSheetInfo, sheetInfo, className }) {
           <InputGroup.Text id="sheetpost-name">글 제목</InputGroup.Text>
           <Form.Control
             type="text"
-            value={sheetInfo.title || ""}
+            value={sheetInfo.title}
             onChange={changeTitle}
             aria-describedby="sheetpost-name"
           />

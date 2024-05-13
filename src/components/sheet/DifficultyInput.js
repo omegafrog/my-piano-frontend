@@ -2,8 +2,8 @@ function DifficultyInput({ value, setSheetInfo }) {
   const changeDifficulty = (event) => {
     setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
+      sheet: {
+        ...prev.sheet,
         difficulty: event.target.value,
       },
     }));

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import Layout from "../Layout";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import revalidate from "../../util/revalidate";

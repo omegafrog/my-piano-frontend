@@ -1,25 +1,24 @@
 import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { searchQuery } from "./AxiosUtil";
-import { UserContext } from "./User-context";
-import { useContext } from "react";
+import { useState } from "react";
 export default function NavSearchBar({
-  searchTermValue,
-  searchResultValue,
-  focusValue,
+  searchTerm,
+  setSearchTerm,
+  searchResult,
+  setSearchResult,
+  focus,
+  setFocus,
 }) {
-  const { searchTerm, setSearchTerm } = searchTermValue;
-  const { searchResult, setSearchResult } = searchResultValue;
-  const { focus, setFocus } = focusValue;
-
   const navigate = useNavigate();
-  const context = useContext(UserContext);
 
-  const changeSearchResult = (e) => {
+  const changeSearchResult = async (e) => {
     setSearchTerm(e.target.value);
+    setSearchResult([]);
     console.log("searchTerm:", e.target.value);
     if (searchTerm.length >= 2) {
-      searchQuery(context, e, setSearchResult);
+      const data = await searchQuery(e.target.value);
+      setSearchResult(data.content);
     }
   };
   return (

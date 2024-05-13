@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { Button } from "react-bootstrap";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 import { addToCart, checkInCart } from "./AxiosUtil";
 
 export default function CartBtn({ item, alertValue }) {

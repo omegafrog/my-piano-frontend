@@ -13,7 +13,7 @@ import {
 import { genreDict, genreIdDict } from "../../components/sheet/GenreSelection";
 import { useLocation, useNavigate } from "react-router";
 import { difficultyDict, difficultyIdDict } from "./DifficultySelection";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import SheetList from "./SheetList";
 import LeftNavigator from "../LeftNavigator";
 import { AlertContext } from "../../context/AlertContext";

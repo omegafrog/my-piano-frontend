@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import AdminLayout from "./AdminLayout";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { useNavigate } from "react-router";
 import { getPosts, getPostsAdmin } from "../AxiosUtil";
 import { LoginError } from "../../util/revalidate";

@@ -1,37 +1,33 @@
-function UploadFileForm({ value }) {
+function UploadFileForm({ setSheetInfo, setSheetFile }) {
   const renameSheetImg = (event) => {
+    console.log("event:", event);
     const files = event.target.files;
-    const newFiles = [];
-
-    for (const file of files) {
-      const nameList = file.name.split(".");
-      newFiles.push(
-        new File(
-          [file],
-          "sheet-" +
-            nameList[0] +
-            "-" +
-            crypto.randomUUID() +
-            "." +
-            nameList[1],
-          { type: file.type }
-        )
-      );
+    let newFile;
+    const nameList = files[0].name.split(".");
+    var fileNameWithoutExtension = "";
+    for (var i = 0; i < nameList.length - 1; i += 1) {
+      fileNameWithoutExtension += nameList[i];
     }
-    let imageListItems = "";
-    newFiles.forEach((sheet) => {
-      imageListItems += sheet.name;
-      imageListItems += ",";
-    });
-    console.log(imageListItems);
-    value.setSheetInfo((prev) => ({
+    newFile = new File(
+      [files[0]],
+      "sheet-" +
+        fileNameWithoutExtension +
+        "-" +
+        crypto.randomUUID() +
+        "." +
+        nameList[nameList.length - 1],
+      { type: files[0].type }
+    );
+
+    setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
-        filePath: imageListItems,
+      sheet: {
+        ...prev.sheet,
+        sheet: newFile.name,
       },
     }));
-    value.setSheetFile(newFiles);
+    console.log("newfile:", newFile);
+    setSheetFile(newFile);
   };
   return (
     <div className="input-group mb-3">

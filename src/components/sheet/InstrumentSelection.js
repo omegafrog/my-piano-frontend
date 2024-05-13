@@ -1,13 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../User-context";
-import { Nav, Tab, TabContainer, Tabs } from "react-bootstrap";
+import { Tab, Tabs } from "react-bootstrap";
 
 function InstrumentSelectionInput({ setSheetInfo, value, text }) {
   const changeInstrument = (event) => {
     setSheetInfo((prev) => ({
       ...prev,
-      sheetDto: {
-        ...prev.sheetDto,
+      sheet: {
+        ...prev.sheet,
         instrument: event.target.value,
       },
     }));
@@ -23,30 +21,27 @@ function InstrumentSelectionInput({ setSheetInfo, value, text }) {
         onClick={changeInstrument}
         value={value}
       />
-      <label className="btn btn-secondary" htmlFor={`instrument${value}`}>
+      <label className="btn btn-primary" htmlFor={`instrument${value}`}>
         {text}
       </label>
     </div>
   );
 }
 
-function InstrumentSelection({ setSheetInfo }) {
-  const [index, setIndex] = useState("piano");
-  const changeIndex = (event) => {
-    console.log("value", event.target.value);
-    // 다른 tab 선택 시
-    if (index !== event.target.value) {
-      const currentDetailsDiv = document.getElementById(index);
-      currentDetailsDiv.style.display = "none";
-      setIndex(event.target.value);
-      const detailsDiv = document.getElementById(event.target.value);
-      detailsDiv.style.display = "block";
-    }
-  };
+function InstrumentSelection({ sheetInfo, setSheetInfo }) {
+  let activeTabKey = "piano";
+  const before = sheetInfo.sheet.instrument;
+  if (before) {
+    if (before < 2) activeTabKey = "piano";
+    else if (2 <= before && before < 4) activeTabKey = "guitar";
+    else if (4 <= before && before < 6) activeTabKey = "string";
+    else if (6 <= before && before < 10) activeTabKey = "wooden";
+    else if (10 <= before) activeTabKey = "steel";
+  }
   return (
-    <div className="w-100">
+    <div className="w-75">
       <h2>악기</h2>
-      <Tabs defaultActiveKey="piano" className="mb-3">
+      <Tabs defaultActiveKey={activeTabKey} className="mb-3">
         <Tab eventKey="piano" title="피아노">
           <div className="d-flex">
             <InstrumentSelectionInput

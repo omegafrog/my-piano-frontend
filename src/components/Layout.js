@@ -1,8 +1,8 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import CustomAlert from "./alert/CustomAlert";
 import { getToken } from "firebase/messaging";
 import Navigator from "./Navigator";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 import { messaging } from "./../firebase";
 import { subscribeNoti, validate } from "./AxiosUtil";
 import { LoginError } from "../util/revalidate";
@@ -43,9 +43,6 @@ export default function Layout({ alertValue, children, leftNav }) {
     // send message
   }, []);
 
-  useEffect(() => {
-    validate(context);
-  }, []);
   return (
     <div className="w-100">
       <Navigator />

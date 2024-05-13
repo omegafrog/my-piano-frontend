@@ -2,7 +2,7 @@ import { Button, Col, Container, FormControl, Row } from "react-bootstrap";
 import Layout from "../Layout";
 import { useNavigate, useParams } from "react-router";
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import Editor from "../sheet/editor";
 import { updatePost, getPost, deletePost } from "../AxiosUtil";
 

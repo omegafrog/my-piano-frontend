@@ -14,7 +14,8 @@ export default function Lessons() {
 
   useEffect(() => {
     async function invoke() {
-      await getLessons();
+      const data = await getLessons();
+      setLessonList(data.lessons);
     }
     invoke();
   }, []);
@@ -101,6 +102,6 @@ function LessonList({ lessons }) {
       </div>
     );
   } else {
-    return <h1>아직 올린 악보가 없습니다.</h1>;
+    return <h1>아직 올린 레슨이 없습니다.</h1>;
   }
 }

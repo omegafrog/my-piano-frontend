@@ -5,7 +5,7 @@ import SettingPrice from "./SettingPrice";
 import SheetPostDescription from "./SheetPostDescription";
 import OrganizationSelection from "./OrganizationSelection";
 
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import LyricsSelection from "./LyricsSelection";
 import DifficultySelection from "./DifficultySelection";
 import UploadFileForm from "./UploadFileForm";
@@ -24,7 +24,7 @@ function UploadSheet() {
     content: "",
     price: 0,
     discountRate: 0,
-    sheetDto: {
+    sheet: {
       title: "",
       pageNum: 0,
       difficulty: -1,
@@ -32,7 +32,6 @@ function UploadSheet() {
       genres: [],
       isSolo: null,
       lyrics: null,
-      filePath: "",
     },
   });
 
@@ -47,10 +46,6 @@ function UploadSheet() {
   );
 
   //logging
-  useEffect(() => {
-    console.log(value.sheetInfo);
-  }, [sheetInfo]);
-
   const submitSheetPost = async () => {
     // send sheet data
     const flag = sheetInfoValidator(value.sheetInfo, value2);
@@ -77,19 +72,28 @@ function UploadSheet() {
         />
 
         <div className="sheet-upload-file">
-          <UploadFileForm value={value} />
+          <UploadFileForm
+            setSheetFile={setSheetFile}
+            setSheetInfo={setSheetInfo}
+          />
         </div>
 
         <SheetPostDescription
-          sheetInfo={value.sheetInfo}
-          setSheetInfo={value.setSheetInfo}
+          sheetInfo={sheetInfo}
+          setSheetInfo={setSheetInfo}
         />
 
-        <GenreSelection value={value} />
-        <InstrumentSelection setSheetInfo={value.setSheetInfo} />
-        <OrganizationSelection setSheetInfo={value.setSheetInfo} />
-        <LyricsSelection setSheetInfo={value.setSheetInfo} />
-        <DifficultySelection setSheetInfo={value.setSheetInfo} />
+        <GenreSelection sheetInfo={sheetInfo} setSheetInfo={setSheetInfo} />
+        <InstrumentSelection
+          sheetInfo={sheetInfo}
+          setSheetInfo={setSheetInfo}
+        />
+        <OrganizationSelection
+          sheetInfo={sheetInfo}
+          setSheetInfo={setSheetInfo}
+        />
+        <LyricsSelection setSheetInfo={setSheetInfo} />
+        <DifficultySelection setSheetInfo={setSheetInfo} />
 
         <div className="m-2">
           <button

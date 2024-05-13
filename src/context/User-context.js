@@ -129,6 +129,7 @@ export const UserProvider = ({ children }) => {
     ) {
       sessionStorage.setItem("userState", JSON.stringify(state));
     }
+    console.log("value changed");
   }, [state]);
   const value = useMemo(() => state, [state]);
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { loadPaymentWidget } from "@tosspayments/payment-widget-sdk";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { useSearchParams } from "react-router-dom";
 
 const clientKey = "test_ck_kYG57Eba3G6jzE0Rmam58pWDOxmA";

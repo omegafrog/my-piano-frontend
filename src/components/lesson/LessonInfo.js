@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { ItemListUserInfo } from "../user/userInfo";
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import VideoContainer from "./VideoContainer";
 import ScrapBtn from "../ScrapBtn";
 import LikeBtn from "../LikeBtn";
@@ -108,7 +108,7 @@ export default function LessonInfo() {
                 variant="outline-secondary"
                 className="my-2 p-2 w-100 d-flex"
                 onClick={() => {
-                  navigate(`/sheet/${lesson.sheet.id}`);
+                  navigate(`/sheet/${lesson.sheetPostId}`);
                 }}
               >
                 ▶️ 레슨에 사용된 악보 : {lesson.sheet.title}
@@ -116,7 +116,7 @@ export default function LessonInfo() {
             </Col>
           </Row>
           <Row className="py-5">
-            <div className="sheet-info comment">
+            <div className="sheet-info">
               <Comment target="lesson" />
             </div>
           </Row>

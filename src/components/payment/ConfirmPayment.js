@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { useParams, useSearchParams } from "react-router-dom";
 import { requestPayment } from "../AxiosUtil";
 import { useContext, useEffect } from "react";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 
 export default function ConfirmPayment() {
   const context = useContext(UserContext);

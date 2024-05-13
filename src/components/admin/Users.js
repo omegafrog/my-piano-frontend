@@ -10,7 +10,7 @@ import {
   Modal,
 } from "react-bootstrap";
 import { changeUserInfo, getUsers } from "../AxiosUtil";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import $ from "jquery";
 import CustomPagenation from "../Pagenation";
 import { LoginError } from "../../util/revalidate";

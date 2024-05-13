@@ -3,7 +3,7 @@ import Layout from "../Layout";
 import Editor from "../sheet/editor";
 import { useContext, useState } from "react";
 import { writePost } from "../AxiosUtil";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { useNavigate } from "react-router";
 
 import "./Editor.css";

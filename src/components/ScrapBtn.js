@@ -1,6 +1,6 @@
 import { Button } from "react-bootstrap";
 import { useContext, useEffect } from "react";
-import { UserContext } from "./User-context";
+import { UserContext } from "../context/User-context";
 import { isScrapped, scrap, unscrap } from "./AxiosUtil";
 import { AlertContext } from "../context/AlertContext";
 
@@ -19,7 +19,7 @@ export default function ScrapBtn({ target, id, style, className }) {
             if (data.isScrapped === true) {
               const scrapBtn = document.querySelector("#scrap-btn");
               scrapBtn.style.backgroundColor = "#74b9ff";
-              scrapBtn.innerHTML = "scrapped";
+              scrapBtn.innerHTML = "🔖scrapped";
               scrapBtn.classList.add("active");
             }
           } catch (e) {
@@ -57,6 +57,7 @@ export default function ScrapBtn({ target, id, style, className }) {
             await scrap(context, target, id);
             scrapBtn.style.backgroundColor = "#74b9ff";
             scrapBtn.innerHTML = "scrapped";
+            scrapBtn.classList.toggle("active");
           } catch (e) {
             console.error(e);
             alertContext.alert("danger", e.message);

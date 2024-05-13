@@ -1,0 +1,26 @@
+.comment {
+  padding-top: 20px;
+  border-top: 1px solid rgba(189, 195, 199, 1);
+  .col {
+    height: 100px;
+  }
+  background-color: rgba(189, 195, 199, 0.473);
+  border-radius: 5px;
+}
+.emptyComment {
+  margin-top: 15px;
+}
+.reply-form.active {
+  display: block;
+}
+.reply-form {
+  display: none;
+}
+.reply {
+  padding: 20px;
+  height: 100px;
+  border-top: 1px solid rgba(189, 195, 199, 1);
+  background-color: hsla(204, 8%, 76%, 0.356);
+  border-radius: 5px;
+  overflow: hidden;
+}

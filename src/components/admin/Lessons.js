@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import AdminLayout from "./AdminLayout";
 import { useNavigate } from "react-router";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import { AlertContext } from "../../context/AlertContext";
 import { LoginError } from "../../util/revalidate";
 import { Accordion, Button, Col, Form, Row, Table } from "react-bootstrap";

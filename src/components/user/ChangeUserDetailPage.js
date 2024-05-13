@@ -2,7 +2,7 @@ import { useContext } from "react";
 import Layout from "../Layout";
 import LeftUserNavigator from "../navigator/LeftUserNavigator";
 import { AlertContext } from "../../context/AlertContext";
-import { UserContext } from "../User-context";
+import { UserContext } from "../../context/User-context";
 import ChangeUserInfo from "../navigator/ChangeUserInput";
 
 export default function ChangeUserDetailPage() {

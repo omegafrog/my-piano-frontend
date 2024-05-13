@@ -4,12 +4,12 @@ import { APIError } from "../context/User-context";
 import revalidate, { LoginError } from "../util/revalidate";
 
 const backend = axios.create({
-  baseURL: `//${process.env.REACT_APP_BACKEND_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}`,
+  baseURL: `http://${process.env.REACT_APP_BACKEND_HOSTNAME}:${process.env.REACT_APP_BACKEND_PORT}`,
   withCredentials: true,
   validateStatus: false,
 });
 const es = axios.create({
-  baseURL: `//${process.env.REACT_APP_ELASTIC_HOSTNAME}:${process.env.REACT_APP_ELASTIC_PORT}`,
+  baseURL: `http://${process.env.REACT_APP_ELASTIC_HOSTNAME}:${process.env.REACT_APP_ELASTIC_PORT}`,
   withCredentials: true,
   validateStatus: false,
 });

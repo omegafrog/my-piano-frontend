@@ -48,6 +48,17 @@ export default function LessonInfo() {
                 profileSrc={lesson.artist.profileSrc}
                 name={lesson.artist.name}
               />
+              <div>
+                <span
+                  style={{
+                    fontSize: "0.9rem",
+                    opacity: "0.5",
+                    paddingLeft: "10px",
+                  }}
+                >
+                  조회수 : {lesson.viewCount}
+                </span>
+              </div>
             </div>
           </div>
           <Row>

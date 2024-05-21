@@ -24,11 +24,11 @@ import {
 } from "../AxiosUtil";
 import $ from "jquery";
 function SheetContent({ item }) {
-  let filePaths = item.sheet.sheetUrl.split(".");
+  let filePath = item.sheet.sheetUrl;
   const thumbnails = [];
   for (let i = 0; i < item.sheet.pageNum; i += 1) {
     thumbnails.push(
-      `https://mypianobucket.s3.ap-northeast-2.amazonaws.com/${filePaths[0]}-${i}.jpg`
+      `https://mypianobucket.s3.ap-northeast-2.amazonaws.com/${filePath}-${i}.jpg`
     );
   }
   return (

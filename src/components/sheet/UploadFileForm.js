@@ -8,14 +8,11 @@ function UploadFileForm({ setSheetInfo, setSheetFile }) {
     for (var i = 0; i < nameList.length - 1; i += 1) {
       fileNameWithoutExtension += nameList[i];
     }
+    var newFileNameWithoutExtension =
+      "sheet-" + fileNameWithoutExtension + "-" + crypto.randomUUID();
     newFile = new File(
       [files[0]],
-      "sheet-" +
-        fileNameWithoutExtension +
-        "-" +
-        crypto.randomUUID() +
-        "." +
-        nameList[nameList.length - 1],
+      newFileNameWithoutExtension + "." + nameList[nameList.length - 1],
       { type: files[0].type }
     );
 
@@ -23,7 +20,8 @@ function UploadFileForm({ setSheetInfo, setSheetFile }) {
       ...prev,
       sheet: {
         ...prev.sheet,
-        sheet: newFile.name,
+        sheetUrl: newFileNameWithoutExtension,
+        originalFileName: files[0].name,
       },
     }));
     console.log("newfile:", newFile);

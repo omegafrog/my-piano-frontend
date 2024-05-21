@@ -20,7 +20,7 @@ function OrganizationSelection({ sheetInfo, setSheetInfo }) {
           className="btn-check"
           autoComplete="off"
           id={`organization${1}`}
-          value={sheetInfo.sheet ? sheetInfo.sheet.solo : true}
+          value={true}
           onClick={changeOrganization}
         />
         <label htmlFor={`organization${1}`} className="btn btn-primary">

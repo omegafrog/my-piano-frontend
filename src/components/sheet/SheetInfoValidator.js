@@ -54,7 +54,10 @@ export function sheetInfoValidator(sheetInfo, alertContext) {
     alertContext.alert("danger", "가사 여부를 선택하지 않았습니다.");
     flag = false;
   }
-  if (sheetInfo.sheet.sheet === null || sheetInfo.sheet.sheet.length === 0) {
+  if (
+    sheetInfo.sheet.sheetUrl === null ||
+    sheetInfo.sheet.sheetUrl.length === 0
+  ) {
     alertContext.alert("danger", "악보를 올리지 않았습니다.");
     flag = false;
   }
